@@ -9,6 +9,6 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 public class SetupClient {
     @SubscribeEvent
     public static void onClientSetupEvent(FMLClientSetupEvent event) {
-        RenderTypeLookup.setRenderLayer(ModBlocks.generatorBlock, RenderType.getCutout());
+        RenderTypeLookup.setRenderLayer(ModBlocks.GENERATOR.get(), RenderType.getCutout());
     }
 }

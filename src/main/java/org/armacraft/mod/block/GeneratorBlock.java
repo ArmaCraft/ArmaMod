@@ -10,7 +10,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
-import org.armacraft.mod.init.ModTileEntities;
+import org.armacraft.mod.init.ModTileEntityTypes;
 import org.armacraft.mod.tileentity.GeneratorTileEntity;
 
 public class GeneratorBlock extends Block {
@@ -27,7 +27,7 @@ public class GeneratorBlock extends Block {
 
     @Override
     public TileEntity createTileEntity(BlockState state, IBlockReader world) {
-        return ModTileEntities.generatorTileEntityType.create();
+        return ModTileEntityTypes.GENERATOR_TILE.get().create();
     }
 
     @Override

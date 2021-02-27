@@ -8,7 +8,7 @@ import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.armacraft.mod.init.ModItems;
-import org.armacraft.mod.init.ModTileEntities;
+import org.armacraft.mod.init.ModTileEntityTypes;
 import org.armacraft.mod.init.SetupClient;
 
 @Mod(ArmaCraft.MODID)
@@ -18,12 +18,11 @@ public class ArmaCraft {
     public static IEventBus modEventBus;
 
     public ArmaCraft() {
-        final ModLoadingContext modLoadingContext = ModLoadingContext.get();
         modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
 
-        modEventBus.register(ModBlocks.class);
-        modEventBus.register(ModItems.class);
-        modEventBus.register(ModTileEntities.class);
+        ModBlocks.BLOCKS.register(modEventBus);
+        ModItems.ITEMS.register(modEventBus);
+        ModTileEntityTypes.TILE_ENTITY_TYPES.register(modEventBus);
 
         DistExecutor.runWhenOn(Dist.CLIENT, () -> ArmaCraft::registerClientOnlyEvents);
 

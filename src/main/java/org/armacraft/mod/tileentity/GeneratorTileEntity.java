@@ -5,7 +5,7 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.tileentity.TileEntity;
-import org.armacraft.mod.init.ModTileEntities;
+import org.armacraft.mod.init.ModTileEntityTypes;
 
 public class GeneratorTileEntity extends TileEntity {
 
@@ -20,7 +20,7 @@ public class GeneratorTileEntity extends TileEntity {
     private int production;
 
     public GeneratorTileEntity() {
-        super(ModTileEntities.generatorTileEntityType);
+        super(ModTileEntityTypes.GENERATOR_TILE.get());
     }
 
     @Override
