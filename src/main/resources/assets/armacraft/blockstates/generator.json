@@ -1,0 +1,11 @@
+{
+  "variants": {
+    "": {
+      "model": "armacraft:block/generator"
+    },
+    "inventory": {
+      "model": "armacraft:block/generator",
+      "transform": "forge:default-block"
+    }
+  }
+}
