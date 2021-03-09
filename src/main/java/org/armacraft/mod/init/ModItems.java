@@ -20,4 +20,7 @@ public class ModItems {
 
     public static RegistryObject<Item> SCREWDRIVER = ITEMS.register("screwdriver",
             () -> new Item(new Item.Properties().maxStackSize(1).group(ItemGroup.TOOLS)));
+
+    public static RegistryObject<Item> SILVER_MEDAL = ITEMS.register("silver_medal",
+            () -> new Item(new Item.Properties().maxStackSize(64).group(ItemGroup.MISC)));
 }

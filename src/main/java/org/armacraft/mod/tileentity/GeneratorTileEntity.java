@@ -10,6 +10,7 @@ import org.armacraft.mod.init.ModTileEntityTypes;
 public class GeneratorTileEntity extends TileEntity {
 
     private String owner;
+    private boolean isValid;
     private boolean isGenerator;
     private boolean isBroken;
     private boolean isActivated;
@@ -37,6 +38,7 @@ public class GeneratorTileEntity extends TileEntity {
         compound.putBoolean("isGenerator", true);
         if(this.owner != null) {
             compound.putString("owner", owner);
+            compound.putBoolean("isValid", isValid);
             compound.putBoolean("isBroken", isBroken);
             compound.putBoolean("isActivated", isActivated);
             compound.putInt("storedStars", storedStars);
@@ -53,6 +55,7 @@ public class GeneratorTileEntity extends TileEntity {
         isGenerator = true;
         if(compound.contains("owner")) {
             this.owner = compound.getString("owner");
+            this.isValid = compound.getBoolean("isValid");
             this.isBroken = compound.getBoolean("isBroken");
             this.isActivated = compound.getBoolean("isActivated");
             this.storedStars = compound.getInt("storedStars");
