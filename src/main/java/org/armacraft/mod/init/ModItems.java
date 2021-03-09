@@ -23,4 +23,7 @@ public class ModItems {
 
     public static RegistryObject<Item> SILVER_MEDAL = ITEMS.register("silver_medal",
             () -> new Item(new Item.Properties().maxStackSize(64).group(ItemGroup.MISC)));
+
+    public static RegistryObject<Item> GOLD_MEDAL = ITEMS.register("gold_medal",
+            () -> new Item(new Item.Properties().maxStackSize(64).group(ItemGroup.MISC)));
 }
