@@ -1,0 +1,12 @@
+{
+  "required": true,
+  "package": "org.armacraft.mod.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "refmap": "armacraft.refmap.json",
+  "mixins": [
+    "GunCraftSlotMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
