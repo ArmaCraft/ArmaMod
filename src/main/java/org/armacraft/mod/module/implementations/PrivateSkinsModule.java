@@ -14,7 +14,6 @@ import java.util.concurrent.atomic.AtomicReference;
 public class PrivateSkinsModule implements IModule {
     @Override
     public void load() {
-
         final DeferredRegister<Item> CD_ITEMS = com.craftingdead.core.item.ModItems.ITEMS;
         CD_ITEMS.getEntries().stream()
                 .filter(registry -> registry.get() instanceof GunItem)
