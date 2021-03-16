@@ -1,0 +1,9 @@
+{
+    "block.armacraft.generator": "Star Generator",
+  
+    "item.armacraft.screwdriver": "Screwdriver",
+    "item.armacraft.silver_medal": "Silver Medal",
+    "item.armacraft.gold_medal": "Gold Medal",
+  
+    "message.no_skin_permission": "You don't have enough permission."
+  }
