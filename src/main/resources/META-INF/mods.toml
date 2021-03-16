@@ -7,7 +7,7 @@ version="${file.jarVersion}" #mandatory
 displayName="ArmaCraft" #mandatory
 logoFile="examplemod.png" #optional
 credits="Thanks for this example mod goes to Java" #optional
-authors="Love, Cheese and small house plants" #optional
+authors="Threader (Black)"
 description='''
 This is a long form description of the mod. You can write whatever you want here
 

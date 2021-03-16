@@ -1,4 +1,4 @@
-package org.armacraft.mod.module.implementations;
+package org.armacraft.mod.module.features;
 
 import com.craftingdead.core.item.GunItem;
 import net.minecraft.item.Item;
@@ -7,7 +7,7 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.server.permission.DefaultPermissionLevel;
 import net.minecraftforge.server.permission.PermissionAPI;
 import org.armacraft.mod.module.IModule;
-import org.armacraft.mod.module.ModuleState;
+import org.armacraft.mod.module.ModuleSide;
 
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -29,5 +29,10 @@ public class PrivateSkinsModule implements IModule {
     @Override
     public String getId() {
         return "private-skins";
+    }
+
+    @Override
+    public ModuleSide getSide() {
+        return ModuleSide.SERVER;
     }
 }
