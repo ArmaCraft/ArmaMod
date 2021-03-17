@@ -36,23 +36,23 @@ public class GunCraftSlotMixin {
     /**
      * @author threader
      */
-    @Inject(method = "func_190901_a", remap = false, at = @At("HEAD"))
+    @Inject(method = "func_190901_a", remap = false, at = @At("TAIL"))
     public void func_190901_a(PlayerEntity playerEntity, ItemStack gunStack, CallbackInfoReturnable<ItemStack> cir) {
         try {
-            if(gunStack.getItem() instanceof GunItem) {
-                if (!craftingInventory.getStackInSlot(3).isEmpty()) {
-                    ItemStack stack = craftingInventory.getStackInSlot(3);
-                    PaintItem paint = (PaintItem) stack.getItem();
+            gunStack.getCapability(ModCapabilities.GUN).ifPresent(gunController -> {
+                if(gunController.getPaint().isPresent()) {
+                    PaintItem paint = (PaintItem) gunController.getPaintStack().getItem();
                     String permissionNode = "armacraft.skins."
                             + gunStack.getItem().getRegistryName().toString().replaceAll("^craftingdead:", "")
                             + "." + paint.getRegistryName().toString().replaceAll("^craftingdead:", "");
+                    System.out.println(permissionNode);
                     if (!ArmaCraft.PERMISSION_CHECKER.checkPermission(playerEntity.getUniqueID(), permissionNode)) {
                         playerEntity.sendMessage(new TranslationTextComponent("message.no_skin_permission")
                                 .setStyle(Style.EMPTY.applyFormatting(TextFormatting.RED).setBold(true)), Util.DUMMY_UUID);
-                        return;
+                        gunStack.getCapability(ModCapabilities.GUN).ifPresent(x -> x.setPaintStack(ItemStack.EMPTY));
                     }
                 }
-            }
+            });
         } catch (Exception ex) {
             ex.printStackTrace();
         }
