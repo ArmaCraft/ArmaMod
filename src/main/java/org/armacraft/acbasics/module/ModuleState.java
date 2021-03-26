@@ -1,4 +1,4 @@
-package org.armacraft.mod.module;
+package org.armacraft.acbasics.module;
 
 import java.util.Arrays;
 

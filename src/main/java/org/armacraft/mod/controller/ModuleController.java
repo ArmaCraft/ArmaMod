@@ -1,25 +1,17 @@
 package org.armacraft.mod.controller;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import com.google.gson.stream.JsonReader;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.DistExecutor;
-import org.armacraft.mod.ArmaCraft;
-import org.armacraft.mod.module.IModule;
-import org.armacraft.mod.module.ModuleSide;
-import org.armacraft.mod.module.ModuleState;
+import org.armacraft.acbasics.module.IModule;
+import org.armacraft.acbasics.module.ModuleSide;
+import org.armacraft.acbasics.module.ModuleState;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.AbstractMap;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 public class ModuleController {

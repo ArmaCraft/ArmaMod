@@ -10,8 +10,7 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.armacraft.mod.init.ModItems;
 import org.armacraft.mod.init.ModTileEntityTypes;
 import org.armacraft.mod.init.SetupClient;
-import org.armacraft.mod.module.ModuleState;
-import org.armacraft.mod.module.features.PrivateSkinsModule;
+import org.armacraft.acbasics.module.features.PrivateSkinsModule;
 
 @Mod(ArmaCraft.MODID)
 public class ArmaCraft {
