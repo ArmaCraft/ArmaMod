@@ -2,6 +2,7 @@ package org.armacraft.mod;
 
 import com.craftingdead.core.util.ModDamageSource;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import org.armacraft.mod.init.ModBlocks;
 import net.minecraftforge.api.distmarker.Dist;
@@ -36,7 +37,7 @@ public class ArmaCraft {
         modEventBus.register(SetupClient.class);
     }
 
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onHurt(LivingHurtEvent event) {
         if(event.getSource() == ModDamageSource.DEHYDRATION) {
             event.setCanceled(true);
