@@ -12,10 +12,11 @@ buildscript {
         }
     }
     dependencies {
-        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '3.+', changing: true
-        classpath 'org.spongepowered:mixingradle:0.7-SNAPSHOT'
+        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '4.1+', changing: true
+        classpath group: 'org.spongepowered', name: 'mixingradle', version: '0.7-SNAPSHOT'
     }
 }
+
 apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'org.spongepowered.mixin'
 apply plugin: 'eclipse'
@@ -24,14 +25,27 @@ apply plugin: 'maven-publish'
 version = '1.0'
 group = 'org.armacraft'
 
+repositories {
+	maven {
+        name 'cursemaven'
+        url 'https://www.cursemaven.com'
+    }
+    google()
+}
+
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
 
 println('Java: ' + System.getProperty('java.version') + ' JVM: ' + System.getProperty('java.vm.version') + '(' + System.getProperty('java.vendor') + ') Arch: ' + System.getProperty('os.arch'))
 minecraft {
-    mappings channel: 'snapshot', version: '20201028-1.16.3'
+    mappings channel: 'official', version: '1.16.5'
     runs {
         client {
             workingDirectory project.file('run')
+
+			// Faz com que seja possivel executar o CD pela IDE sem ter problemas com os refMaps
+			// Properties sao enfiadas nos Arguments da Run enquanto a run eh gerada por genEclipseRuns/genIntellijRuns, por exemplo.
+			// E eh adicionado um prefixo -D, ficando tipo assim: '-Dmixin.env...'
+            property 'mixin.env.disableRefMap', 'true'
 
             property 'forge.logging.markers', 'REGISTRIES'
             property 'forge.logging.console.level', 'debug'
@@ -45,6 +59,11 @@ minecraft {
 
         server {
             workingDirectory project.file('run')
+
+			// Faz com que seja possivel executar o CD pela IDE sem ter problemas com os refMaps
+			// Properties sao enfiadas nos Arguments da Run enquanto a run eh gerada por genEclipseRuns/genIntellijRuns, por exemplo.
+			// E eh adicionado um prefixo -D, ficando tipo assim: '-Dmixin.env...'
+            property 'mixin.env.disableRefMap', 'true'
 
             property 'forge.logging.markers', 'REGISTRIES'
             property 'forge.logging.console.level', 'debug'
@@ -78,9 +97,10 @@ sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 dependencies {
     compile fileTree(dir:'libs', include:['*.jar'])
-    minecraft 'net.minecraftforge:forge:1.16.5-36.0.43'
+    minecraft 'net.minecraftforge:forge:1.16.5-36.1.0'
     implementation group: 'org.spongepowered', name: 'mixin', version: "0.8.2"
     annotationProcessor("org.spongepowered:mixin:0.8.2:processor")
+    implementation fg.deobf("curse.maven:crafting_dead_core-${cd_curseforge_project_id}:${cd_curseforge_file_id}")
 }
 
 jar {
