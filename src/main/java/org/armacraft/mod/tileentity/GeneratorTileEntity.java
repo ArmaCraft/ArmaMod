@@ -27,14 +27,15 @@ public class GeneratorTileEntity extends TileEntity {
     @Override
     public SUpdateTileEntityPacket getUpdatePacket() {
         CompoundNBT nbtTag = new CompoundNBT();
-        nbtTag = write(nbtTag);
-        return new SUpdateTileEntityPacket(getPos(), -1, nbtTag);
+        nbtTag = this.save(nbtTag);
+        return new SUpdateTileEntityPacket(this.getBlockPos(), -1, nbtTag);
     }
 
     @Override
     public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt){}
 
-    public CompoundNBT write(CompoundNBT compound) {
+    @Override
+    public CompoundNBT save(CompoundNBT compound) {
         compound.putBoolean("isGenerator", true);
         if(this.owner != null) {
             compound.putString("owner", owner);
@@ -47,11 +48,11 @@ public class GeneratorTileEntity extends TileEntity {
             compound.putInt("resistance", resistance);
             compound.putInt("production", production);
         }
-        return super.write(compound);
+        return super.save(compound);
     }
 
     @Override
-    public void read(BlockState state, CompoundNBT compound) {
+    public void load(BlockState state, CompoundNBT compound) {
         isGenerator = true;
         if(compound.contains("owner")) {
             this.owner = compound.getString("owner");
@@ -64,17 +65,17 @@ public class GeneratorTileEntity extends TileEntity {
             this.resistance = compound.getInt("resistance");
             this.production = compound.getInt("production");
         }
-        super.read(state, compound);
+        super.load(state, compound);
     }
 
     public void setOwner(String owner) {
         this.owner = owner;
-        markDirty();
+        this.setChanged();
     }
 
     public void setGenerator() {
         this.isGenerator = true;
-        markDirty();
+        this.setChanged();
     }
 
     public String getOwner() {

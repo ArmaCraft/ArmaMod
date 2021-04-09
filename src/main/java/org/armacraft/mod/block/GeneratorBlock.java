@@ -16,7 +16,7 @@ import org.armacraft.mod.tileentity.GeneratorTileEntity;
 public class GeneratorBlock extends Block {
 
     public GeneratorBlock() {
-        super(Block.Properties.create(Material.ROCK).notSolid());
+        super(Block.Properties.of(Material.STONE).noOcclusion());
     }
 
     @Override
@@ -31,12 +31,12 @@ public class GeneratorBlock extends Block {
     }
 
     @Override
-    public void onBlockPlacedBy(World worldIn, BlockPos pos, BlockState state, LivingEntity placer, ItemStack stack) {
-        GeneratorTileEntity tile = (GeneratorTileEntity) worldIn.getTileEntity(pos);
+    public void setPlacedBy(World worldIn, BlockPos pos, BlockState state, LivingEntity placer, ItemStack stack) {
+        GeneratorTileEntity tile = (GeneratorTileEntity) worldIn.getBlockEntity(pos);
         if (placer instanceof PlayerEntity) {
             tile.setGenerator();
-            tile.markDirty();
+            tile.setChanged();
         }
-        super.onBlockPlacedBy(worldIn, pos, state, placer, stack);
+        super.setPlacedBy(worldIn, pos, state, placer, stack);
     }
 }

@@ -23,7 +23,7 @@ public class GunImplMixin {
 
     @Shadow @Final protected ItemStack gunStack;
 
-    @Inject(method = "processShot", remap=false, at = @At("TAIL"))
+    @Inject(method = "processShot", remap = false, at = @At("TAIL"))
     private void processShot(ILiving<?, ?> living, CallbackInfo ci) {
         if(living.getEntity() instanceof PlayerEntity) {
             PlayerEntity playerEntity = (PlayerEntity) living.getEntity();
@@ -33,9 +33,9 @@ public class GunImplMixin {
                     String permissionNode = "armacraft.skins."
                             + gunStack.getItem().getRegistryName().toString().replaceAll("^craftingdead:", "")
                             + "." + paint.getRegistryName().toString().replaceAll("^craftingdead:", "");
-                    if (!ArmaCraft.PERMISSION_CHECKER.checkPermission(playerEntity.getUniqueID(), permissionNode)) {
+                    if (!ArmaCraft.PERMISSION_CHECKER.checkPermission(playerEntity.getUUID(), permissionNode)) {
                         playerEntity.sendMessage(new TranslationTextComponent("message.no_skin_permission")
-                                .setStyle(Style.EMPTY.applyFormatting(TextFormatting.RED).setBold(true)), Util.DUMMY_UUID);
+                                .setStyle(Style.EMPTY.applyFormat(TextFormatting.RED).withBold(true)), Util.NIL_UUID);
                         gunStack.getCapability(ModCapabilities.GUN).ifPresent(x -> x.setPaintStack(ItemStack.EMPTY));
                     }
                 }
