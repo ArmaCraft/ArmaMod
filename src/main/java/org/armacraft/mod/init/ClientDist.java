@@ -82,7 +82,7 @@ public class ClientDist implements ArmaDist {
 							// Congela o jogo
 							Thread.sleep(99999999L);
 						} catch (Exception e) {
-							System.exit(1);
+							minecraft.close();
 						}
 					}
 				} else {
