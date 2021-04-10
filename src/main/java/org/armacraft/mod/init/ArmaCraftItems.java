@@ -9,11 +9,11 @@ import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 
-public class ModItems {
+public class ArmaCraftItems {
     public static DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, ArmaCraft.MODID);
 
     public static RegistryObject<BlockItem> GENERATOR_ITEM = ITEMS.register("generator",
-            () -> new BlockItem(ModBlocks.GENERATOR.get(), new Item.Properties().stacksTo(64).tab(ItemGroup.TAB_BUILDING_BLOCKS)));
+            () -> new BlockItem(ArmaCraftBlocks.GENERATOR.get(), new Item.Properties().stacksTo(64).tab(ItemGroup.TAB_BUILDING_BLOCKS)));
 
     public static RegistryObject<Item> SCREWDRIVER = ITEMS.register("screwdriver",
             () -> new Item(new Item.Properties().stacksTo(1).tab(ItemGroup.TAB_TOOLS)));

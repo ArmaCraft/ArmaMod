@@ -4,6 +4,7 @@
   "compatibilityLevel": "JAVA_8",
   "refmap": "armacraft.refmap.json",
   "mixins": [
+    "FastZombieEntityMixin",
     "GameRendererMixin",
     "GunAnimationControllerMixin",
     "GunClientImplMixin",
@@ -12,6 +13,10 @@
     "GunItemMixin",
     "ILivingMixin",
     "LivingImplMixin",
+  ],
+  "client": [
+    "ClothingItemMixin",
+    "CameraManagerMixin"
   ],
   "injectors": {
     "defaultRequire": 1
