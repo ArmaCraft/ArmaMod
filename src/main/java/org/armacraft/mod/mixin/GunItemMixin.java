@@ -16,6 +16,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 @Mixin(GunItem.class)
 public class GunItemMixin {
@@ -25,6 +27,7 @@ public class GunItemMixin {
 	 */
 
 	@Inject(method = "appendHoverText", at = @At("TAIL"))
+	@OnlyIn(Dist.CLIENT)
 	public void appendHoverText(ItemStack stack, World world, List<ITextComponent> lines, ITooltipFlag tooltipFlag,
 			CallbackInfo ci) {
 		// Cast unsafe mesmo porque sei que sempre será essa a classe

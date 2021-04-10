@@ -5,16 +5,16 @@
   "refmap": "armacraft.refmap.json",
   "mixins": [
     "FastZombieEntityMixin",
-    "GameRendererMixin",
-    "GunAnimationControllerMixin",
-    "GunClientImplMixin",
     "GunCraftSlotMixin",
     "GunImplMixin",
-    "GunItemMixin",
     "ILivingMixin",
     "LivingImplMixin",
+    "GunItemMixin",
   ],
   "client": [
+    "GunClientImplMixin",
+    "GunAnimationControllerMixin",
+    "GameRendererMixin",
     "ClothingItemMixin",
     "CameraManagerMixin"
   ],
