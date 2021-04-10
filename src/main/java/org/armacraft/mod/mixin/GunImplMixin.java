@@ -38,7 +38,7 @@ public abstract class GunImplMixin implements IGunImplBridge {
 	@Final
 	protected ItemStack gunStack;
 	
-	@Accessor("gunProvider") public abstract IGunProvider bridge$getGunProvider();
+	@Accessor(value = "gunProvider", remap = false) public abstract IGunProvider bridge$getGunProvider();
 
 	/**
 	 * Remove skins ao atirar, se não tiver perm
