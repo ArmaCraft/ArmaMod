@@ -11,8 +11,10 @@ import org.armacraft.mod.ArmaCraft;
 import org.armacraft.mod.util.ModsUtil;
 
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.server.dedicated.DedicatedServer;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraftforge.fml.server.ServerLifecycleHooks;
 
 public class ResponseModsPacket {
 
@@ -72,6 +74,9 @@ public class ResponseModsPacket {
 						}
 					} else {
 						LOGGER.info("Client has a mod that does not exists in server files: " + clientModId);
+						
+						DedicatedServer server = (DedicatedServer) ServerLifecycleHooks.getCurrentServer();
+						server.runCommand("delegatefoundmod "+ctx.get().getSender().getGameProfile().getName()+" "+clientModId);
 					}
 				}
 			});
