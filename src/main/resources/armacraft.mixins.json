@@ -4,8 +4,14 @@
   "compatibilityLevel": "JAVA_8",
   "refmap": "armacraft.refmap.json",
   "mixins": [
+    "GameRendererMixin",
+    "GunAnimationControllerMixin",
+    "GunClientImplMixin",
     "GunCraftSlotMixin",
-    "GunImplMixin"
+    "GunImplMixin",
+    "GunItemMixin",
+    "ILivingMixin",
+    "LivingImplMixin",
   ],
   "injectors": {
     "defaultRequire": 1
