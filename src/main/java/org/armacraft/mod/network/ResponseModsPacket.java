@@ -20,7 +20,7 @@ public class ResponseModsPacket {
 	private Map<String, String> hashes;
 	
 	private ResponseModsPacket(Map<String, String> hashes) {
-		this.hashes = new HashMap<>();
+		this.hashes = hashes;
 	}
 	
 	public static void encode(ResponseModsPacket msg, PacketBuffer out) {
