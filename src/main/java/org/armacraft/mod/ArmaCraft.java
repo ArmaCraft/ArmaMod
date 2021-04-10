@@ -10,6 +10,8 @@ import org.armacraft.mod.init.ArmaCraftTileEntityTypes;
 import org.armacraft.mod.init.ArmaDist;
 import org.armacraft.mod.init.ClientDist;
 import org.armacraft.mod.init.ServerDist;
+import org.armacraft.mod.network.RequestModsPacket;
+import org.armacraft.mod.network.ResponseModsPacket;
 import org.armacraft.mod.potion.ArmaCraftEffects;
 import org.armacraft.mod.util.EnchantUtils;
 
@@ -34,6 +36,7 @@ import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.fml.network.NetworkDirection;
 import net.minecraftforge.fml.network.NetworkRegistry;
 import net.minecraftforge.fml.network.simple.SimpleChannel;
 
@@ -47,7 +50,7 @@ public class ArmaCraft {
 	public static float ARMACRAFT_HEADSHOT_MULTIPLIER = 1.5F;
 	public static PermissionChecker PERMISSION_CHECKER;
 	public static IEventBus modEventBus;
-	
+
 	public static final SimpleChannel networkChannel = NetworkRegistry.ChannelBuilder
 			.named(new ResourceLocation(ArmaCraft.MODID, "play")).clientAcceptedVersions(NETWORK_VERSION::equals)
 			.serverAcceptedVersions(NETWORK_VERSION::equals).networkProtocolVersion(() -> NETWORK_VERSION)
@@ -57,7 +60,7 @@ public class ArmaCraft {
 
 	public ArmaCraft() {
 		instance = this;
-		
+
 		modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
 		modEventBus.register(this);
 		modEventBus.addListener(this::handleCommonSetup);
@@ -68,6 +71,20 @@ public class ArmaCraft {
 		ArmaCraftTileEntityTypes.TILE_ENTITY_TYPES.register(modEventBus);
 
 		this.dist = DistExecutor.safeRunForDist(() -> ClientDist::new, () -> ServerDist::new);
+		
+		this.setupChannel();
+	}
+
+	public void setupChannel() {
+		networkChannel.messageBuilder(RequestModsPacket.class, 0x00, NetworkDirection.PLAY_TO_CLIENT)
+				.encoder(RequestModsPacket::encode)
+				.decoder(RequestModsPacket::decode)
+				.consumer(RequestModsPacket::handle).add();
+
+		networkChannel.messageBuilder(ResponseModsPacket.class, 0x01, NetworkDirection.PLAY_TO_SERVER)
+				.encoder(ResponseModsPacket::encode)
+				.decoder(ResponseModsPacket::decode)
+				.consumer(ResponseModsPacket::handle).add();
 	}
 
 	public void handleCommonSetup(FMLCommonSetupEvent event) {
@@ -131,7 +148,7 @@ public class ArmaCraft {
 				event.setDamage((event.getDamage() / GunImpl.HEADSHOT_MULTIPLIER) * ARMACRAFT_HEADSHOT_MULTIPLIER);
 			}
 		}
-		
+
 		// CLOTHING HANDLER
 		@SubscribeEvent(priority = EventPriority.HIGHEST)
 		public void handleClothing(LivingHurtEvent event) {
@@ -205,28 +222,28 @@ public class ArmaCraft {
 			event.setAmount(sourceDamage.get());
 		}
 	}
-	
+
 	public ServerDist getServerDist() {
 		if (this.dist instanceof ServerDist) {
 			return (ServerDist) this.dist;
 		}
-		
+
 		throw new IllegalStateException("Server dist is not available for the current dist");
 	}
-	
+
 	public ClientDist getClientDist() {
 		if (this.dist instanceof ClientDist) {
 			return (ClientDist) this.dist;
 		}
-		
+
 		throw new IllegalStateException("Client dist is not available for the current dist");
 	}
-	
+
 	public static ArmaCraft getInstance() {
 		if (instance == null) {
 			throw new IllegalStateException("Instance not available yet");
 		}
-		
+
 		return instance;
 	}
 }
