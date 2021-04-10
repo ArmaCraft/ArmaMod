@@ -20,7 +20,7 @@ public class ResponseModsPacket {
 	private Map<String, String> hashes;
 	
 	private ResponseModsPacket(Map<String, String> hashes) {
-		this.hashes = new HashMap<>();
+		this.hashes = hashes;
 	}
 	
 	public static void encode(ResponseModsPacket msg, PacketBuffer out) {
@@ -55,7 +55,6 @@ public class ResponseModsPacket {
 		if (ctx.get().getDirection().getReceptionSide().isServer()) {
 			ctx.get().enqueueWork(() -> {
 				Map<String, String> serverHashes = ArmaCraft.getInstance().getServerDist().getHashes();
-
 				for (Entry<String, String> entry : msg.hashes.entrySet()) {
 					String clientModId = entry.getKey();
 					String clientModHash = entry.getValue();
@@ -64,7 +63,7 @@ public class ResponseModsPacket {
 
 					// Mod existe no server
 					if (theModHashInServer != null) {
-						// Hash não bate
+						// Hash nï¿½o bate
 						if (!clientModHash.equals(theModHashInServer)) {
 							ctx.get().getNetworkManager().disconnect(
 									new StringTextComponent("Connection closed - mod files are different from server"));
