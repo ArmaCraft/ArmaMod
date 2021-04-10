@@ -43,16 +43,13 @@ public class AbsorptionRegenEffect extends Effect {
 			return;
 		}
 
-		// Alguém quebrou as absorptions dele
-		if (livingEntity.getAbsorptionAmount() <= 0) {
-			livingEntity.removeEffect(this);
-			return;
-		}
+		// Vida cheia
+		if (livingEntity.getHealth() >= livingEntity.getMaxHealth()) {
+			final float absorptionAmount = livingEntity.getAbsorptionAmount();
 
-		final float absorptionAmount = livingEntity.getAbsorptionAmount();
-
-		if (absorptionAmount < MAX_ABSORPTION_HEARTS * 2) {
-			livingEntity.setAbsorptionAmount(absorptionAmount + 2);
+			if (absorptionAmount < MAX_ABSORPTION_HEARTS * 2) {
+				livingEntity.setAbsorptionAmount(absorptionAmount + 2);
+			}
 		}
 	}
 
@@ -63,26 +60,6 @@ public class AbsorptionRegenEffect extends Effect {
 			return duration % bitShiftedAmplifier == 1; // prefira 1 ao invés de zero aqui
 		} else {
 			return true;
-		}
-	}
-
-	@Override
-	public void addAttributeModifiers(LivingEntity livingEntity, AttributeModifierManager attributeManager,
-			int amplifier) {
-		// Evita que dê o efeito enquanto morto
-		if (livingEntity.isDeadOrDying()) {
-			return;
-		}
-
-		// Somente server
-		if (livingEntity.level.isClientSide()) {
-			return;
-		}
-
-		if (livingEntity.getAbsorptionAmount() <= 0) {
-			// Dá pelo menos o primeiro cora
-			// Só dê se não tiver, senão perde o que já tinha
-			livingEntity.setAbsorptionAmount(2);
 		}
 	}
 

@@ -2,6 +2,7 @@ package org.armacraft.mod.mixin;
 
 import org.armacraft.mod.ArmaCraft;
 import org.armacraft.mod.bridge.IGunImplBridge;
+import org.armacraft.mod.util.GunUtils;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
@@ -9,7 +10,6 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.gen.Accessor;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
@@ -69,7 +69,7 @@ public abstract class GunImplMixin implements IGunImplBridge {
 	 */
 	@Inject(method = "getAccuracy", remap = false, at = @At("HEAD"), cancellable = true)
 	public void getAccuracy(ILiving<?, ?> living, CallbackInfoReturnable<Float> ci) {
-		if (ArmaCraft.isAiming(living.getEntity())) {
+		if (GunUtils.isAiming(living.getEntity())) {
 			ci.setReturnValue(1F);
 		}
 	}

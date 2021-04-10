@@ -1,6 +1,6 @@
 package org.armacraft.mod.mixin;
 
-import org.armacraft.mod.ArmaCraft;
+import org.armacraft.mod.util.GunUtils;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -25,7 +25,7 @@ public class GameRendererMixin {
 	private void bobView(MatrixStack stack, float p_228383_2_, CallbackInfo ci) {
 		PlayerEntity myPlayer = this.minecraft.player;
 		
-		if (myPlayer != null && ArmaCraft.isAiming(myPlayer)) {
+		if (myPlayer != null && GunUtils.isAiming(myPlayer)) {
 			ci.cancel();
 		}
 	}

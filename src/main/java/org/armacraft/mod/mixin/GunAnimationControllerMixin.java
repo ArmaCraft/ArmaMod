@@ -1,6 +1,6 @@
 package org.armacraft.mod.mixin;
 
-import org.armacraft.mod.ArmaCraft;
+import org.armacraft.mod.util.GunUtils;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -21,7 +21,7 @@ public class GunAnimationControllerMixin {
 	
     @Inject(method = "tick", remap = false, at = @At("HEAD"))
     public void tick(LivingEntity livingEntity, ItemStack itemStack, CallbackInfo ci) {
-    	if (ArmaCraft.isAiming(livingEntity)) {
+    	if (GunUtils.isAiming(livingEntity)) {
     		this.removeCurrentAnimation();
     	}
     }

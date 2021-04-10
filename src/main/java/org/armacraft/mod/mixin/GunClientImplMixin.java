@@ -1,7 +1,7 @@
 package org.armacraft.mod.mixin;
 
-import org.armacraft.mod.ArmaCraft;
 import org.armacraft.mod.bridge.IGunImplBridge;
+import org.armacraft.mod.util.GunUtils;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -41,8 +41,7 @@ public abstract class GunClientImplMixin {
 	@Inject(method = "handleShoot", remap = false, at = @At("HEAD"))
 	public void handleShoot(ILiving<?, ?> living, CallbackInfo ci) {
 		LivingEntity theEntity = living.getEntity();
-		if (ArmaCraft.isAiming(theEntity)) {
-
+		if (GunUtils.isAiming(theEntity)) {
 			if (theEntity == this.minecraft.getCameraEntity()) {
 				this.client.getCameraManager()
 						.joltCamera(1.0F - ((IGunImplBridge) this.gun).bridge$getGunProvider().getAccuracyPct()
