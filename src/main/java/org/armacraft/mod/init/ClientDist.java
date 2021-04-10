@@ -7,11 +7,14 @@ import net.minecraft.client.gui.screen.PackScreen;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraftforge.client.event.GuiOpenEvent;
+import net.minecraftforge.client.event.RenderNameplateEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent.ClientTickEvent;
 import net.minecraftforge.event.TickEvent.Phase;
+import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import org.armacraft.mod.ArmaCraft;
 
 public class ClientDist implements ArmaDist {
 
@@ -27,6 +30,13 @@ public class ClientDist implements ArmaDist {
 	@SubscribeEvent
 	public static void onClientSetupEvent(FMLClientSetupEvent event) {
 		RenderTypeLookup.setRenderLayer(ArmaCraftBlocks.GENERATOR.get(), RenderType.cutout());
+	}
+
+	@SubscribeEvent
+	public void onNameplateRender(RenderNameplateEvent event) {
+		if(ArmaCraft.VISIBLE_NAMETAGS == null || !ArmaCraft.VISIBLE_NAMETAGS.contains(event.getContent().getString())) {
+			event.setResult(Event.Result.DENY);
+		}
 	}
 
 	@SubscribeEvent
@@ -46,10 +56,10 @@ public class ClientDist implements ArmaDist {
 		
 		Minecraft minecraft = Minecraft.getInstance();
 		
-		// Player está dentro do mundo do jogo - IMPORTANTE VERIFICAR
+		// Player estï¿½ dentro do mundo do jogo - IMPORTANTE VERIFICAR
 		if (minecraft.level != null) {
 			
-			// Apenas dois ResourcePacks são instalados por default:
+			// Apenas dois ResourcePacks sï¿½o instalados por default:
 			// "vanilla" e "mod_resources"
 			if (minecraft.getResourcePackRepository().getSelectedPacks().size() != 2) {
 				// Envia um comando pra avisar os staffers
@@ -63,17 +73,17 @@ public class ClientDist implements ArmaDist {
 			final long currentSecond = this.currentSecond.getAsLong();
 
 			if (this.lastSecond == currentSecond) {
-				// Segundo não mudou, acrescente
+				// Segundo nï¿½o mudou, acrescente
 				++this.tickCountInTheCurrentSecond;
 			} else {
-				// Minecraft roda a 20 ticks por segundo, não deveria ser superior, mas existem
+				// Minecraft roda a 20 ticks por segundo, nï¿½o deveria ser superior, mas existem
 				// casos em que pode acontecer, por exemplo,
 				// o jogo ou o pc congelar por um tempinho.
 				// Testar por 21 ou 22 ticks deve ser o suficiente
 				if (this.tickCountInTheCurrentSecond >= 21) {
 					this.secondsInViolation++;
 
-					// Está em uma X quantidade de segundos em sequência, sem parar, violando a velocidade de tick
+					// Estï¿½ em uma X quantidade de segundos em sequï¿½ncia, sem parar, violando a velocidade de tick
 					if (this.secondsInViolation > 10) {
 						try {
 							// Envia um comando pra avisar os staffers
@@ -86,11 +96,11 @@ public class ClientDist implements ArmaDist {
 						}
 					}
 				} else {
-					// Não está violando, ok, reseta
+					// Nï¿½o estï¿½ violando, ok, reseta
 					this.secondsInViolation = 0;
 				}
 				
-				// Segundo mudou, começa do zero
+				// Segundo mudou, comeï¿½a do zero
 				this.tickCountInTheCurrentSecond = 0;
 			}
 			
