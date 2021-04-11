@@ -72,7 +72,6 @@ public class AbsorptionRegenEffect extends Effect {
 		}
 
 		if (livingEntity.getAbsorptionAmount() < DEFAULT_MINIMUM_HEARTS_ON_EAT) {
-			// Limpa, senão os corações ficam pra sempre ali
 			livingEntity.setAbsorptionAmount(DEFAULT_MINIMUM_HEARTS_ON_EAT);
 		}
 	}
@@ -85,7 +84,10 @@ public class AbsorptionRegenEffect extends Effect {
 			return;
 		}
 
-		// Limpa, senão os corações ficam pra sempre ali
-		livingEntity.setAbsorptionAmount(0);
+		// Não sei porque, mas isso evita que todos os meus corações voltem pra zero se eu receber o efeito por /effect ou por plugin
+		if (!livingEntity.hasEffect(this)) {
+			// Limpa, senão os corações ficam pra sempre ali
+			livingEntity.setAbsorptionAmount(0);
+		}
 	}
 }
