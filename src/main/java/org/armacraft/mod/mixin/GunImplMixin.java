@@ -95,10 +95,10 @@ public abstract class GunImplMixin implements IGunImplBridge {
 		if (!hitLiving.getEntity().isDeadOrDying()) {
 			// Acertar o tiro
 			this.hitEntity(player, hitLiving.getEntity(), pendingHit.getHitSnapshot().getPos(), false);
-
-			// Som de plim
-			MiscUtil.playSoundToPlayer(player.getEntity(), SoundEvents.ARROW_HIT_PLAYER, 2F, 1.1F);
 		}
+		
+		// Som de plim
+		MiscUtil.playSoundToPlayer(player.getEntity(), SoundEvents.ARROW_HIT_PLAYER, 2F, 1.1F);
 	}
 	
 	@Shadow() private void hitEntity(ILiving<?, ?> living, Entity hitEntity, Vector3d hitPos, boolean playSound) {}
