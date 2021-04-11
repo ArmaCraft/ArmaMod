@@ -15,6 +15,7 @@ import com.google.common.io.Files;
 import cpw.mods.modlauncher.Launcher;
 import cpw.mods.modlauncher.api.IEnvironment;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.dedicated.DedicatedServer;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
@@ -45,13 +46,15 @@ public class MiscUtil {
 		Map<String, String> hashes = new HashMap<>();
 
 		List<ModInfo> infos = FMLLoader.getLoadingModList().getMods();
-		
+
 		// Supondo que pode haver mais de uma pasta pra mods (?), vai saber
 		Set<File> possibleModFolders = new HashSet<>();
-		possibleModFolders.addAll(infos.stream().map(i -> i.getOwningFile().getFile().getFilePath().toFile().getParentFile()).collect(Collectors.toList()));
+		possibleModFolders
+				.addAll(infos.stream().map(i -> i.getOwningFile().getFile().getFilePath().toFile().getParentFile())
+						.collect(Collectors.toList()));
 
 		possibleModFolders.stream().map(folder -> folder.listFiles()).forEach(files -> {
-			
+
 			for (File file : files) {
 				// Not a folder (for example, when running in the dev workspace)
 				if (file.isFile()) {
@@ -63,7 +66,7 @@ public class MiscUtil {
 					}
 				}
 			}
-			
+
 		});
 
 		return hashes;
@@ -77,5 +80,11 @@ public class MiscUtil {
 
 	public static void playSoundAtEntity(Entity entity, SoundEvent sound, float volume, float pitch) {
 		entity.level.playSound(null, entity.blockPosition(), sound, SoundCategory.HOSTILE, volume, pitch);
+	}
+
+	public static void playSoundToPlayer(PlayerEntity playerEntity, SoundEvent sound, float volume, float pitch) {
+		System.out.println("??");
+		playerEntity.getCommandSenderWorld().playSound(null, playerEntity, sound, SoundCategory.HOSTILE, volume,
+				pitch);
 	}
 }

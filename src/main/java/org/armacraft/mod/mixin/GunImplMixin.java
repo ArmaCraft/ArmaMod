@@ -3,6 +3,7 @@ package org.armacraft.mod.mixin;
 import org.armacraft.mod.ArmaCraft;
 import org.armacraft.mod.bridge.IGunImplBridge;
 import org.armacraft.mod.util.GunUtils;
+import org.armacraft.mod.util.MiscUtil;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
@@ -25,6 +26,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.SoundEvents;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.Style;
@@ -91,7 +93,11 @@ public abstract class GunImplMixin implements IGunImplBridge {
 	@Overwrite(remap = false)
 	public void validatePendingHit(IPlayer<ServerPlayerEntity> player, ILiving<?, ?> hitLiving, PendingHit pendingHit) {
 		if (!hitLiving.getEntity().isDeadOrDying()) {
+			// Acertar o tiro
 			this.hitEntity(player, hitLiving.getEntity(), pendingHit.getHitSnapshot().getPos(), false);
+
+			// Som de plim
+			MiscUtil.playSoundToPlayer(player.getEntity(), SoundEvents.ARROW_HIT_PLAYER, 2F, 1.1F);
 		}
 	}
 	
