@@ -83,7 +83,6 @@ public class MiscUtil {
 	}
 
 	public static void playSoundToPlayer(PlayerEntity playerEntity, SoundEvent sound, float volume, float pitch) {
-		System.out.println("??");
 		playerEntity.getCommandSenderWorld().playSound(null, playerEntity, sound, SoundCategory.HOSTILE, volume,
 				pitch);
 	}
