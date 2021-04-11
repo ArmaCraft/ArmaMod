@@ -53,7 +53,7 @@ minecraft {
             property 'forge.logging.console.level', 'debug'
             
             // Isso aqui acaba indo no "program arguments"
-            args '--mixin armacraft.mixins.json'
+            args '--mixin', 'armacraft.mixins.json'
 
             mods {
                 examplemod {
@@ -76,7 +76,7 @@ minecraft {
             property 'forge.logging.console.level', 'debug'
 
             // Isso aqui acaba indo no "program arguments"
-            args '--mixin armacraft.mixins.json'
+            args '--mixin', 'armacraft.mixins.json'
 
             mods {
                 examplemod {
