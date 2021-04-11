@@ -1,16 +1,14 @@
 package org.armacraft.mod.mixin;
 
-import com.craftingdead.core.client.renderer.CameraManager;
-import com.craftingdead.core.client.renderer.VelocitySmoother;
+import java.util.Random;
+
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.util.Random;
+import com.craftingdead.core.client.renderer.CameraManager;
+import com.craftingdead.core.client.renderer.VelocitySmoother;
 
 @Mixin(value = CameraManager.class, remap = false)
 public class CameraManagerMixin {
