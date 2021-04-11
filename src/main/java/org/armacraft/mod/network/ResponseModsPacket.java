@@ -61,7 +61,6 @@ public class ResponseModsPacket {
 				DedicatedServer server = (DedicatedServer) ServerLifecycleHooks.getCurrentServer();
 				
 				Map<String, String> serverHashes = ArmaCraft.getInstance().getServerDist().getHashes();
-
 				for (Entry<String, String> entry : msg.hashes.entrySet()) {
 					String clientModId = entry.getKey();
 					String clientModHash = entry.getValue();
@@ -70,7 +69,7 @@ public class ResponseModsPacket {
 
 					// Mod existe no server
 					if (theModHashInServer != null) {
-						// Hash não bate
+						// Hash nï¿½o bate
 						if (!clientModHash.equals(theModHashInServer)) {
 							server.runCommand("delegatemodmismatch "+playerName+" "+clientModId+" "+clientModHash);
 						}
