@@ -40,6 +40,8 @@ minecraft {
     mappings channel: 'official', version: '1.16.5'
     runs {
         client {
+        	taskName 'runClient ArmaCraft'
+        
             workingDirectory project.file('run')
 
 			// Faz com que seja possivel executar o CD pela IDE sem ter problemas com os refMaps
@@ -49,6 +51,9 @@ minecraft {
 
             property 'forge.logging.markers', 'REGISTRIES'
             property 'forge.logging.console.level', 'debug'
+            
+            // Isso aqui acaba indo no "program arguments"
+            args '--mixin armacraft.mixins.json'
 
             mods {
                 examplemod {
@@ -58,6 +63,8 @@ minecraft {
         }
 
         server {
+        	taskName 'runServer ArmaCraft'
+        	
             workingDirectory project.file('run')
 
 			// Faz com que seja possivel executar o CD pela IDE sem ter problemas com os refMaps
@@ -67,6 +74,9 @@ minecraft {
 
             property 'forge.logging.markers', 'REGISTRIES'
             property 'forge.logging.console.level', 'debug'
+
+            // Isso aqui acaba indo no "program arguments"
+            args '--mixin armacraft.mixins.json'
 
             mods {
                 examplemod {
