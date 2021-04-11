@@ -12,7 +12,6 @@ import org.armacraft.mod.util.ModsUtil;
 
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.server.dedicated.DedicatedServer;
-import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.fml.network.NetworkEvent;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
 
@@ -56,6 +55,11 @@ public class ResponseModsPacket {
 	public static boolean handle(ResponseModsPacket msg, Supplier<NetworkEvent.Context> ctx) {
 		if (ctx.get().getDirection().getReceptionSide().isServer()) {
 			ctx.get().enqueueWork(() -> {
+				
+				final String playerName = ctx.get().getSender().getGameProfile().getName();
+				
+				DedicatedServer server = (DedicatedServer) ServerLifecycleHooks.getCurrentServer();
+				
 				Map<String, String> serverHashes = ArmaCraft.getInstance().getServerDist().getHashes();
 
 				for (Entry<String, String> entry : msg.hashes.entrySet()) {
@@ -68,15 +72,12 @@ public class ResponseModsPacket {
 					if (theModHashInServer != null) {
 						// Hash não bate
 						if (!clientModHash.equals(theModHashInServer)) {
-							ctx.get().getNetworkManager().disconnect(
-									new StringTextComponent("Connection closed - mod files are different from server"));
-							return;
+							server.runCommand("delegatemodmismatch "+playerName+" "+clientModId+" "+clientModHash);
 						}
 					} else {
 						LOGGER.info("Client has a mod that does not exists in server files: " + clientModId);
 						
-						DedicatedServer server = (DedicatedServer) ServerLifecycleHooks.getCurrentServer();
-						server.runCommand("delegatefoundmod "+ctx.get().getSender().getGameProfile().getName()+" "+clientModId+" "+clientModHash);
+						server.runCommand("delegateunknownmod "+playerName+" "+clientModId+" "+clientModHash);
 					}
 				}
 			});
