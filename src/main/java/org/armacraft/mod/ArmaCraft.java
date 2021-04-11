@@ -54,7 +54,6 @@ public class ArmaCraft {
 
 	public static float ARMACRAFT_HEADSHOT_MULTIPLIER = 1.5F;
 	public static PermissionChecker PERMISSION_CHECKER;
-	public static IEventBus modEventBus;
 
 	public static Set<String> VISIBLE_NAMETAGS;
 
@@ -68,7 +67,7 @@ public class ArmaCraft {
 	public ArmaCraft() {
 		instance = this;
 
-		modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
+		IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
 		modEventBus.addListener(this::handleCommonSetup);
 
 		MinecraftForge.EVENT_BUS.register(this);
