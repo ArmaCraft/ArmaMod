@@ -46,7 +46,7 @@ public class ResponseModsPacket {
 		}
 
 		for (int i = 0; i < modsAmount; i++) {
-			String modId = in.readUtf(100);
+			String modId = in.readUtf(50);
 			String hash = in.readUtf(32);
 
 			modsPacket.hashes.put(modId, hash);
@@ -59,7 +59,7 @@ public class ResponseModsPacket {
 		}
 
 		for (int i = 0; i < modsAmount; i++) {
-			modsPacket.transformationServices.add(in.readUtf(100));
+			modsPacket.transformationServices.add(in.readUtf(50));
 		}
 
 		return modsPacket;

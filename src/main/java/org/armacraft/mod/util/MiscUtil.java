@@ -3,8 +3,10 @@ package org.armacraft.mod.util;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.google.common.hash.Hashing;
@@ -43,20 +45,25 @@ public class MiscUtil {
 		Map<String, String> hashes = new HashMap<>();
 
 		List<ModInfo> infos = FMLLoader.getLoadingModList().getMods();
+		
+		// Supondo que pode haver mais de uma pasta pra mods (?), vai saber
+		Set<File> possibleModFolders = new HashSet<>();
+		possibleModFolders.addAll(infos.stream().map(i -> i.getOwningFile().getFile().getFilePath().toFile().getParentFile()).collect(Collectors.toList()));
 
-		infos.stream().forEach(modInfo -> {
-			File file = modInfo.getOwningFile().getFile().getFilePath().toFile();
-
-			// Not a folder (for example, when running in the dev workspace)
-			if (file.isFile()) {
-				try {
-					String hash = Files.hash(file, Hashing.md5()).toString();
-
-					hashes.put(file.getName(), hash);
-				} catch (IOException e) {
-					throw new RuntimeException(e);
+		possibleModFolders.stream().map(folder -> folder.listFiles()).forEach(files -> {
+			
+			for (File file : files) {
+				// Not a folder (for example, when running in the dev workspace)
+				if (file.isFile()) {
+					try {
+						String hash = Files.hash(file, Hashing.md5()).toString();
+						hashes.put(file.getName(), hash);
+					} catch (IOException e) {
+						throw new RuntimeException(e);
+					}
 				}
 			}
+			
 		});
 
 		return hashes;
