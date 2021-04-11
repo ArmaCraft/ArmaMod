@@ -14,6 +14,7 @@ import org.armacraft.mod.network.RequestModsPacket;
 import org.armacraft.mod.network.ResponseModsPacket;
 import org.armacraft.mod.potion.ArmaCraftEffects;
 import org.armacraft.mod.util.EnchantUtils;
+import org.armacraft.mod.util.MiscUtil;
 
 import com.craftingdead.core.capability.ModCapabilities;
 import com.craftingdead.core.capability.gun.GunImpl;
@@ -27,7 +28,9 @@ import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundEvents;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -62,8 +65,9 @@ public class ArmaCraft {
 		instance = this;
 
 		modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
-		modEventBus.register(this);
 		modEventBus.addListener(this::handleCommonSetup);
+
+		MinecraftForge.EVENT_BUS.register(this);
 
 		ArmaCraftBlocks.BLOCKS.register(modEventBus);
 		ArmaCraftItems.ITEMS.register(modEventBus);
@@ -71,19 +75,17 @@ public class ArmaCraft {
 		ArmaCraftTileEntityTypes.TILE_ENTITY_TYPES.register(modEventBus);
 
 		this.dist = DistExecutor.safeRunForDist(() -> ClientDist::new, () -> ServerDist::new);
-		
+
 		this.setupChannel();
 	}
 
 	public void setupChannel() {
 		networkChannel.messageBuilder(RequestModsPacket.class, 0x00, NetworkDirection.PLAY_TO_CLIENT)
-				.encoder(RequestModsPacket::encode)
-				.decoder(RequestModsPacket::decode)
+				.encoder(RequestModsPacket::encode).decoder(RequestModsPacket::decode)
 				.consumer(RequestModsPacket::handle).add();
 
 		networkChannel.messageBuilder(ResponseModsPacket.class, 0x01, NetworkDirection.PLAY_TO_SERVER)
-				.encoder(ResponseModsPacket::encode)
-				.decoder(ResponseModsPacket::decode)
+				.encoder(ResponseModsPacket::encode).decoder(ResponseModsPacket::decode)
 				.consumer(ResponseModsPacket::handle).add();
 	}
 
@@ -134,45 +136,90 @@ public class ArmaCraft {
 		ClothingRepresentation.register(ModItems.CONTRACTOR_CLOTHING.get(), ProtectionLevel.NONE);
 	}
 
-	/**
-	 * Listener pro {@link MinecraftForge}.EVENT_BUS
-	 */
-	@Mod.EventBusSubscriber
-	public static class ClothingHandlers {
-
-		@SubscribeEvent(priority = EventPriority.HIGHEST)
-		public void onGunHit(GunEvent.HitEntity event) {
-			if (event.isHeadshot()) {
-				// Matematicamente remove o multiplier de headshot do dano e aplica o nosso no
-				// lugar
-				event.setDamage((event.getDamage() / GunImpl.HEADSHOT_MULTIPLIER) * ARMACRAFT_HEADSHOT_MULTIPLIER);
-			}
+	@SubscribeEvent
+	public void onPlayerTick(LivingUpdateEvent event) {
+		if (event.getEntityLiving().level.isClientSide()) {
+			return;
 		}
 
-		// CLOTHING HANDLER
-		@SubscribeEvent(priority = EventPriority.HIGHEST)
-		public void handleClothing(LivingHurtEvent event) {
-			AtomicReference<Float> sourceDamage = new AtomicReference<>(event.getAmount());
-			event.getEntityLiving().getCapability(ModCapabilities.LIVING).ifPresent(living -> {
-				ItemStack clothingStack = living.getItemHandler().getStackInSlot(InventorySlotType.CLOTHING.getIndex());
-				if (!living.getItemHandler().getStackInSlot(InventorySlotType.CLOTHING.getIndex()).isEmpty()) {
-					ClothingRepresentation.from(clothingStack).ifPresent(clothing -> {
-						if (EnchantUtils.hasEnchant(clothingStack, Enchantments.PROJECTILE_PROTECTION)) {
-							int level = EnchantUtils.getEnchantNBT(clothingStack, Enchantments.PROJECTILE_PROTECTION)
-									.getInt("lvl");
-							sourceDamage.set(sourceDamage.get() * (clothing.getProtectionLevel().getProtection()
-									* ProtectionLevel.PROTECTION_BASE_MULTIPLIER
-									- level * ProtectionLevel.PROTECTION_MULTIPLIER));
-						} else {
-							sourceDamage.set(sourceDamage.get() - clothing.getProtectionLevel().getProtection());
-						}
-					});
-				}
+		// Remove o efeito de absorp regen se acabou os coras amarelos
+		if (event.getEntityLiving().hasEffect(ArmaCraftEffects.ABSORPTION_REGENERATION.get())
+				&& event.getEntityLiving().getAbsorptionAmount() <= 0) {
+			event.getEntityLiving().removeEffect(ArmaCraftEffects.ABSORPTION_REGENERATION.get());
 
-				ItemStack vestStack = living.getItemHandler().getStackInSlot(InventorySlotType.VEST.getIndex());
+			// Som pra avisar o player
+			MiscUtil.playSoundAtEntity(event.getEntityLiving(), SoundEvents.ELDER_GUARDIAN_CURSE, 1F, 1.75F);
+			MiscUtil.playSoundAtEntity(event.getEntityLiving(), SoundEvents.GLASS_BREAK, 2F, 0.8F);
+		}
+	}
+
+	@SubscribeEvent(priority = EventPriority.HIGHEST)
+	public void onGunHit(GunEvent.HitEntity event) {
+		if (event.isHeadshot()) {
+			// Matematicamente remove o multiplier de headshot do dano e aplica o nosso no
+			// lugar
+			event.setDamage((event.getDamage() / GunImpl.HEADSHOT_MULTIPLIER) * ARMACRAFT_HEADSHOT_MULTIPLIER);
+		}
+	}
+
+	// CLOTHING HANDLER
+	@SubscribeEvent(priority = EventPriority.HIGHEST)
+	public void handleClothing(LivingHurtEvent event) {
+		AtomicReference<Float> sourceDamage = new AtomicReference<>(event.getAmount());
+		event.getEntityLiving().getCapability(ModCapabilities.LIVING).ifPresent(living -> {
+			ItemStack clothingStack = living.getItemHandler().getStackInSlot(InventorySlotType.CLOTHING.getIndex());
+			if (!living.getItemHandler().getStackInSlot(InventorySlotType.CLOTHING.getIndex()).isEmpty()) {
+				ClothingRepresentation.from(clothingStack).ifPresent(clothing -> {
+					if (EnchantUtils.hasEnchant(clothingStack, Enchantments.PROJECTILE_PROTECTION)) {
+						int level = EnchantUtils.getEnchantNBT(clothingStack, Enchantments.PROJECTILE_PROTECTION)
+								.getInt("lvl");
+						sourceDamage.set(sourceDamage.get() * (clothing.getProtectionLevel().getProtection()
+								* ProtectionLevel.PROTECTION_BASE_MULTIPLIER
+								- level * ProtectionLevel.PROTECTION_MULTIPLIER));
+					} else {
+						sourceDamage.set(sourceDamage.get() - clothing.getProtectionLevel().getProtection());
+					}
+				});
+			}
+
+			ItemStack vestStack = living.getItemHandler().getStackInSlot(InventorySlotType.VEST.getIndex());
+			if (!living.getItemHandler().getStackInSlot(InventorySlotType.CLOTHING.getIndex()).isEmpty()) {
+				if (EnchantUtils.hasEnchant(vestStack, Enchantments.PROJECTILE_PROTECTION)) {
+					int level = EnchantUtils.getEnchantNBT(vestStack, Enchantments.PROJECTILE_PROTECTION).getInt("lvl");
+					sourceDamage.set(sourceDamage.get() * 0.86f * ProtectionLevel.PROTECTION_BASE_MULTIPLIER
+							- level * ProtectionLevel.PROTECTION_MULTIPLIER);
+				} else {
+					sourceDamage.set(sourceDamage.get() - 0.86f);
+				}
+			}
+
+			ItemStack bootStack = living.getItemHandler().getStackInSlot(EquipmentSlotType.FEET.getIndex());
+			if (!living.getItemHandler().getStackInSlot(InventorySlotType.CLOTHING.getIndex()).isEmpty()) {
+				float baseDefense = 1f;
+				float rawDefense = 1f;
+				if (bootStack.getItem().equals(Items.NETHERITE_BOOTS)) {
+					baseDefense = 0.75f;
+					rawDefense = 2;
+				} else if (bootStack.getItem().equals(Items.DIAMOND_BOOTS)) {
+					baseDefense = 0.8f;
+					rawDefense = 1.5f;
+				} else if (bootStack.getItem().equals(Items.IRON_BOOTS)) {
+					baseDefense = 0.85f;
+				}
+				if (EnchantUtils.hasEnchant(bootStack, Enchantments.PROJECTILE_PROTECTION)) {
+					int level = EnchantUtils.getEnchantNBT(bootStack, Enchantments.PROJECTILE_PROTECTION).getInt("lvl");
+					sourceDamage.set(sourceDamage.get() * baseDefense * ProtectionLevel.PROTECTION_BASE_MULTIPLIER
+							- level * ProtectionLevel.PROTECTION_MULTIPLIER);
+				} else {
+					sourceDamage.set(sourceDamage.get() - rawDefense);
+				}
+			}
+
+			if (event.getSource().getMsgId().equalsIgnoreCase(ModDamageSource.BULLET_HEADSHOT_DAMAGE_TYPE)) {
+				ItemStack helmetStack = living.getItemHandler().getStackInSlot(EquipmentSlotType.FEET.getIndex());
 				if (!living.getItemHandler().getStackInSlot(InventorySlotType.CLOTHING.getIndex()).isEmpty()) {
-					if (EnchantUtils.hasEnchant(vestStack, Enchantments.PROJECTILE_PROTECTION)) {
-						int level = EnchantUtils.getEnchantNBT(vestStack, Enchantments.PROJECTILE_PROTECTION)
+					if (EnchantUtils.hasEnchant(bootStack, Enchantments.PROJECTILE_PROTECTION)) {
+						int level = EnchantUtils.getEnchantNBT(helmetStack, Enchantments.PROJECTILE_PROTECTION)
 								.getInt("lvl");
 						sourceDamage.set(sourceDamage.get() * 0.86f * ProtectionLevel.PROTECTION_BASE_MULTIPLIER
 								- level * ProtectionLevel.PROTECTION_MULTIPLIER);
@@ -180,47 +227,10 @@ public class ArmaCraft {
 						sourceDamage.set(sourceDamage.get() - 0.86f);
 					}
 				}
+			}
+		});
 
-				ItemStack bootStack = living.getItemHandler().getStackInSlot(EquipmentSlotType.FEET.getIndex());
-				if (!living.getItemHandler().getStackInSlot(InventorySlotType.CLOTHING.getIndex()).isEmpty()) {
-					float baseDefense = 1f;
-					float rawDefense = 1f;
-					if (bootStack.getItem().equals(Items.NETHERITE_BOOTS)) {
-						baseDefense = 0.75f;
-						rawDefense = 2;
-					} else if (bootStack.getItem().equals(Items.DIAMOND_BOOTS)) {
-						baseDefense = 0.8f;
-						rawDefense = 1.5f;
-					} else if (bootStack.getItem().equals(Items.IRON_BOOTS)) {
-						baseDefense = 0.85f;
-					}
-					if (EnchantUtils.hasEnchant(bootStack, Enchantments.PROJECTILE_PROTECTION)) {
-						int level = EnchantUtils.getEnchantNBT(bootStack, Enchantments.PROJECTILE_PROTECTION)
-								.getInt("lvl");
-						sourceDamage.set(sourceDamage.get() * baseDefense * ProtectionLevel.PROTECTION_BASE_MULTIPLIER
-								- level * ProtectionLevel.PROTECTION_MULTIPLIER);
-					} else {
-						sourceDamage.set(sourceDamage.get() - rawDefense);
-					}
-				}
-
-				if (event.getSource().getMsgId().equalsIgnoreCase(ModDamageSource.BULLET_HEADSHOT_DAMAGE_TYPE)) {
-					ItemStack helmetStack = living.getItemHandler().getStackInSlot(EquipmentSlotType.FEET.getIndex());
-					if (!living.getItemHandler().getStackInSlot(InventorySlotType.CLOTHING.getIndex()).isEmpty()) {
-						if (EnchantUtils.hasEnchant(bootStack, Enchantments.PROJECTILE_PROTECTION)) {
-							int level = EnchantUtils.getEnchantNBT(helmetStack, Enchantments.PROJECTILE_PROTECTION)
-									.getInt("lvl");
-							sourceDamage.set(sourceDamage.get() * 0.86f * ProtectionLevel.PROTECTION_BASE_MULTIPLIER
-									- level * ProtectionLevel.PROTECTION_MULTIPLIER);
-						} else {
-							sourceDamage.set(sourceDamage.get() - 0.86f);
-						}
-					}
-				}
-			});
-
-			event.setAmount(sourceDamage.get());
-		}
+		event.setAmount(sourceDamage.get());
 	}
 
 	public ServerDist getServerDist() {

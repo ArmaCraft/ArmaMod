@@ -6,18 +6,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import com.google.common.hash.Hashing;
 import com.google.common.io.Files;
 
+import net.minecraft.entity.Entity;
+import net.minecraft.util.SoundCategory;
+import net.minecraft.util.SoundEvent;
+import net.minecraft.util.SoundEvents;
 import net.minecraftforge.fml.loading.FMLLoader;
 import net.minecraftforge.fml.loading.moddiscovery.ModInfo;
 
-public class ModsUtil {
-	
-	private static final Logger LOGGER = LogManager.getLogger();
+public class MiscUtil {
 	
 	public static Map<String, String> calculateMyHashes() {
 		Map<String, String> hashes = new HashMap<>();
@@ -39,11 +38,11 @@ public class ModsUtil {
 				}
 			}
 		});
-		
-		// They are not mods, but they are in the mod list
-		hashes.remove("minecraft");
-		hashes.remove("forge");
 
 		return hashes;
+	}
+	
+	public static void playSoundAtEntity(Entity entity, SoundEvent sound, float volume, float pitch) {
+		entity.level.playSound(null, entity.blockPosition(), sound, SoundCategory.HOSTILE, volume, pitch);
 	}
 }

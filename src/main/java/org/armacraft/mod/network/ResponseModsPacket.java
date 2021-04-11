@@ -5,10 +5,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Supplier;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.armacraft.mod.ArmaCraft;
-import org.armacraft.mod.util.ModsUtil;
+import org.armacraft.mod.util.MiscUtil;
 
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.server.dedicated.DedicatedServer;
@@ -17,7 +15,6 @@ import net.minecraftforge.fml.server.ServerLifecycleHooks;
 
 public class ResponseModsPacket {
 
-	private static final Logger LOGGER = LogManager.getLogger();
 	private Map<String, String> hashes;
 	
 	private ResponseModsPacket(Map<String, String> hashes) {
@@ -75,8 +72,6 @@ public class ResponseModsPacket {
 							server.runCommand("delegatemodmismatch "+playerName+" "+clientModId+" "+clientModHash);
 						}
 					} else {
-						LOGGER.info("Client has a mod that does not exists in server files: " + clientModId);
-						
 						server.runCommand("delegateunknownmod "+playerName+" "+clientModId+" "+clientModHash);
 					}
 				}
@@ -90,6 +85,6 @@ public class ResponseModsPacket {
 	}
 	
 	public static ResponseModsPacket withMyMods() {
-		return new ResponseModsPacket(ModsUtil.calculateMyHashes());
+		return new ResponseModsPacket(MiscUtil.calculateMyHashes());
 	}
 }

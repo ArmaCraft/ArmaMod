@@ -22,10 +22,12 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.attributes.AttributeModifierManager;
 import net.minecraft.potion.Effect;
 import net.minecraft.potion.EffectType;
+import net.minecraft.util.math.MathHelper;
 
 public class AbsorptionRegenEffect extends Effect {
 
-	public static int MAX_ABSORPTION_HEARTS = 20;
+	public static int MAX_ABSORPTION_HEARTS = 20 * 2;
+	public static int DEFAULT_MINIMUM_HEARTS_ON_EAT = 3 * 2;
 
 	protected AbsorptionRegenEffect() {
 		super(EffectType.BENEFICIAL, 0x2552A5);
@@ -43,13 +45,11 @@ public class AbsorptionRegenEffect extends Effect {
 			return;
 		}
 
-		// Vida cheia
-		if (livingEntity.getHealth() >= livingEntity.getMaxHealth()) {
+		// Vida quase cheia
+		if (livingEntity.getHealth() >= (livingEntity.getMaxHealth() - 0.5F)) {
 			final float absorptionAmount = livingEntity.getAbsorptionAmount();
 
-			if (absorptionAmount < MAX_ABSORPTION_HEARTS * 2) {
-				livingEntity.setAbsorptionAmount(absorptionAmount + 2);
-			}
+			livingEntity.setAbsorptionAmount(MathHelper.clamp(absorptionAmount + 2, 0, MAX_ABSORPTION_HEARTS));
 		}
 	}
 
@@ -62,6 +62,20 @@ public class AbsorptionRegenEffect extends Effect {
 			return true;
 		}
 	}
+	
+	@Override
+	public void addAttributeModifiers(LivingEntity livingEntity, AttributeModifierManager attributeManager,
+			int amplifier) {
+		// Somente server
+		if (livingEntity.level.isClientSide()) {
+			return;
+		}
+
+		if (livingEntity.getAbsorptionAmount() < DEFAULT_MINIMUM_HEARTS_ON_EAT) {
+			// Limpa, senão os corações ficam pra sempre ali
+			livingEntity.setAbsorptionAmount(DEFAULT_MINIMUM_HEARTS_ON_EAT);
+		}
+	}
 
 	@Override
 	public void removeAttributeModifiers(LivingEntity livingEntity, AttributeModifierManager attributeManager,
@@ -71,10 +85,7 @@ public class AbsorptionRegenEffect extends Effect {
 			return;
 		}
 
-		// Se o efeito não está mais presente
-		if (livingEntity.getEffect(this) == null) {
-			// Limpa, senão os corações ficam pra sempre ali
-			livingEntity.setAbsorptionAmount(0);
-		}
+		// Limpa, senão os corações ficam pra sempre ali
+		livingEntity.setAbsorptionAmount(0);
 	}
 }

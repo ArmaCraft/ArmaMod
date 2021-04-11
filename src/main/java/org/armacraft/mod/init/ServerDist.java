@@ -4,7 +4,7 @@ import java.util.Map;
 
 import org.armacraft.mod.ArmaCraft;
 import org.armacraft.mod.network.RequestModsPacket;
-import org.armacraft.mod.util.ModsUtil;
+import org.armacraft.mod.util.MiscUtil;
 
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraftforge.common.MinecraftForge;
@@ -14,7 +14,7 @@ import net.minecraftforge.fml.network.PacketDistributor;
 
 public class ServerDist implements ArmaDist {
 
-	private Map<String, String> serverHashes = ModsUtil.calculateMyHashes();
+	private Map<String, String> serverHashes = MiscUtil.calculateMyHashes();
 	
 	public ServerDist() {
 		MinecraftForge.EVENT_BUS.register(this);
