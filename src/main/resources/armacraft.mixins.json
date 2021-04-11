@@ -13,6 +13,7 @@
     "GunItemMixin"
   ],
   "client": [
+    "IngameGuiMixin",
     "MinecraftMixin",
     "GunClientImplMixin",
     "GunAnimationControllerMixin",
