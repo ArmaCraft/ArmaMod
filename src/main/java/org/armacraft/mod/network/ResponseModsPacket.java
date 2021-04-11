@@ -58,7 +58,7 @@ public class ResponseModsPacket {
 			throw new RuntimeException("Too many transformation services: " + transformationServices);
 		}
 
-		for (int i = 0; i < modsAmount; i++) {
+		for (int i = 0; i < transformationServices; i++) {
 			modsPacket.transformationServices.add(in.readUtf(50));
 		}
 
