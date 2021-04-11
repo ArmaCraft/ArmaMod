@@ -70,8 +70,6 @@ public class ArmaCraft {
 		IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
 		modEventBus.addListener(this::handleCommonSetup);
 
-		MinecraftForge.EVENT_BUS.register(this);
-
 		ArmaCraftBlocks.BLOCKS.register(modEventBus);
 		ArmaCraftItems.ITEMS.register(modEventBus);
 		ArmaCraftEffects.EFFECTS.register(modEventBus);
@@ -98,6 +96,7 @@ public class ArmaCraft {
 	}
 
 	public void handleCommonSetup(FMLCommonSetupEvent event) {
+		MinecraftForge.EVENT_BUS.register(this);
 		this.registerClothings();
 	}
 

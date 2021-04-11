@@ -25,8 +25,8 @@ public class GameRendererMixin {
 	private void bobView(MatrixStack stack, float p_228383_2_, CallbackInfo ci) {
 		PlayerEntity myPlayer = this.minecraft.player;
 		
-		if (myPlayer != null && GunUtils.isAiming(myPlayer)) {
+		/*if (myPlayer != null && GunUtils.isAiming(myPlayer)) {
 			ci.cancel();
-		}
+		}*/
 	}
 }

@@ -7,6 +7,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.function.LongSupplier;
 
+import net.minecraft.entity.player.PlayerEntity;
 import org.armacraft.mod.ArmaCraft;
 
 import net.minecraft.client.Minecraft;
@@ -59,8 +60,9 @@ public class ClientDist implements ArmaDist {
 
 	@SubscribeEvent
 	public void onNameplateRender(RenderNameplateEvent event) {
-		if (ArmaCraft.VISIBLE_NAMETAGS == null
-				|| !ArmaCraft.VISIBLE_NAMETAGS.contains(event.getContent().getString())) {
+		if ((ArmaCraft.VISIBLE_NAMETAGS == null
+				|| !ArmaCraft.VISIBLE_NAMETAGS.contains(event.getContent().getString()))
+				&& event.getEntity() instanceof PlayerEntity) {
 			event.setResult(Event.Result.DENY);
 		}
 	}
