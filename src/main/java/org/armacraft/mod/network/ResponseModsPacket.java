@@ -76,7 +76,7 @@ public class ResponseModsPacket {
 						LOGGER.info("Client has a mod that does not exists in server files: " + clientModId);
 						
 						DedicatedServer server = (DedicatedServer) ServerLifecycleHooks.getCurrentServer();
-						server.runCommand("delegatefoundmod "+ctx.get().getSender().getGameProfile().getName()+" "+clientModId);
+						server.runCommand("delegatefoundmod "+ctx.get().getSender().getGameProfile().getName()+" "+clientModId+" "+clientModHash);
 					}
 				}
 			});
