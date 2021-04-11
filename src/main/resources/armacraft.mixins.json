@@ -9,6 +9,7 @@
     "GunImplMixin",
     "ILivingMixin",
     "LivingImplMixin",
+    "PlayerImplMixin",
     "GunItemMixin",
   ],
   "client": [
