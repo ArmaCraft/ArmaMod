@@ -22,3 +22,9 @@ Mod próprio do servidor ArmaCraft :D
     versionRange="[1.16.5,1.17)"
     ordering="NONE"
     side="BOTH"
+[[dependencies.armacraft]]
+    modId="craftingdead"
+    versionRange="[0,)" #mandatory, but any
+    mandatory=true
+    ordering="NONE"
+    side="BOTH"
