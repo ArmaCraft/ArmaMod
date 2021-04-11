@@ -3,6 +3,7 @@ package org.armacraft.mod;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 
+import org.armacraft.mod.bridge.INametagControllerBridge;
 import org.armacraft.mod.clothing.ClothingRepresentation;
 import org.armacraft.mod.clothing.ProtectionLevel;
 import org.armacraft.mod.init.ArmaCraftBlocks;
@@ -54,6 +55,7 @@ public class ArmaCraft {
 
 	public static float ARMACRAFT_HEADSHOT_MULTIPLIER = 1.5F;
 	public static PermissionChecker PERMISSION_CHECKER;
+	public static INametagControllerBridge NAMETAG_CONTROLLER;
 
 	public static Set<String> VISIBLE_NAMETAGS;
 
