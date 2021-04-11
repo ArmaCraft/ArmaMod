@@ -15,7 +15,7 @@ import java.util.function.Supplier;
 public class UpdateVisibleNametagsPacket {
     private Set<String> visibleNameTags;
 
-    private UpdateVisibleNametagsPacket(Set<String> visibleNameTags) {
+    public UpdateVisibleNametagsPacket(Set<String> visibleNameTags) {
         this.visibleNameTags = visibleNameTags;
     }
 

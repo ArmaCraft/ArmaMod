@@ -1,9 +1,17 @@
 package org.armacraft.mod.init;
 
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
+import net.minecraft.server.MinecraftServer;
+import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.fml.server.ServerLifecycleHooks;
 import org.armacraft.mod.ArmaCraft;
 import org.armacraft.mod.network.RequestModsPacket;
+import org.armacraft.mod.network.UpdateVisibleNametagsPacket;
 import org.armacraft.mod.util.MiscUtil;
 
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -25,6 +33,24 @@ public class ServerDist implements ArmaDist {
     	// Pede pro player enviar os mods dele
     	ArmaCraft.networkChannel.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) event.getPlayer()), new RequestModsPacket());
     }
+
+    @SubscribeEvent
+	public void onServerTick(TickEvent.ServerTickEvent event) {
+		ArmaCraft.NAMETAG_CONTROLLER.getNametagUpdateWatcher().entrySet().stream()
+				.filter(Map.Entry::getValue)
+				.map(Map.Entry::getKey)
+				.forEach(uuid -> {
+					Collection<String> visibleTags = ArmaCraft.NAMETAG_CONTROLLER.getNametagVisibility().get(uuid);
+					ServerPlayerEntity entity = ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayer(uuid);
+					if(entity != null) {
+						ArmaCraft.networkChannel.send(PacketDistributor.PLAYER.with(() -> entity),
+								new UpdateVisibleNametagsPacket(new HashSet<>(visibleTags)));
+					}
+					ArmaCraft.NAMETAG_CONTROLLER.getNametagUpdateWatcher().remove(uuid);
+					ArmaCraft.NAMETAG_CONTROLLER.getNametagUpdateWatcher().put(uuid, false);
+				});
+
+	}
 	
     public Map<String, String> getHashes() {
     	return this.serverHashes;
