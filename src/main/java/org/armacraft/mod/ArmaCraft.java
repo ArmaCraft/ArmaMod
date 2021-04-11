@@ -1,5 +1,6 @@
 package org.armacraft.mod;
 
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.armacraft.mod.clothing.ClothingRepresentation;
@@ -12,6 +13,7 @@ import org.armacraft.mod.init.ClientDist;
 import org.armacraft.mod.init.ServerDist;
 import org.armacraft.mod.network.RequestModsPacket;
 import org.armacraft.mod.network.ResponseModsPacket;
+import org.armacraft.mod.network.UpdateVisibleNametagsPacket;
 import org.armacraft.mod.potion.ArmaCraftEffects;
 import org.armacraft.mod.util.EnchantUtils;
 import org.armacraft.mod.util.MiscUtil;
@@ -54,6 +56,8 @@ public class ArmaCraft {
 	public static PermissionChecker PERMISSION_CHECKER;
 	public static IEventBus modEventBus;
 
+	public static Set<String> VISIBLE_NAMETAGS;
+
 	public static final SimpleChannel networkChannel = NetworkRegistry.ChannelBuilder
 			.named(new ResourceLocation(ArmaCraft.MODID, "play")).clientAcceptedVersions(NETWORK_VERSION::equals)
 			.serverAcceptedVersions(NETWORK_VERSION::equals).networkProtocolVersion(() -> NETWORK_VERSION)
@@ -87,6 +91,11 @@ public class ArmaCraft {
 		networkChannel.messageBuilder(ResponseModsPacket.class, 0x01, NetworkDirection.PLAY_TO_SERVER)
 				.encoder(ResponseModsPacket::encode).decoder(ResponseModsPacket::decode)
 				.consumer(ResponseModsPacket::handle).add();
+
+		networkChannel.messageBuilder(UpdateVisibleNametagsPacket.class, 0x02, NetworkDirection.PLAY_TO_CLIENT)
+				.encoder(UpdateVisibleNametagsPacket::encode)
+				.decoder(UpdateVisibleNametagsPacket::decode)
+				.consumer(UpdateVisibleNametagsPacket::handle).add();
 	}
 
 	public void handleCommonSetup(FMLCommonSetupEvent event) {
