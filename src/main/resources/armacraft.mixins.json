@@ -9,7 +9,8 @@
     "GunImplMixin",
     "ILivingMixin",
     "LivingImplMixin",
-    "GunItemMixin",
+    "PlayerImplMixin",
+    "GunItemMixin"
   ],
   "client": [
     "MinecraftMixin",
