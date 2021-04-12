@@ -62,7 +62,7 @@ public class ClientDist implements ArmaDist {
 	public void onNameplateRender(RenderNameplateEvent event) {
 		if ((ArmaCraft.VISIBLE_NAMETAGS == null
 				|| !ArmaCraft.VISIBLE_NAMETAGS.contains(event.getContent().getString()))
-				&& event.getEntity() instanceof PlayerEntity) {
+				&& event.getEntity() instanceof PlayerEntity){
 			event.setResult(Event.Result.DENY);
 		}
 	}
