@@ -68,7 +68,7 @@ public class ClientDist implements ArmaDist {
 	}
 
 	@SubscribeEvent
-	public void onRender(GuiOpenEvent event) {
+	public void onGuiOpen(GuiOpenEvent event) {
 		// Tela de resourcepacks
 		if (event.getGui() instanceof PackScreen) {
 			event.setCanceled(true);
