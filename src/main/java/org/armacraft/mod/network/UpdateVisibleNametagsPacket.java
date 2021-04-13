@@ -30,11 +30,7 @@ public class UpdateVisibleNametagsPacket {
         byte amount = in.readByte();
 
         for (int i = 0; i < amount; i++) {
-            try {
-                packet.visibleNameTags.add(new String(in.readByteArray(), "UTF-8"));
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
+            packet.visibleNameTags.add(in.readUtf());
         }
 
         return packet;
