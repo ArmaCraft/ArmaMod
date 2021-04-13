@@ -8,7 +8,7 @@ import net.minecraft.item.ItemStack;
 
 public class GunUtils {
 	public static boolean isAiming(LivingEntity livingEntity) {
-		// Getters de ItemStacks não retornam mais null em mods até onde sei
+		// Getters de ItemStacks nÃ£o retornam mais null em mods atÃ© onde sei
 		ItemStack heldItem = livingEntity.getMainHandItem();
 
 		return heldItem.getCapability(ModCapabilities.GUN).map(gun -> {
