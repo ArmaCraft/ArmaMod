@@ -33,19 +33,19 @@ public class ServerDist implements ArmaDist {
 
 	@SubscribeEvent
 	public void onServerTick(TickEvent.ServerTickEvent event) {
-		if(ArmaCraft.NAMETAG_CONTROLLER != null) {
-			ArmaCraft.NAMETAG_CONTROLLER.getNametagUpdateWatcher().entrySet().stream()
+		if(ArmaCraft.NAMETAG_BRIDGE != null) {
+			ArmaCraft.NAMETAG_BRIDGE.getNametagUpdateWatcher().entrySet().stream()
 					.filter(Map.Entry::getValue)
 					.map(Map.Entry::getKey)
 					.forEach(uuid -> {
-						Collection<String> visibleTags = ArmaCraft.NAMETAG_CONTROLLER.getNametagVisibility().get(uuid);
+						Collection<String> visibleTags = ArmaCraft.NAMETAG_BRIDGE.getNametagVisibility().get(uuid);
 						ServerPlayerEntity entity = ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayer(uuid);
 						if (entity != null) {
 							ArmaCraft.networkChannel.send(PacketDistributor.PLAYER.with(() -> entity),
 									new UpdateVisibleNametagsPacket(new HashSet<>(visibleTags)));
 						}
 					});
-			ArmaCraft.NAMETAG_CONTROLLER.getNametagUpdateWatcher().clear();
+			ArmaCraft.NAMETAG_BRIDGE.getNametagUpdateWatcher().clear();
 		}
 	}
 

@@ -38,7 +38,7 @@ public class GunCraftSlotMixin {
                     String permissionNode = "armacraft.skins."
                             + gunStack.getItem().getRegistryName().toString().replaceAll("^craftingdead:", "")
                             + "." + paint.getRegistryName().toString().replaceAll("^craftingdead:", "");
-                    if (!ArmaCraft.PERMISSION_CHECKER.checkPermission(playerEntity.getUUID(), permissionNode)) {
+                    if (!ArmaCraft.PERMISSION_BRIDGE.hasPermission(playerEntity.getUUID(), permissionNode)) {
                         playerEntity.sendMessage(new TranslationTextComponent("message.no_skin_permission")
                                 .setStyle(Style.EMPTY.applyFormat(TextFormatting.RED).withBold(true)), Util.NIL_UUID);
                         gunStack.getCapability(ModCapabilities.GUN).ifPresent(x -> x.setPaintStack(ItemStack.EMPTY));

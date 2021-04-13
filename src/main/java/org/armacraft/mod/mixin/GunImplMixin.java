@@ -43,7 +43,7 @@ public abstract class GunImplMixin implements IGunImplBridge {
 	@Accessor(value = "gunProvider", remap = false) public abstract IGunProvider bridge$getGunProvider();
 
 	/**
-	 * Remove skins ao atirar, se não tiver perm
+	 * Remove skins ao atirar, se nï¿½o tiver perm
 	 */
 
 	@Inject(method = "processShot", remap = false, at = @At("TAIL"))
@@ -56,7 +56,7 @@ public abstract class GunImplMixin implements IGunImplBridge {
 					String permissionNode = "armacraft.skins."
 							+ gunStack.getItem().getRegistryName().toString().replaceAll("^craftingdead:", "") + "."
 							+ paint.getRegistryName().toString().replaceAll("^craftingdead:", "");
-					if (!ArmaCraft.PERMISSION_CHECKER.checkPermission(playerEntity.getUUID(), permissionNode)) {
+					if (!ArmaCraft.PERMISSION_BRIDGE.hasPermission(playerEntity.getUUID(), permissionNode)) {
 						playerEntity.sendMessage(new TranslationTextComponent("message.no_skin_permission")
 								.setStyle(Style.EMPTY.applyFormat(TextFormatting.RED).withBold(true)), Util.NIL_UUID);
 						gunStack.getCapability(ModCapabilities.GUN).ifPresent(x -> x.setPaintStack(ItemStack.EMPTY));
@@ -67,7 +67,7 @@ public abstract class GunImplMixin implements IGunImplBridge {
 	}
 
 	/**
-	 * Faz com que os tiros vão 100% retos se estiver mirando
+	 * Faz com que os tiros vï¿½o 100% retos se estiver mirando
 	 */
 	@Inject(method = "getAccuracy", remap = false, at = @At("HEAD"), cancellable = true)
 	public void getAccuracy(ILiving<?, ?> living, CallbackInfoReturnable<Float> ci) {
@@ -77,7 +77,7 @@ public abstract class GunImplMixin implements IGunImplBridge {
 	}
 
 	/**
-	 * Faz com que os players não consigam atirar enquanto estiverem planando
+	 * Faz com que os players nï¿½o consigam atirar enquanto estiverem planando
 	 * (exemplo, de elytra ou via plugin)
 	 */
 	@Inject(method = "canShoot", remap = false, at = @At("HEAD"), cancellable = true)
@@ -88,7 +88,7 @@ public abstract class GunImplMixin implements IGunImplBridge {
 	}
 
 	/**
-	 * SEMPRE confia nos tiros dos players, evitando o sistema de teste de colisão por rollbacks do CDA
+	 * SEMPRE confia nos tiros dos players, evitando o sistema de teste de colisï¿½o por rollbacks do CDA
 	 */
 	@Overwrite(remap = false)
 	public void validatePendingHit(IPlayer<ServerPlayerEntity> player, ILiving<?, ?> hitLiving, PendingHit pendingHit) {
