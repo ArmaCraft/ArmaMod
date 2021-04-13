@@ -25,7 +25,7 @@ public abstract class LivingImplMixin<T extends LivingEntity> {
     
 	
 	/**
-	 * Altera o comportamento o som que toca ao trocar de arma pois ele é muito irritante pros jogadores
+	 * Altera o comportamento o som que toca ao trocar de arma pois ele Ã© muito irritante pros jogadores
 	 */
     @ModifyArg(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;playSound(Lnet/minecraft/util/SoundEvent;FF)V"))
     private SoundEvent volumeGunEquip(SoundEvent soundEvent) {

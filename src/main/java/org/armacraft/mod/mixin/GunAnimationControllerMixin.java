@@ -26,7 +26,5 @@ public class GunAnimationControllerMixin {
     	}
     }
     
-    // @formatter:off
     @Shadow public void removeCurrentAnimation() {}
-    // @formatter:on
 }

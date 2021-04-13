@@ -12,7 +12,7 @@ import com.craftingdead.core.client.gui.IngameGui;
 public class IngameGuiMixin {
 
 	/**
-	 * Não mostra hitmarkers
+	 * NÃ£o mostra hitmarkers
 	 */
 	@Inject(method = "displayHitMarker", remap = false, cancellable = true, at = @At("HEAD"))
 	public void displayHitMarker(HitMarker hitMarker, CallbackInfo ci) {

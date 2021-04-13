@@ -84,7 +84,7 @@ public class ClientDist implements ArmaDist {
 
 		Minecraft minecraft = Minecraft.getInstance();
 
-		// Player est� dentro do mundo do jogo - IMPORTANTE VERIFICAR
+		// Player está dentro do mundo do jogo - IMPORTANTE VERIFICAR
 		if (minecraft.level != null) {
 
 			// Apenas dois ResourcePacks s�o instalados por default:
@@ -112,7 +112,7 @@ public class ClientDist implements ArmaDist {
 				if (this.tickCountInTheCurrentSecond >= 21) {
 					this.secondsInViolation++;
 
-					// Est� em uma X quantidade de segundos em sequ�ncia, sem parar, violando a
+					// Está em uma X quantidade de segundos em sequência, sem parar, violando a
 					// velocidade de tick
 					if (this.secondsInViolation > 10) {
 						try {
@@ -126,11 +126,11 @@ public class ClientDist implements ArmaDist {
 						}
 					}
 				} else {
-					// N�o est� violando, ok, reseta
+					// Não está violando, ok, reseta
 					this.secondsInViolation = 0;
 				}
 
-				// Segundo mudou, come�a do zero
+				// Segundo mudou, começa do zero
 				this.tickCountInTheCurrentSecond = 0;
 			}
 
