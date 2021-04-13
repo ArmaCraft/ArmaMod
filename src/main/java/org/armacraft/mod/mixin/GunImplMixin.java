@@ -43,7 +43,7 @@ public abstract class GunImplMixin implements IGunImplBridge {
 	@Accessor(value = "gunProvider", remap = false) public abstract IGunProvider bridge$getGunProvider();
 
 	/**
-	 * Remove skins ao atirar, se n�o tiver perm
+	 * Remove skins ao atirar, se não tiver perm
 	 */
 
 	@Inject(method = "processShot", remap = false, at = @At("TAIL"))
@@ -67,7 +67,7 @@ public abstract class GunImplMixin implements IGunImplBridge {
 	}
 
 	/**
-	 * Faz com que os tiros v�o 100% retos se estiver mirando
+	 * Faz com que os tiros vão 100% retos se estiver mirando
 	 */
 	@Inject(method = "getAccuracy", remap = false, at = @At("HEAD"), cancellable = true)
 	public void getAccuracy(ILiving<?, ?> living, CallbackInfoReturnable<Float> ci) {
@@ -77,7 +77,7 @@ public abstract class GunImplMixin implements IGunImplBridge {
 	}
 
 	/**
-	 * Faz com que os players n�o consigam atirar enquanto estiverem planando
+	 * Faz com que os players não consigam atirar enquanto estiverem planando
 	 * (exemplo, de elytra ou via plugin)
 	 */
 	@Inject(method = "canShoot", remap = false, at = @At("HEAD"), cancellable = true)
@@ -88,7 +88,7 @@ public abstract class GunImplMixin implements IGunImplBridge {
 	}
 
 	/**
-	 * SEMPRE confia nos tiros dos players, evitando o sistema de teste de colis�o por rollbacks do CDA
+	 * SEMPRE confia nos tiros dos players, evitando o sistema de teste de colisão por rollbacks do CDA
 	 */
 	@Overwrite(remap = false)
 	public void validatePendingHit(IPlayer<ServerPlayerEntity> player, ILiving<?, ?> hitLiving, PendingHit pendingHit) {

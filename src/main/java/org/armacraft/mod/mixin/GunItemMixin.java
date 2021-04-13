@@ -30,7 +30,7 @@ public class GunItemMixin {
 	@OnlyIn(Dist.CLIENT)
 	public void appendHoverText(ItemStack stack, World world, List<ITextComponent> lines, ITooltipFlag tooltipFlag,
 			CallbackInfo ci) {
-		// Cast unsafe mesmo porque sei que sempre ser· essa a classe
+		// Cast unsafe mesmo porque sei que sempre ser√° essa a classe
 		GunItem gun = (GunItem) (Object) this;
 		
 		// Remove e adiciona de volta

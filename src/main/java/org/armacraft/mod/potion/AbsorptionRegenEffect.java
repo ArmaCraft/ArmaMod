@@ -35,7 +35,7 @@ public class AbsorptionRegenEffect extends Effect {
 
 	@Override
 	public void applyEffectTick(LivingEntity livingEntity, int amplifier) {
-		// Evita que dê o efeito enquanto morto
+		// Evita que dÃª o efeito enquanto morto
 		if (livingEntity.isDeadOrDying()) {
 			return;
 		}
@@ -57,7 +57,7 @@ public class AbsorptionRegenEffect extends Effect {
 	public boolean isDurationEffectTick(int duration, int amplifier) {
 		int bitShiftedAmplifier = 60 / amplifier; // do vanilla, da potion de regen
 		if (bitShiftedAmplifier > 0) {
-			return duration % bitShiftedAmplifier == 1; // prefira 1 ao invés de zero aqui
+			return duration % bitShiftedAmplifier == 1; // prefira 1 ao invÃ©s de zero aqui
 		} else {
 			return true;
 		}
@@ -84,9 +84,9 @@ public class AbsorptionRegenEffect extends Effect {
 			return;
 		}
 
-		// Não sei porque, mas isso evita que todos os meus corações voltem pra zero se eu receber o efeito por /effect ou por plugin
+		// Nï¿½o sei porque, mas isso evita que todos os meus coraÃ§Ãµes voltem pra zero se eu receber o efeito por /effect ou por plugin
 		if (!livingEntity.hasEffect(this)) {
-			// Limpa, senão os corações ficam pra sempre ali
+			// Limpa, senï¿½o os coraÃ§Ãµes ficam pra sempre ali
 			livingEntity.setAbsorptionAmount(0);
 		}
 	}

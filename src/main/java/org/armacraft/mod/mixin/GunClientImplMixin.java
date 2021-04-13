@@ -47,8 +47,8 @@ public abstract class GunClientImplMixin {
 
 	/**
 	 * Faz com que seja aplicado o jolt contendo o spread original da arma caso
-	 * estiver mirando, j· que pro Crafting Dead, n„o existe mais recoil, e sim
-	 * accuracy. A accuracy enquanto mira È sempre mÌnima.
+	 * estiver mirando, j√° que pro Crafting Dead, n√£o existe mais recoil, e sim
+	 * accuracy. A accuracy enquanto mira √© sempre m√≠nima.
 	 */
 	@Inject(method = "handleShoot", remap = false, at = @At("HEAD"))
 	public void handleShoot(ILiving<?, ?> living, CallbackInfo ci) {
@@ -64,7 +64,7 @@ public abstract class GunClientImplMixin {
 
 	/**
 	 * Faz com que os pacotes de tiro sejam enviados diretamente ao servidor ao inves de ficarem em um buffer,
-	 * pois os tiros estavam sofrendo um merge de dano. Isso, no CDA, È pra salvar desempenho. Mas aqui, simplesmente
+	 * pois os tiros estavam sofrendo um merge de dano. Isso, no CDA, √© pra salvar desempenho. Mas aqui, simplesmente
 	 * ignoramos isso.
 	 */
 	@Inject(method = "handleHitEntityPre", remap = false, at = @At("TAIL"))
@@ -73,7 +73,7 @@ public abstract class GunClientImplMixin {
 		NetworkChannel.PLAY.getSimpleChannel()
 				.sendToServer(new ValidatePendingHitMessage(new HashMap<>(this.livingHitValidationBuffer.asMap())));
 		
-		// Por ser limpo aqui, o CDA entende que n„o tem nada pra enviar, ent„o por isso NA TEORIA n„o acaba enviando mais de uma vez
+		// Por ser limpo aqui, o CDA entende que n√£o tem nada pra enviar, ent√£o por isso NA TEORIA nÔøΩo acaba enviando mais de uma vez
 		this.livingHitValidationBuffer.clear();
 	}
 }

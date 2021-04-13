@@ -15,7 +15,7 @@ import net.minecraft.entity.player.PlayerEntity;
 public interface ILivingMixin<T extends LivingEntity> {
 
     /*
-     * Faz mira n„o abrir ao andar
+     * Faz mira n√£o abrir ao andar
      */
     @Overwrite(remap = false)
     default float getModifiedAccuracy(float accuracy, Random random) {
@@ -23,7 +23,7 @@ public interface ILivingMixin<T extends LivingEntity> {
 			accuracy += 0.15F;
 		}
 
-		// Se n„o for player, adiciona um 
+		// Se n√£o for player, adiciona um 
 		if (!(this.getEntity() instanceof PlayerEntity)) {
 			accuracy -= random.nextFloat();
 		}
