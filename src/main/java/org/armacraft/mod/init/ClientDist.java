@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashSet;
 import java.util.function.LongSupplier;
 
 import net.minecraft.entity.player.PlayerEntity;
@@ -25,9 +26,11 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import org.armacraft.mod.client.ClientUserData;
 
 public class ClientDist implements ArmaDist {
 
+	private ClientUserData userData;
 	private LongSupplier currentSecond = () -> System.currentTimeMillis() / 1000L;
 	private Long lastSecond = currentSecond.getAsLong();
 	private int tickCountInTheCurrentSecond = 0;
@@ -36,9 +39,19 @@ public class ClientDist implements ArmaDist {
 	public ClientDist() {
 		MinecraftForge.EVENT_BUS.register(this);
 
+		userData = new ClientUserData(new HashSet<>(), new HashSet<>());
+
 		IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
 		modEventBus.addListener(this::handleClientSetup);
 		modEventBus.addListener(this::handleLoadComplete);
+	}
+
+	public void setClientUserData(ClientUserData data) {
+		this.userData = data;
+	}
+
+	public ClientUserData getClientUserData() {
+		return userData;
 	}
 
 	public void handleClientSetup(FMLClientSetupEvent event) {

@@ -1,13 +1,12 @@
 package org.armacraft.mod.init;
 
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.Map;
 
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
 import org.armacraft.mod.ArmaCraft;
+import org.armacraft.mod.client.ClientUserData;
 import org.armacraft.mod.network.RequestModsPacket;
-import org.armacraft.mod.network.UpdateVisibleNametagsPacket;
+import org.armacraft.mod.network.UpdateUserDataPacket;
 import org.armacraft.mod.util.MiscUtil;
 
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -33,19 +32,21 @@ public class ServerDist implements ArmaDist {
 
 	@SubscribeEvent
 	public void onServerTick(TickEvent.ServerTickEvent event) {
-		if(ArmaCraft.NAMETAG_BRIDGE != null) {
-			ArmaCraft.NAMETAG_BRIDGE.getNametagUpdateWatcher().entrySet().stream()
+		if(ArmaCraft.USER_DATA_CONTROLLER != null) {
+			ArmaCraft.USER_DATA_CONTROLLER.getUserDataUpdateWatcher().entrySet().stream()
 					.filter(Map.Entry::getValue)
 					.map(Map.Entry::getKey)
 					.forEach(uuid -> {
-						Collection<String> visibleTags = ArmaCraft.NAMETAG_BRIDGE.getNametagVisibility().get(uuid);
 						ServerPlayerEntity entity = ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayer(uuid);
-						if (entity != null) {
-							ArmaCraft.networkChannel.send(PacketDistributor.PLAYER.with(() -> entity),
-									new UpdateVisibleNametagsPacket(new HashSet<>(visibleTags)));
-						}
+						ArmaCraft.USER_DATA_CONTROLLER.getUsersData().stream()
+								.filter(user -> user.getHolder().equals(uuid)).findFirst().ifPresent(data -> {
+							if (entity != null) {
+								ArmaCraft.networkChannel.send(PacketDistributor.PLAYER.with(() -> entity),
+										new UpdateUserDataPacket(ClientUserData.from(data)));
+							}
+						});
 					});
-			ArmaCraft.NAMETAG_BRIDGE.getNametagUpdateWatcher().clear();
+			ArmaCraft.USER_DATA_CONTROLLER.getUserDataUpdateWatcher().clear();
 		}
 	}
 

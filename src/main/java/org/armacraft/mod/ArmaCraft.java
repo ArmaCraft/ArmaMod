@@ -4,7 +4,7 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.armacraft.mod.bridge.bukkit.IBukkitPermissionBridge;
-import org.armacraft.mod.bridge.bukkit.IBukkitNametagControllerBridge;
+import org.armacraft.mod.bridge.bukkit.IBukkitUserDataControllerBridge;
 import org.armacraft.mod.clothing.ClothingRepresentation;
 import org.armacraft.mod.clothing.ProtectionLevel;
 import org.armacraft.mod.init.ArmaCraftBlocks;
@@ -15,7 +15,7 @@ import org.armacraft.mod.init.ClientDist;
 import org.armacraft.mod.init.ServerDist;
 import org.armacraft.mod.network.RequestModsPacket;
 import org.armacraft.mod.network.ResponseModsPacket;
-import org.armacraft.mod.network.UpdateVisibleNametagsPacket;
+import org.armacraft.mod.network.UpdateUserDataPacket;
 import org.armacraft.mod.potion.ArmaCraftEffects;
 import org.armacraft.mod.util.EnchantUtils;
 import org.armacraft.mod.util.MiscUtil;
@@ -55,8 +55,10 @@ public class ArmaCraft {
 	private static ArmaCraft instance;
 
 	public static float ARMACRAFT_HEADSHOT_MULTIPLIER = 1.5F;
+
+	//Pontes entre o mod e o Bukkit que são injetadas pelo server
 	public static IBukkitPermissionBridge PERMISSION_BRIDGE;
-	public static IBukkitNametagControllerBridge NAMETAG_BRIDGE;
+	public static IBukkitUserDataControllerBridge USER_DATA_CONTROLLER;
 
 	public static Set<String> VISIBLE_NAMETAGS;
 
@@ -94,10 +96,10 @@ public class ArmaCraft {
 				.encoder(ResponseModsPacket::encode).decoder(ResponseModsPacket::decode)
 				.consumer(ResponseModsPacket::handle).add();
 
-		networkChannel.messageBuilder(UpdateVisibleNametagsPacket.class, 0x02, NetworkDirection.PLAY_TO_CLIENT)
-				.encoder(UpdateVisibleNametagsPacket::encode)
-				.decoder(UpdateVisibleNametagsPacket::decode)
-				.consumer(UpdateVisibleNametagsPacket::handle).add();
+		networkChannel.messageBuilder(UpdateUserDataPacket.class, 0x02, NetworkDirection.PLAY_TO_CLIENT)
+				.encoder(UpdateUserDataPacket::encode)
+				.decoder(UpdateUserDataPacket::decode)
+				.consumer(UpdateUserDataPacket::handle).add();
 	}
 
 	public void handleCommonSetup(FMLCommonSetupEvent event) {
