@@ -73,10 +73,17 @@ public class ClientDist implements ArmaDist {
 
 	@SubscribeEvent
 	public void onNameplateRender(RenderNameplateEvent event) {
-		if ((ArmaCraft.VISIBLE_NAMETAGS == null
-				|| !ArmaCraft.VISIBLE_NAMETAGS.contains(event.getContent().getString()))
-				&& event.getEntity() instanceof PlayerEntity){
-			event.setResult(Event.Result.DENY);
+		if (ArmaCraft.VISIBLE_NAMETAGS == null && event.getEntity() instanceof PlayerEntity){
+			ClientUserData data = ArmaCraft.getInstance().getClientDist().getClientUserData();
+			if(data.getFlags().contains("show-all")) {
+				event.setResult(Event.Result.ALLOW);
+			} else if (data.getFlags().contains("hide-all")) {
+				event.setResult(Event.Result.DENY);
+			} else {
+				if(!data.getNametagWhitelist().contains(event.getContent().getString())) {
+					event.setResult(Event.Result.DENY);
+				}
+			}
 		}
 	}
 
