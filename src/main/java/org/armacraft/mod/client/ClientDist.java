@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashSet;
 import java.util.function.LongSupplier;
 
 import javax.swing.JDialog;
@@ -42,6 +43,7 @@ import net.minecraftforge.fml.network.PacketDistributor;
 public class ClientDist implements ArmaDist {
 
 	private static final int MINIMUM_MEMORY_FOR_NOT_JAVA11 = 2100;
+	private ClientUserData userData;
 	private LongSupplier currentSecond = () -> System.currentTimeMillis() / 1000L;
 	private Long lastSecond = currentSecond.getAsLong();
 	private int tickCountInTheCurrentSecond = 0;
@@ -52,9 +54,19 @@ public class ClientDist implements ArmaDist {
 	public ClientDist() {
 		MinecraftForge.EVENT_BUS.register(this);
 
+		userData = new ClientUserData(new HashSet<>(), new HashSet<>());
+
 		IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
 		modEventBus.addListener(this::handleClientSetup);
 		modEventBus.addListener(this::handleLoadComplete);
+	}
+
+	public void setClientUserData(ClientUserData data) {
+		this.userData = data;
+	}
+
+	public ClientUserData getClientUserData() {
+		return userData;
 	}
 
 	public void handleClientSetup(FMLClientSetupEvent event) {
@@ -113,9 +125,17 @@ public class ClientDist implements ArmaDist {
 
 	@SubscribeEvent
 	public void onNameplateRender(RenderNameplateEvent event) {
-		if ((ArmaCraft.VISIBLE_NAMETAGS == null || !ArmaCraft.VISIBLE_NAMETAGS.contains(event.getContent().getString()))
-				&& event.getEntity() instanceof PlayerEntity) {
-			event.setResult(Event.Result.DENY);
+		if (ArmaCraft.VISIBLE_NAMETAGS == null && event.getEntity() instanceof PlayerEntity){
+			ClientUserData data = ArmaCraft.getInstance().getClientDist().getClientUserData();
+			if(data.getFlags().contains("show-all")) {
+				event.setResult(Event.Result.ALLOW);
+			} else if (data.getFlags().contains("hide-all")) {
+				event.setResult(Event.Result.DENY);
+			} else {
+				if(!data.getNametagWhitelist().contains(event.getContent().getString())) {
+					event.setResult(Event.Result.DENY);
+				}
+			}
 		}
 	}
 

@@ -2,7 +2,8 @@ package org.armacraft.mod;
 
 import java.util.Set;
 
-import org.armacraft.mod.bridge.INametagControllerBridge;
+import org.armacraft.mod.bridge.bukkit.IBukkitPermissionBridge;
+import org.armacraft.mod.bridge.bukkit.IBukkitUserDataControllerBridge;
 import org.armacraft.mod.client.ClientDist;
 import org.armacraft.mod.clothing.ClothingRepresentation;
 import org.armacraft.mod.clothing.ProtectionLevel;
@@ -12,7 +13,7 @@ import org.armacraft.mod.init.ArmaCraftTileEntityTypes;
 import org.armacraft.mod.network.ClientDashPacket;
 import org.armacraft.mod.network.ClientInfoRequestPacket;
 import org.armacraft.mod.network.ClientInfoResponsePacket;
-import org.armacraft.mod.network.UpdateVisibleNametagsPacket;
+import org.armacraft.mod.network.UpdateUserDataPacket;
 import org.armacraft.mod.potion.ArmaCraftEffects;
 import org.armacraft.mod.server.ServerDist;
 import org.armacraft.mod.util.EnchantUtils;
@@ -28,7 +29,6 @@ import net.minecraft.enchantment.Enchantments;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvents;
-import net.minecraft.util.math.vector.Vector3d;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
@@ -51,8 +51,10 @@ public class ArmaCraft {
 	private static ArmaCraft instance;
 
 	public static float ARMACRAFT_HEADSHOT_MULTIPLIER = 1.5F;
-	public static PermissionChecker PERMISSION_CHECKER;
-	public static INametagControllerBridge NAMETAG_CONTROLLER;
+
+	//Pontes entre o mod e o Bukkit que são injetadas pelo server
+	public static IBukkitPermissionBridge PERMISSION_BRIDGE;
+	public static IBukkitUserDataControllerBridge USER_DATA_CONTROLLER;
 
 	public static Set<String> VISIBLE_NAMETAGS;
 
@@ -97,6 +99,11 @@ public class ArmaCraft {
 		networkChannel.messageBuilder(ClientDashPacket.class, 0x03, NetworkDirection.PLAY_TO_SERVER)
 				.encoder(ClientDashPacket::encode).decoder(ClientDashPacket::decode)
 				.consumer(ClientDashPacket::handle).add();
+
+		networkChannel.messageBuilder(UpdateUserDataPacket.class, 0x04, NetworkDirection.PLAY_TO_CLIENT)
+				.encoder(UpdateUserDataPacket::encode)
+				.decoder(UpdateUserDataPacket::decode)
+				.consumer(UpdateUserDataPacket::handle).add();
 	}
 
 	public void handleCommonSetup(FMLCommonSetupEvent event) {
