@@ -42,7 +42,7 @@ import net.minecraftforge.fml.network.PacketDistributor;
 
 public class ClientDist implements ArmaDist {
 
-	private static final int MINIMUM_MEMORY_FOR_NOT_JAVA11 = 2100;
+	private static final int MINIMUM_MEMORY_FOR_NOT_JAVA11 = 2500;
 	private ClientUserData userData;
 	private LongSupplier currentSecond = () -> System.currentTimeMillis() / 1000L;
 	private Long lastSecond = currentSecond.getAsLong();
