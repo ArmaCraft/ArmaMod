@@ -20,7 +20,7 @@ public class FolderSnapshotDTO {
 	
 	private static final Logger LOGGER = LogManager.getLogger();
 	private String folderName;
-	private Map<String, String> fileHashes;
+	private Map<String, String> fileHashes = new HashMap<>();
 	
 	public FolderSnapshotDTO() {}
 
