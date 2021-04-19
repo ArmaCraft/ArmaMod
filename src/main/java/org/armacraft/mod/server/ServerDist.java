@@ -9,8 +9,9 @@ import java.util.Map;
 
 import org.armacraft.mod.ArmaCraft;
 import org.armacraft.mod.ArmaDist;
+import org.armacraft.mod.client.ClientUserData;
 import org.armacraft.mod.network.ClientInfoRequestPacket;
-import org.armacraft.mod.network.UpdateVisibleNametagsPacket;
+import org.armacraft.mod.network.UpdateUserDataPacket;
 import org.armacraft.mod.network.dto.FolderSnapshotDTO;
 import org.armacraft.mod.util.MiscUtil;
 
@@ -47,28 +48,32 @@ public class ServerDist implements ArmaDist {
 			this.mandatoryHashes.add(FolderSnapshotDTO.getHash(f));
 		}
 	}
+	
+	@SubscribeEvent
+	public void onServerTick(TickEvent.ServerTickEvent event) {
+		if(ArmaCraft.USER_DATA_CONTROLLER != null) {
+			ArmaCraft.USER_DATA_CONTROLLER.getUserDataUpdateWatcher().entrySet().stream()
+					.filter(Map.Entry::getValue)
+					.map(Map.Entry::getKey)
+					.forEach(uuid -> {
+						ServerPlayerEntity entity = ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayer(uuid);
+						ArmaCraft.USER_DATA_CONTROLLER.getUsersData().stream()
+								.filter(user -> user.getHolder().equals(uuid)).findFirst().ifPresent(data -> {
+							if (entity != null) {
+								ArmaCraft.networkChannel.send(PacketDistributor.PLAYER.with(() -> entity),
+										new UpdateUserDataPacket(ClientUserData.from(data)));
+							}
+						});
+					});
+			ArmaCraft.USER_DATA_CONTROLLER.getUserDataUpdateWatcher().clear();
+		}
+	}
+
 
 	@SubscribeEvent
 	public void onLoggedIn(PlayerLoggedInEvent event) {
 		ArmaCraft.networkChannel.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) event.getPlayer()),
 				new ClientInfoRequestPacket());
-	}
-
-	@SubscribeEvent
-	public void onServerTick(TickEvent.ServerTickEvent event) {
-		if (ArmaCraft.NAMETAG_CONTROLLER != null) {
-			ArmaCraft.NAMETAG_CONTROLLER.getNametagUpdateWatcher().entrySet().stream().filter(Map.Entry::getValue)
-					.map(Map.Entry::getKey).forEach(uuid -> {
-						Collection<String> visibleTags = ArmaCraft.NAMETAG_CONTROLLER.getNametagVisibility().get(uuid);
-						ServerPlayerEntity entity = ServerLifecycleHooks.getCurrentServer().getPlayerList()
-								.getPlayer(uuid);
-						if (entity != null) {
-							ArmaCraft.networkChannel.send(PacketDistributor.PLAYER.with(() -> entity),
-									new UpdateVisibleNametagsPacket(new HashSet<>(visibleTags)));
-						}
-					});
-			ArmaCraft.NAMETAG_CONTROLLER.getNametagUpdateWatcher().clear();
-		}
 	}
 
 	@Override
