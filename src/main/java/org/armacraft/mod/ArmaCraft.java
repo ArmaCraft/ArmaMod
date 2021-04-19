@@ -1,5 +1,6 @@
 package org.armacraft.mod;
 
+import java.util.Optional;
 import java.util.Set;
 
 import org.armacraft.mod.bridge.bukkit.IBukkitPermissionBridge;
@@ -218,20 +219,20 @@ public class ArmaCraft {
 		return this.dist;
 	}
 
-	public ServerDist getServerDist() {
+	public Optional<ServerDist> getServerDist() {
 		if (this.dist instanceof ServerDist) {
-			return (ServerDist) this.dist;
+			return Optional.of((ServerDist) this.dist);
 		}
 
-		throw new IllegalStateException("Server dist is not available for the current dist");
+		return Optional.empty();
 	}
 
-	public ClientDist getClientDist() {
+	public Optional<ClientDist> getClientDist() {
 		if (this.dist instanceof ClientDist) {
-			return (ClientDist) this.dist;
+			return Optional.ofNullable((ClientDist) this.dist);
 		}
 
-		throw new IllegalStateException("Client dist is not available for the current dist");
+		return Optional.empty();
 	}
 
 	public static ArmaCraft getInstance() {

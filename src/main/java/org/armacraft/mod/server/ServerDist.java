@@ -2,8 +2,6 @@ package org.armacraft.mod.server;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -13,6 +11,8 @@ import org.armacraft.mod.client.ClientUserData;
 import org.armacraft.mod.network.ClientInfoRequestPacket;
 import org.armacraft.mod.network.UpdateUserDataPacket;
 import org.armacraft.mod.network.dto.FolderSnapshotDTO;
+import org.armacraft.mod.server.bukkit.util.BukkitInterface;
+import org.armacraft.mod.server.bukkit.util.BukkitInterfaceImpl;
 import org.armacraft.mod.util.MiscUtil;
 
 import net.minecraft.entity.player.PlayerEntity;
@@ -95,5 +95,9 @@ public class ServerDist implements ArmaDist {
 						+ entry.getKey() + " " + entry.getValue());
 			}
 		});
+	}
+	
+	public BukkitInterface getBukkitInterface() {
+		return BukkitInterfaceImpl.INSTANCE;
 	}
 }

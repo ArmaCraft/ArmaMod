@@ -1,4 +1,4 @@
-package org.armacraft.mod.bukkit;
+package org.armacraft.mod.server.bukkit.event;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;

@@ -67,4 +67,12 @@ public class MiscUtil {
 	public static boolean isUsingJava11() {
 		return System.getProperty("java.version").startsWith("11");
 	}
+	
+	public static void silentyCatchException(Runnable runnable) {
+		try {
+			runnable.run();
+		} catch (Exception e) {
+			// shhh....
+		}
+	}
 }

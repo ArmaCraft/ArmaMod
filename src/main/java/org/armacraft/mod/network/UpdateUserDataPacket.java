@@ -41,7 +41,7 @@ public class UpdateUserDataPacket {
 
     public static boolean handle(UpdateUserDataPacket msg, Supplier<NetworkEvent.Context> ctx) {
         if (ctx.get().getDirection().getReceptionSide().isClient()) {
-            ctx.get().enqueueWork(() -> ArmaCraft.getInstance().getClientDist().setClientUserData(msg.userData));
+            ctx.get().enqueueWork(() -> ArmaCraft.getInstance().getClientDist().orElseThrow().setClientUserData(msg.userData));
         }
         return true;
     }
