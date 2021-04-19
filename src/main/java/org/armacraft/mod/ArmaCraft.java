@@ -92,9 +92,10 @@ public class ArmaCraft {
 				.encoder(ClientInfoResponsePacket::encode).decoder(ClientInfoResponsePacket::decode)
 				.consumer(ClientInfoResponsePacket::handle).add();
 
-		networkChannel.messageBuilder(UpdateVisibleNametagsPacket.class, 0x02, NetworkDirection.PLAY_TO_CLIENT)
-				.encoder(UpdateVisibleNametagsPacket::encode).decoder(UpdateVisibleNametagsPacket::decode)
-				.consumer(UpdateVisibleNametagsPacket::handle).add();
+		// A classe sumiu?
+		//networkChannel.messageBuilder(UpdateVisibleNametagsPacket.class, 0x02, NetworkDirection.PLAY_TO_CLIENT)
+		//		.encoder(UpdateVisibleNametagsPacket::encode).decoder(UpdateVisibleNametagsPacket::decode)
+		//		.consumer(UpdateVisibleNametagsPacket::handle).add();
 
 		networkChannel.messageBuilder(ClientDashPacket.class, 0x03, NetworkDirection.PLAY_TO_SERVER)
 				.encoder(ClientDashPacket::encode).decoder(ClientDashPacket::decode)
