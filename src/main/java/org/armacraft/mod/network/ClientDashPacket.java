@@ -1,0 +1,31 @@
+package org.armacraft.mod.network;
+
+import java.util.function.Supplier;
+
+import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.FoodStats;
+import net.minecraft.util.SoundEvents;
+import net.minecraftforge.fml.network.NetworkEvent;
+
+public class ClientDashPacket {
+	
+	public static void encode(ClientDashPacket msg, PacketBuffer out) {}
+
+	public static ClientDashPacket decode(PacketBuffer in) {
+		return new ClientDashPacket();
+	}
+
+	public static boolean handle(ClientDashPacket msg, Supplier<NetworkEvent.Context> ctx) {
+		if (ctx.get().getDirection().getReceptionSide().isServer()) {
+			ctx.get().enqueueWork(() -> {
+				
+				FoodStats foodStats = ctx.get().getSender().getFoodData();
+				// Afeta o nivel de fome
+				foodStats.setFoodLevel(foodStats.getFoodLevel() - 1);
+				
+				ctx.get().getSender().playSound(SoundEvents.HORSE_JUMP, 1.2F, 0.5F);
+			});
+		}
+		return true;
+	}
+}

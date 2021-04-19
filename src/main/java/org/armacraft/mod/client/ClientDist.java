@@ -1,4 +1,4 @@
-package org.armacraft.mod.init;
+package org.armacraft.mod.client;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -7,13 +7,25 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.function.LongSupplier;
 
-import net.minecraft.entity.player.PlayerEntity;
+import javax.swing.JDialog;
+import javax.swing.JOptionPane;
+
 import org.armacraft.mod.ArmaCraft;
+import org.armacraft.mod.ArmaDist;
+import org.armacraft.mod.event.DoubleTapKeyBindingEvent;
+import org.armacraft.mod.init.ArmaCraftBlocks;
+import org.armacraft.mod.network.ClientDashPacket;
+import org.armacraft.mod.network.dto.FolderSnapshotDTO;
+import org.armacraft.mod.util.MiscUtil;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.audio.SimpleSound;
 import net.minecraft.client.gui.screen.PackScreen;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.RenderTypeLookup;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.SoundEvents;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.client.event.RenderNameplateEvent;
 import net.minecraftforge.common.MinecraftForge;
@@ -25,13 +37,17 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.fml.network.PacketDistributor;
 
 public class ClientDist implements ArmaDist {
 
+	private static final int MINIMUM_MEMORY_FOR_NOT_JAVA11 = 2100;
 	private LongSupplier currentSecond = () -> System.currentTimeMillis() / 1000L;
 	private Long lastSecond = currentSecond.getAsLong();
 	private int tickCountInTheCurrentSecond = 0;
 	private int secondsInViolation = 0;
+
+	private long lastDash = 0L;
 
 	public ClientDist() {
 		MinecraftForge.EVENT_BUS.register(this);
@@ -56,13 +72,49 @@ public class ClientDist implements ArmaDist {
 				e.printStackTrace();
 			}
 		}
+
+		long maxMB = Runtime.getRuntime().maxMemory() / 1024L / 1024L;
+		if (maxMB <= MINIMUM_MEMORY_FOR_NOT_JAVA11) {
+			if (!MiscUtil.isUsingJava11()) {
+				MiscUtil.runWithoutHeadlessMode(() -> {
+					JDialog parentComponent = new JDialog();
+					parentComponent.setAlwaysOnTop(true);
+					JOptionPane.showMessageDialog(parentComponent,
+							"Você NÃO está usando o Java 11 e está usando menos que " + MINIMUM_MEMORY_FOR_NOT_JAVA11
+									+ " MB de RAM no modpack. Veja o tutorial para evitar travamentos: https://armacraft.net/ram");
+				});
+			}
+		}
+	}
+	
+	@SubscribeEvent
+	public void onDoubleTap(DoubleTapKeyBindingEvent event) {
+		Minecraft minecraft = Minecraft.getInstance();
+		
+		if (minecraft.level != null) {
+			boolean hasEnoughFood = minecraft.player.getFoodData().getFoodLevel() > 6;
+			boolean onGround = minecraft.player.isOnGround();
+			boolean notInCooldown = System.currentTimeMillis() - this.lastDash > 550L;
+			if (hasEnoughFood && onGround && notInCooldown) {
+				if (event.getKeyBinding() == minecraft.options.keyLeft) {
+					dash(-90F);
+				}
+				
+				if (event.getKeyBinding() == minecraft.options.keyRight) {
+					dash(90F);
+				}
+				
+				if (event.getKeyBinding() == minecraft.options.keyDown) {
+					dash(-180F);
+				}
+			}
+		}
 	}
 
 	@SubscribeEvent
 	public void onNameplateRender(RenderNameplateEvent event) {
-		if ((ArmaCraft.VISIBLE_NAMETAGS == null
-				|| !ArmaCraft.VISIBLE_NAMETAGS.contains(event.getContent().getString()))
-				&& event.getEntity() instanceof PlayerEntity){
+		if ((ArmaCraft.VISIBLE_NAMETAGS == null || !ArmaCraft.VISIBLE_NAMETAGS.contains(event.getContent().getString()))
+				&& event.getEntity() instanceof PlayerEntity) {
 			event.setResult(Event.Result.DENY);
 		}
 	}
@@ -73,6 +125,16 @@ public class ClientDist implements ArmaDist {
 		if (event.getGui() instanceof PackScreen) {
 			event.setCanceled(true);
 		}
+	}
+	
+	private void dash(float angle) {
+		Minecraft minecraft = Minecraft.getInstance();
+		Vector3d dashMovement = Vector3d.directionFromRotation(0, minecraft.player.yRot + angle).normalize().multiply(0.7F, 0.7F, 0.7F);
+		minecraft.player.setDeltaMovement(minecraft.player.getDeltaMovement().add(dashMovement).add(0F, 0.32F, 0F));
+		this.lastDash = System.currentTimeMillis();
+		minecraft.getSoundManager().play(SimpleSound.forUI(SoundEvents.HORSE_JUMP, 1.2F, 0.2F));
+		
+		ArmaCraft.networkChannel.send(PacketDistributor.SERVER.noArg(), new ClientDashPacket());
 	}
 
 	@SubscribeEvent
@@ -87,7 +149,7 @@ public class ClientDist implements ArmaDist {
 		// Player está dentro do mundo do jogo - IMPORTANTE VERIFICAR
 		if (minecraft.level != null) {
 
-			// Apenas dois ResourcePacks s�o instalados por default:
+			// Apenas dois ResourcePacks são instalados por default:
 			// "vanilla" e "mod_resources"
 			if (minecraft.getResourcePackRepository().getSelectedPacks().size() != 2) {
 				// Envia um comando pra avisar os staffers
@@ -101,7 +163,7 @@ public class ClientDist implements ArmaDist {
 			final long currentSecond = this.currentSecond.getAsLong();
 
 			if (this.lastSecond == currentSecond) {
-				// Segundo n�o mudou, acrescente
+				// Segundo não mudou, acrescente
 				++this.tickCountInTheCurrentSecond;
 			} else {
 				// Minecraft roda a 20 ticks por segundo, n�o deveria ser superior, mas
@@ -156,4 +218,7 @@ public class ClientDist implements ArmaDist {
 		// Should be the asset directory for that modpack
 		return Paths.get(technicPath.toAbsolutePath().toString(), "assets", "packs", "armacraft-reborn");
 	}
+
+	@Override
+	public void validateUntrustedFolder(FolderSnapshotDTO snapshot, PlayerEntity source) {}
 }

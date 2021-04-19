@@ -14,4 +14,7 @@ public class ArmaCraftEffects {
 
 	public static final RegistryObject<Effect> ABSORPTION_REGENERATION = EFFECTS.register("absorption_regeneration",
 			AbsorptionRegenEffect::new);
+
+	public static final RegistryObject<Effect> ARMACRAFT_SPEED = EFFECTS.register("mini_speed",
+			MiniSpeedEffect::new);
 }

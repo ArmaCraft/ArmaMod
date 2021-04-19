@@ -8,19 +8,19 @@ import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkEvent;
 import net.minecraftforge.fml.network.PacketDistributor;
 
-public class RequestModsPacket {
+public class ClientInfoRequestPacket {
 
-	public static void encode(RequestModsPacket msg, PacketBuffer out) {}
+	public static void encode(ClientInfoRequestPacket msg, PacketBuffer out) {}
 
-	public static RequestModsPacket decode(PacketBuffer in) {
-		return new RequestModsPacket();
+	public static ClientInfoRequestPacket decode(PacketBuffer in) {
+		return new ClientInfoRequestPacket();
 	}
 
-	public static boolean handle(RequestModsPacket msg, Supplier<NetworkEvent.Context> ctx) {
+	public static boolean handle(ClientInfoRequestPacket msg, Supplier<NetworkEvent.Context> ctx) {
 		if (ctx.get().getDirection().getReceptionSide().isClient()) {
 			ctx.get().enqueueWork(() -> {
 				// Envia meus mods ao server
-				ArmaCraft.networkChannel.send(PacketDistributor.SERVER.noArg(), ResponseModsPacket.withMyMods());
+				ArmaCraft.networkChannel.send(PacketDistributor.SERVER.noArg(), ClientInfoResponsePacket.withMyMods());
 			});
 		}
 		return true;

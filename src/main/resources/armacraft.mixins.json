@@ -4,15 +4,18 @@
   "compatibilityLevel": "JAVA_8",
   "refmap": "armacraft.refmap.json",
   "mixins": [
+    "AbstractReloadActionMixin",
     "FastZombieEntityMixin",
     "GunCraftSlotMixin",
     "GunImplMixin",
     "ILivingMixin",
     "LivingImplMixin",
     "PlayerImplMixin",
-    "GunItemMixin"
+    "GunItemMixin",
+    "RemoveMagazineActionMixin",
   ],
   "client": [
+    "KeyBindingMixin",
     "IngameGuiMixin",
     "MinecraftMixin",
     "GunClientImplMixin",
