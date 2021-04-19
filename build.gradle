@@ -30,6 +30,8 @@ repositories {
         name 'cursemaven'
         url 'https://www.cursemaven.com'
     }
+    maven { url = 'https://oss.sonatype.org/content/repositories/snapshots' }
+    maven { url = 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/' }
     google()
 }
 
@@ -114,6 +116,7 @@ dependencies {
     implementation group: 'org.spongepowered', name: 'mixin', version: "0.8.2"
     annotationProcessor("org.spongepowered:mixin:0.8.2:processor")
     implementation fg.deobf("curse.maven:crafting_dead_core-${cd_curseforge_project_id}:${cd_curseforge_file_id}")
+    implementation 'org.spigotmc:spigot-api:1.12.2-R0.1-SNAPSHOT'
 }
 
 jar {

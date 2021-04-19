@@ -2,9 +2,11 @@ package org.armacraft.mod.network;
 
 import java.util.function.Supplier;
 
+import org.armacraft.mod.bukkit.PlayerDashEvent;
+import org.armacraft.mod.util.BukkitUtils;
+import org.bukkit.Bukkit;
+
 import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.FoodStats;
-import net.minecraft.util.SoundEvents;
 import net.minecraftforge.fml.network.NetworkEvent;
 
 public class ClientDashPacket {
@@ -18,12 +20,7 @@ public class ClientDashPacket {
 	public static boolean handle(ClientDashPacket msg, Supplier<NetworkEvent.Context> ctx) {
 		if (ctx.get().getDirection().getReceptionSide().isServer()) {
 			ctx.get().enqueueWork(() -> {
-				
-				FoodStats foodStats = ctx.get().getSender().getFoodData();
-				// Afeta o nivel de fome
-				foodStats.setFoodLevel(foodStats.getFoodLevel() - 1);
-				
-				ctx.get().getSender().playSound(SoundEvents.HORSE_JUMP, 1.2F, 0.5F);
+				Bukkit.getPluginManager().callEvent(new PlayerDashEvent(BukkitUtils.getBukkitPlayer(ctx.get().getSender())));
 			});
 		}
 		return true;

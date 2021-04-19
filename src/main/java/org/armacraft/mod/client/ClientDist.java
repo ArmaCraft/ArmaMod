@@ -129,7 +129,7 @@ public class ClientDist implements ArmaDist {
 	
 	private void dash(float angle) {
 		Minecraft minecraft = Minecraft.getInstance();
-		Vector3d dashMovement = Vector3d.directionFromRotation(0, minecraft.player.yRot + angle).normalize().multiply(0.7F, 0.7F, 0.7F);
+		Vector3d dashMovement = Vector3d.directionFromRotation(0, minecraft.player.yRot + angle).normalize().multiply(0.75F, 0.75F, 0.75F);
 		minecraft.player.setDeltaMovement(minecraft.player.getDeltaMovement().add(dashMovement).add(0F, 0.32F, 0F));
 		this.lastDash = System.currentTimeMillis();
 		minecraft.getSoundManager().play(SimpleSound.forUI(SoundEvents.HORSE_JUMP, 1.2F, 0.2F));
