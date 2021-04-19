@@ -14,7 +14,7 @@ public class AbstractReloadActionMixin {
 	/**
 	 * Faz com que seja possível recarregar arma enquanto corre
 	 */
-	@Redirect(method = "start", remap = false, at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;isSprinting()Z"))
+	@Redirect(method = "start", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;isSprinting()Z"))
 	public boolean start$isSprinting(LivingEntity entity) {
 		return false;
 	}
@@ -22,7 +22,7 @@ public class AbstractReloadActionMixin {
 	/**
 	 * Faz com que seja possível recarregar arma enquanto corre
 	 */
-	@Redirect(method = "tick", remap = false, at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;isSprinting()Z"))
+	@Redirect(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;isSprinting()Z"))
 	public boolean tick$isSprinting(LivingEntity entity) {
 		return false;
 	}
