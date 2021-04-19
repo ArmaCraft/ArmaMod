@@ -14,6 +14,7 @@ import javax.swing.JOptionPane;
 import org.armacraft.mod.ArmaCraft;
 import org.armacraft.mod.ArmaDist;
 import org.armacraft.mod.event.DoubleTapKeyBindingEvent;
+import org.armacraft.mod.exception.DistNotFoundException;
 import org.armacraft.mod.init.ArmaCraftBlocks;
 import org.armacraft.mod.network.ClientDashPacket;
 import org.armacraft.mod.network.dto.FolderSnapshotDTO;
@@ -125,8 +126,9 @@ public class ClientDist implements ArmaDist {
 
 	@SubscribeEvent
 	public void onNameplateRender(RenderNameplateEvent event) {
-		if (ArmaCraft.VISIBLE_NAMETAGS == null && event.getEntity() instanceof PlayerEntity){
-			ClientUserData data = ArmaCraft.getInstance().getClientDist().orElseThrow().getClientUserData();
+		if (event.getEntity() instanceof PlayerEntity){
+			ClientUserData data = ArmaCraft.getInstance().getClientDist().orElseThrow(
+					() -> new DistNotFoundException("Client")).getClientUserData();
 			if(data.getFlags().contains("show-all")) {
 				event.setResult(Event.Result.ALLOW);
 			} else if (data.getFlags().contains("hide-all")) {

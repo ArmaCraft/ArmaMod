@@ -4,6 +4,7 @@ import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkEvent;
 import org.armacraft.mod.ArmaCraft;
 import org.armacraft.mod.client.ClientUserData;
+import org.armacraft.mod.exception.DistNotFoundException;
 
 import java.util.HashSet;
 import java.util.function.Supplier;
@@ -41,7 +42,7 @@ public class UpdateUserDataPacket {
 
     public static boolean handle(UpdateUserDataPacket msg, Supplier<NetworkEvent.Context> ctx) {
         if (ctx.get().getDirection().getReceptionSide().isClient()) {
-            ctx.get().enqueueWork(() -> ArmaCraft.getInstance().getClientDist().orElseThrow().setClientUserData(msg.userData));
+            ctx.get().enqueueWork(() -> ArmaCraft.getInstance().getClientDist().orElseThrow(() -> new DistNotFoundException("Client")).setClientUserData(msg.userData));
         }
         return true;
     }
