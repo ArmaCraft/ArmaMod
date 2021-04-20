@@ -21,6 +21,10 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 @Mixin(GunItem.class)
 public class GunItemMixin {
+	
+	// @StringObfuscator:on
+	private static String LORE_HEADSHOT_DAMAGE = "item_lore.gun_item.headshot_damage";
+	// @StringObfuscator:off
 
 	/**
 	 * Mostra o dano de headshot correto na arma
@@ -35,7 +39,7 @@ public class GunItemMixin {
 		
 		// Remove e adiciona de volta
 		lines.remove(3);
-		lines.add(3, Text.translate("item_lore.gun_item.headshot_damage", 3).withStyle(TextFormatting.GRAY).append(
+		lines.add(3, Text.translate(LORE_HEADSHOT_DAMAGE, 3).withStyle(TextFormatting.GRAY).append(
 				Text.of(gun.getDamage() * ArmaCraft.ARMACRAFT_HEADSHOT_MULTIPLIER).withStyle(TextFormatting.RED)));
 	}
 }

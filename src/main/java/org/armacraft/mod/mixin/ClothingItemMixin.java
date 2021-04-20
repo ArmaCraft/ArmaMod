@@ -21,13 +21,17 @@ import net.minecraft.world.World;
 @Mixin(ClothingItem.class)
 public class ClothingItemMixin {
 
+	// @StringObfuscator:on
+	private static final String PROTECTION_LEVEL_TEXT = "Protection Level: ";
+	// @StringObfuscator:off
+	
     @Inject(method = "appendHoverText", at = @At("TAIL"))
     public void appendHoverText(ItemStack stack, World world,
                              List<ITextComponent> lines,
                              ITooltipFlag tooltipFlag, CallbackInfo ci) {
         if(ClothingRepresentation.has(stack.getItem())) {
             ProtectionLevel level = ClothingRepresentation.getLevel(stack.getItem());
-            lines.add(Text.of("Protection Level: " + level.toString()).withStyle(TextFormatting.GRAY));
+            lines.add(Text.of(PROTECTION_LEVEL_TEXT + level.toString()).withStyle(TextFormatting.GRAY));
         }
     }
 }
