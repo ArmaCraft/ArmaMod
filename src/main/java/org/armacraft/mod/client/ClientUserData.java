@@ -19,7 +19,8 @@ public class ClientUserData {
         this.flags = flags;
     }
 
-    public UUID getHolder() {
+    @SuppressWarnings("resource")
+	public UUID getHolder() {
         return Minecraft.getInstance().player.getUUID();
     }
 
