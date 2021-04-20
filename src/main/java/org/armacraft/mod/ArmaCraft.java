@@ -46,9 +46,10 @@ import net.minecraftforge.fml.network.simple.SimpleChannel;
 
 @Mod(ArmaCraft.MODID)
 public class ArmaCraft {
-	
-	// @StringObfuscator:on
+
+	// Infelizmente não tem como ofuscar esse field
 	public static final String MODID = "armacraft";
+	// @StringObfuscator:on
 	private static final String NETWORK_VERSION = "1.0.0";
 	// @StringObfuscator:off
 	
