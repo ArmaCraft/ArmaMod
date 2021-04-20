@@ -17,7 +17,6 @@ import net.minecraft.network.PacketBuffer;
 
 public class FolderSnapshotDTO {
 	
-	private static final Logger LOGGER = LogManager.getLogger();
 	private String folderName;
 	private List<FileInfoDTO> fileHashes = new ArrayList<>();
 	
@@ -88,7 +87,6 @@ public class FolderSnapshotDTO {
 			for (File file : folder.listFiles()) {
 				// Not a folder (for example, when running in the dev workspace)
 				if (file.isFile() && file.getName().matches(fileRegex)) {
-					LOGGER.info("File {} matches {}", file.getName(), fileRegex);
 					String hash = getHash(file);
 					hashes.add(new FileInfoDTO(file.getName(), hash));
 				}
