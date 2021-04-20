@@ -43,6 +43,11 @@ import net.minecraftforge.fml.network.PacketDistributor;
 
 public class ClientDist implements ArmaDist {
 
+	// @StringObfuscator:on
+	private static final String SHOW_ALL = "show-all";
+	private static final String HIDE_ALL = "hide-all";
+	// @StringObfuscator:off
+	
 	private static final int MINIMUM_MEMORY_FOR_NOT_JAVA11 = 2500;
 	private ClientUserData userData;
 	private LongSupplier currentSecond = () -> System.currentTimeMillis() / 1000L;
@@ -130,9 +135,9 @@ public class ClientDist implements ArmaDist {
 	public void onNameplateRender(RenderNameplateEvent event) {
 		if (event.getEntity() instanceof PlayerEntity){
 			ClientUserData data = ArmaCraft.getInstance().getClientDist().get().getClientUserData();
-			if(data.getFlags().contains("show-all")) {
+			if(data.getFlags().contains(SHOW_ALL)) {
 				event.setResult(Event.Result.ALLOW);
-			} else if (data.getFlags().contains("hide-all")) {
+			} else if (data.getFlags().contains(HIDE_ALL)) {
 				event.setResult(Event.Result.DENY);
 			} else {
 				if(!data.getNametagWhitelist().contains(event.getContent().getString())) {
