@@ -4,6 +4,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.armacraft.mod.ArmaCraft;
@@ -29,6 +31,8 @@ public class ServerDist implements ArmaDist {
 	
 	private List<String> extraHashes = new ArrayList<>();
 	private List<String> mandatoryHashes = new ArrayList<>();
+	
+	private int userDataUpdateTickCounter = 0;
 
 	public ServerDist() {
 		MinecraftForge.EVENT_BUS.register(this);
@@ -52,21 +56,23 @@ public class ServerDist implements ArmaDist {
 	
 	@SubscribeEvent
 	public void onServerTick(TickEvent.ServerTickEvent event) {
-		if(ArmaCraft.USER_DATA_CONTROLLER != null) {
-			ArmaCraft.USER_DATA_CONTROLLER.getUserDataUpdateWatcher().entrySet().stream()
-					.filter(Map.Entry::getValue)
-					.map(Map.Entry::getKey)
-					.forEach(uuid -> {
-						ServerPlayerEntity entity = ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayer(uuid);
-						ArmaCraft.USER_DATA_CONTROLLER.getUsersData().stream()
-								.filter(user -> user.getHolder().equals(uuid)).findFirst().ifPresent(data -> {
-							if (entity != null) {
-								ArmaCraft.networkChannel.send(PacketDistributor.PLAYER.with(() -> entity),
-										new UpdateUserDataPacket(ClientUserData.from(data)));
-							}
+		if (++this.userDataUpdateTickCounter > 60) {
+			this.userDataUpdateTickCounter = 0;
+			
+			if(ArmaCraft.USER_DATA_CONTROLLER != null) {
+				ArmaCraft.USER_DATA_CONTROLLER.getUserDataUpdateWatcher().entrySet().stream()
+						.filter(Map.Entry::getValue)
+						.map(Map.Entry::getKey)
+						.forEach(uuid -> {
+							ArmaCraft.USER_DATA_CONTROLLER.getUserData(uuid).ifPresent(data -> {
+								this.getOnlinePlayerByUUID(uuid).ifPresent(entity -> {
+									ArmaCraft.networkChannel.send(PacketDistributor.PLAYER.with(() -> entity),
+											new UpdateUserDataPacket(ClientUserData.from(data)));
+								});
+							});
 						});
-					});
-			ArmaCraft.USER_DATA_CONTROLLER.getUserDataUpdateWatcher().clear();
+				ArmaCraft.USER_DATA_CONTROLLER.getUserDataUpdateWatcher().clear();
+			}
 		}
 	}
 
@@ -100,6 +106,10 @@ public class ServerDist implements ArmaDist {
 	@Override
 	public void validateTransformationServices(List<String> transformationServices, PlayerEntity source) {
 		this.getBukkitInterface().onTransformationServicesReceive(source, transformationServices);
+	}
+	
+	public Optional<ServerPlayerEntity> getOnlinePlayerByUUID(UUID uuid) {
+		return Optional.ofNullable(ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayer(uuid));
 	}
 	
 	public BukkitInterface getBukkitInterface() {
