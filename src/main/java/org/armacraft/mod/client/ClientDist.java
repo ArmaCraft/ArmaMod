@@ -126,7 +126,7 @@ public class ClientDist implements ArmaDist {
 
 	@SubscribeEvent
 	public void onNameplateRender(RenderNameplateEvent event) {
-		if (ArmaCraft.VISIBLE_NAMETAGS == null && event.getEntity() instanceof PlayerEntity){
+		if (event.getEntity() instanceof PlayerEntity){
 			ClientUserData data = ArmaCraft.getInstance().getClientDist().get().getClientUserData();
 			if(data.getFlags().contains("show-all")) {
 				event.setResult(Event.Result.ALLOW);

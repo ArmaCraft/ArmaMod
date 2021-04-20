@@ -20,7 +20,7 @@ public enum BukkitInterfaceImpl implements BukkitInterface {
 	INSTANCE;
 	
 	public void onDash(PlayerEntity entity) {
-		Bukkit.getPluginManager().callEvent(new PlayerDashEvent(null));
+		Bukkit.getPluginManager().callEvent(new PlayerDashEvent(this.getBukkitPlayer(entity)));
 	}
 	
 	public Player getBukkitPlayer(PlayerEntity playerEntity) {
