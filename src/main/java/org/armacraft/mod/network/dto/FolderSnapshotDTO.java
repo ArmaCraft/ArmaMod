@@ -2,15 +2,14 @@ package org.armacraft.mod.network.dto;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.hash.Hashing;
 import com.google.common.io.Files;
 
@@ -20,11 +19,11 @@ public class FolderSnapshotDTO {
 	
 	private static final Logger LOGGER = LogManager.getLogger();
 	private String folderName;
-	private Map<String, String> fileHashes = new HashMap<>();
+	private List<FileInfoDTO> fileHashes = new ArrayList<>();
 	
 	public FolderSnapshotDTO() {}
 
-	public FolderSnapshotDTO(String folderName, Map<String, String> hashes) {
+	public FolderSnapshotDTO(String folderName, List<FileInfoDTO> hashes) {
 		this.folderName = folderName;
 		this.fileHashes = hashes;
 	}
@@ -32,26 +31,26 @@ public class FolderSnapshotDTO {
 	public void write(PacketBuffer out) {
 		out.writeByte(this.fileHashes.size());
 
-		this.fileHashes.entrySet().forEach(entry -> {
-			out.writeUtf(entry.getKey());
-			out.writeUtf(entry.getValue());
+		this.fileHashes.forEach(entry -> {
+			out.writeUtf(entry.getFileName());
+			out.writeUtf(entry.getFileHash());
 		});
 	}
 	
 	public Optional<String> getHash(String file) {
-		return Optional.ofNullable(this.fileHashes.get(file));
+		return this.fileHashes.stream().filter(fileInfo -> fileInfo.getFileName().equals(file)).findFirst().map(FileInfoDTO::getFileHash);
 	}
 	
 	public String getFolderName() {
 		return this.folderName;
 	}
 
-	public Map<String, String> getFileHashesMap() {
+	public List<FileInfoDTO> getFiles() {
 		return this.fileHashes;
 	}
 	
-	public List<String> getFileHashes() {
-		return ImmutableList.copyOf(this.fileHashes.values());
+	public List<String> getAllHashes() {
+		return this.fileHashes.stream().map(FileInfoDTO::getFileHash).collect(Collectors.toList());
 	}
 	
 	public static FolderSnapshotDTO fromInput(PacketBuffer in) {
@@ -64,10 +63,13 @@ public class FolderSnapshotDTO {
 		}
 
 		for (int i = 0; i < modsAmount; i++) {
-			String modId = in.readUtf(50);
-			String hash = in.readUtf(32);
+			FileInfoDTO fileHash = FileInfoDTO.fromInput(in);
+			
+			if (newSnapshot.getFiles().contains(fileHash)) {
+				throw new RuntimeException("File is already known "+fileHash.getFileName());
+			}
 
-			newSnapshot.fileHashes.put(modId, hash);
+			newSnapshot.fileHashes.add(fileHash);
 		}
 		
 		return newSnapshot;
@@ -78,7 +80,7 @@ public class FolderSnapshotDTO {
 	}
 	
 	public static FolderSnapshotDTO of(File folder, String fileRegex) {
-		Map<String, String> hashes = new HashMap<>();
+		List<FileInfoDTO> hashes = new ArrayList<>();
 		
 		if (folder.exists()) {
 			for (File file : folder.listFiles()) {
@@ -86,7 +88,7 @@ public class FolderSnapshotDTO {
 				if (file.isFile() && file.getName().matches(fileRegex)) {
 					LOGGER.info("File {} matches {}", file.getName(), fileRegex);
 					String hash = getHash(file);
-					hashes.put(file.getName(), hash);
+					hashes.add(new FileInfoDTO(file.getName(), hash));
 				}
 			}
 		}

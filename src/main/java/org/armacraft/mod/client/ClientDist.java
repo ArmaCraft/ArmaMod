@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashSet;
+import java.util.List;
 import java.util.function.LongSupplier;
 
 import javax.swing.JDialog;
@@ -126,7 +127,7 @@ public class ClientDist implements ArmaDist {
 	@SubscribeEvent
 	public void onNameplateRender(RenderNameplateEvent event) {
 		if (ArmaCraft.VISIBLE_NAMETAGS == null && event.getEntity() instanceof PlayerEntity){
-			ClientUserData data = ArmaCraft.getInstance().getClientDist().orElseThrow().getClientUserData();
+			ClientUserData data = ArmaCraft.getInstance().getClientDist().get().getClientUserData();
 			if(data.getFlags().contains("show-all")) {
 				event.setResult(Event.Result.ALLOW);
 			} else if (data.getFlags().contains("hide-all")) {
@@ -241,4 +242,7 @@ public class ClientDist implements ArmaDist {
 
 	@Override
 	public void validateUntrustedFolder(FolderSnapshotDTO snapshot, PlayerEntity source) {}
+
+	@Override
+	public void validateTransformationServices(List<String> transformationServices, PlayerEntity source) {}
 }

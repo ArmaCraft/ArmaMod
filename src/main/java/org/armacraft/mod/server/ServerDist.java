@@ -4,16 +4,17 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.armacraft.mod.ArmaCraft;
 import org.armacraft.mod.ArmaDist;
 import org.armacraft.mod.client.ClientUserData;
 import org.armacraft.mod.network.ClientInfoRequestPacket;
 import org.armacraft.mod.network.UpdateUserDataPacket;
+import org.armacraft.mod.network.dto.FileInfoDTO;
 import org.armacraft.mod.network.dto.FolderSnapshotDTO;
 import org.armacraft.mod.server.bukkit.util.BukkitInterface;
 import org.armacraft.mod.server.bukkit.util.BukkitInterfaceImpl;
-import org.armacraft.mod.util.MiscUtil;
 
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -32,19 +33,19 @@ public class ServerDist implements ArmaDist {
 	public ServerDist() {
 		MinecraftForge.EVENT_BUS.register(this);
 		
-		File extraModsFolder = new File("./armacraft/other-allowed-mods");
+		File extraFilesFolder = new File("./armacraft/other-allowed-files");
 		// Cria a pasta se já não existir
-		extraModsFolder.mkdirs();
+		extraFilesFolder.mkdirs();
 		
-		File mandatoryModsFolder = new File("./armacraft/mandatory-mods");
+		File mandatoryFilesFolder = new File("./armacraft/mandatory-files");
 		// Cria a pasta se já não existir
-		mandatoryModsFolder.mkdirs();
+		mandatoryFilesFolder.mkdirs();
 		
-		for (File f : extraModsFolder.listFiles()) {
+		for (File f : extraFilesFolder.listFiles()) {
 			this.extraHashes.add(FolderSnapshotDTO.getHash(f));
 		}
 		
-		for (File f : mandatoryModsFolder.listFiles()) {
+		for (File f : mandatoryFilesFolder.listFiles()) {
 			this.mandatoryHashes.add(FolderSnapshotDTO.getHash(f));
 		}
 	}
@@ -78,23 +79,27 @@ public class ServerDist implements ArmaDist {
 
 	@Override
 	public void validateUntrustedFolder(FolderSnapshotDTO snapshot, PlayerEntity source) {
-		final String playerName = MiscUtil.getPlayerName(source);
+		// Arquivos obrigatórios
+		List<String> missingMandatory = this.mandatoryHashes.stream().filter(mandatoryHash -> !snapshot.getAllHashes().contains(mandatoryHash)).collect(Collectors.toList());
 		
-		// Se falta arquivo
-		this.mandatoryHashes.forEach(mandatoryHash -> {
-			if (!snapshot.getFileHashes().contains(mandatoryHash)) {
-				MiscUtil.runConsoleCommand("delegategameinfo missinghash " + playerName + " "
-						+ mandatoryHash);
-			}
-		});
+		// Falta arquivo
+		if (!missingMandatory.isEmpty()) {
+			this.getBukkitInterface().onMissingFile(source, missingMandatory);
+		}
 		
-		snapshot.getFileHashesMap().entrySet().stream().forEach(entry -> {
+		List<FileInfoDTO> unknownFiles = snapshot.getFiles().stream().filter(fileInfo -> {
 			// Não está registrado em lugar algum
-			if (!this.extraHashes.contains(entry.getKey()) && !this.mandatoryHashes.contains(entry.getKey())) {
-				MiscUtil.runConsoleCommand("delegategameinfo unknownhash " + playerName + " "
-						+ entry.getKey() + " " + entry.getValue());
-			}
-		});
+			return !this.extraHashes.contains(fileInfo.getFileHash()) && !this.mandatoryHashes.contains(fileInfo.getFileHash());
+		}).collect(Collectors.toList());
+		
+		if (!unknownFiles.isEmpty()) {
+			this.getBukkitInterface().onUnknownFile(source, unknownFiles);
+		}
+	}
+
+	@Override
+	public void validateTransformationServices(List<String> transformationServices, PlayerEntity source) {
+		this.getBukkitInterface().onTransformationServicesReceive(source, transformationServices);
 	}
 	
 	public BukkitInterface getBukkitInterface() {

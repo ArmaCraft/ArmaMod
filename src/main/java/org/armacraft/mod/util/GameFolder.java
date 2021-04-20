@@ -1,4 +1,4 @@
-package org.armacraft.mod.server;
+package org.armacraft.mod.util;
 
 import java.util.HashMap;
 import java.util.Map;

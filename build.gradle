@@ -10,20 +10,32 @@ buildscript {
             name 'sponge'
             url 'https://repo.spongepowered.org/repository/maven-public'
         }
+	    maven {
+	    	url "https://plugins.gradle.org/m2/"
+	    }
     }
     dependencies {
         classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '4.1+', changing: true
         classpath group: 'org.spongepowered', name: 'mixingradle', version: '0.7-SNAPSHOT'
+        classpath 'de.undercouch:gradle-download-task:4.1.1'
     }
 }
 
+apply plugin: 'java'
 apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'org.spongepowered.mixin'
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
+apply plugin: 'de.undercouch.download'
+
+targetCompatibility = sourceCompatibility = 1.8
 
 version = '1.2'
 group = 'org.armacraft'
+
+ext {
+	downloadedFilesFolder = new File(buildDir, 'downloaded-files')
+}
 
 repositories {
 	maven {
@@ -117,6 +129,7 @@ dependencies {
     annotationProcessor("org.spongepowered:mixin:0.8.2:processor")
     implementation fg.deobf("curse.maven:crafting_dead_core-${cd_curseforge_project_id}:${cd_curseforge_file_id}")
     implementation 'org.spigotmc:spigot-api:1.12.2-R0.1-SNAPSHOT'
+	implementation fileTree(dir: downloadedFilesFolder, include: ['*.jar'])
 }
 
 jar {
@@ -152,3 +165,23 @@ publishing {
 mixin {
     add sourceSets.main, "armacraft.refmap.json"
 }
+
+task deleteDownloads(type: Delete) {
+	delete downloadedFilesFolder
+}
+
+task downloadFiles(type: Download) {
+	dependsOn deleteDownloads
+	doFirst {
+		// Creates the folder
+		downloadedFilesFolder.mkdirs();
+	}
+	src([
+		'https://github.com/IzzelAliz/Arclight/releases/download/1.16%2F1.0.17/arclight-forge-1.16-1.0.17.jar'
+	])
+	dest downloadedFilesFolder
+	overwrite false
+}
+
+compileJava.options.encoding = 'UTF-8'
+compileJava.dependsOn(downloadFiles)
