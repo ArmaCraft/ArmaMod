@@ -36,12 +36,14 @@ public class ClientInfoResponsePacket {
 	}
 
 	public static ClientInfoResponsePacket decode(PacketBuffer in) {
+		// @StringObfuscator:on
 		ClientInfoResponsePacket modsPacket = ClientInfoResponsePacket.empty();
 
 		for (int i = 0; i < GameFolder.values().length; i++) {
 			String folderName = in.readUtf(50);
 			FolderSnapshotDTO folderSnapshot = FolderSnapshotDTO.fromInput(in);
 
+			
 			GameFolder folder = GameFolder.fromFolderName(folderName)
 					.orElseThrow(() -> new RuntimeException("Game folder " + folderName + " was not expected"));
 
@@ -61,6 +63,8 @@ public class ClientInfoResponsePacket {
 		for (int i = 0; i < transformationServices; i++) {
 			modsPacket.clientTransformationServices.add(in.readUtf(50));
 		}
+		
+		// @StringObfuscator:off
 
 		return modsPacket;
 	}

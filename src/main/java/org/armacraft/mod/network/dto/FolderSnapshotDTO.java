@@ -58,6 +58,7 @@ public class FolderSnapshotDTO {
 		
 		byte modsAmount = in.readByte();
 
+		// @StringObfuscator:on
 		if (modsAmount > 30) {
 			throw new RuntimeException("Too many mods: " + modsAmount);
 		}
@@ -71,6 +72,7 @@ public class FolderSnapshotDTO {
 
 			newSnapshot.fileHashes.add(fileHash);
 		}
+		// @StringObfuscator:off
 		
 		return newSnapshot;
 	}

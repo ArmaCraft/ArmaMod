@@ -35,6 +35,7 @@ public class ServerDist implements ArmaDist {
 	private int userDataUpdateTickCounter = 0;
 
 	public ServerDist() {
+		// @StringObfuscator:on
 		MinecraftForge.EVENT_BUS.register(this);
 		
 		File extraFilesFolder = new File("./armacraft/other-allowed-files");
@@ -42,6 +43,8 @@ public class ServerDist implements ArmaDist {
 		extraFilesFolder.mkdirs();
 		
 		File mandatoryFilesFolder = new File("./armacraft/mandatory-files");
+
+		
 		// Cria a pasta se já não existir
 		mandatoryFilesFolder.mkdirs();
 		
@@ -52,6 +55,7 @@ public class ServerDist implements ArmaDist {
 		for (File f : mandatoryFilesFolder.listFiles()) {
 			this.mandatoryHashes.add(FolderSnapshotDTO.getHash(f));
 		}
+		// @StringObfuscator:off
 	}
 	
 	@SubscribeEvent

@@ -23,6 +23,7 @@ public class MiscUtil {
 	 * mods do Forge.
 	 */
 	public static List<String> getTransformationServices() {
+		// @StringObfuscator:on
 		final List<Map<String, String>> modList = Launcher.INSTANCE.environment()
 				.getProperty(IEnvironment.Keys.MODLIST.get()).orElseThrow(() -> new RuntimeException("Not set"));
 
@@ -33,6 +34,7 @@ public class MiscUtil {
 
 			return true;
 		}).map(map -> map.get("name")).collect(Collectors.toList());
+		// @StringObfuscator:off
 	}
 
 	public static boolean isHeadshotDamage(DamageSource source) {
@@ -58,14 +60,18 @@ public class MiscUtil {
 	}
 	
 	public static void runWithoutHeadlessMode(Runnable runnable) {
+		// @StringObfuscator:on
 		String valueBefore = System.getProperty("java.awt.headless");
         System.setProperty("java.awt.headless", "false");
         runnable.run();
         System.setProperty("java.awt.headless", valueBefore);
+		// @StringObfuscator:off
 	}
 	
 	public static boolean isUsingJava11() {
+		// @StringObfuscator:on
 		return System.getProperty("java.version").startsWith("11");
+		// @StringObfuscator:off
 	}
 	
 	public static void silentyCatchException(Runnable runnable) {

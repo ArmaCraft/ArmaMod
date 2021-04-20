@@ -7,9 +7,11 @@ import java.util.Optional;
 import org.armacraft.mod.network.dto.FolderSnapshotDTO;
 
 public enum GameFolder {
+	// @StringObfuscator:on
 	COREMODS("coremods", ".*"),
 	MODS("mods", ".*"),
 	BIN("bin", "(zip|jar)$");
+	// @StringObfuscator:off
 	
 	private final String folderName;
 	private final String regex;

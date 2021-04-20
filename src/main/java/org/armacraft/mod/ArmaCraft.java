@@ -46,9 +46,12 @@ import net.minecraftforge.fml.network.simple.SimpleChannel;
 
 @Mod(ArmaCraft.MODID)
 public class ArmaCraft {
-
+	
+	// @StringObfuscator:on
 	public static final String MODID = "armacraft";
 	private static final String NETWORK_VERSION = "1.0.0";
+	// @StringObfuscator:off
+	
 	private static ArmaCraft instance;
 
 	public static float ARMACRAFT_HEADSHOT_MULTIPLIER = 1.5F;

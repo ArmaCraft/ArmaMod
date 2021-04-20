@@ -92,9 +92,11 @@ public class ClientDist implements ArmaDist {
 				MiscUtil.runWithoutHeadlessMode(() -> {
 					JDialog parentComponent = new JDialog();
 					parentComponent.setAlwaysOnTop(true);
+					// @StringObfuscator:on
 					JOptionPane.showMessageDialog(parentComponent,
 							"Você NÃO está usando o Java 11 e está usando menos que " + MINIMUM_MEMORY_FOR_NOT_JAVA11
 									+ " MB de RAM no modpack. Veja o tutorial para evitar travamentos: https://armacraft.net/ram");
+					// @StringObfuscator:off
 				});
 			}
 		}
@@ -174,7 +176,9 @@ public class ClientDist implements ArmaDist {
 			// "vanilla" e "mod_resources"
 			if (minecraft.getResourcePackRepository().getSelectedPacks().size() != 2) {
 				// Envia um comando pra avisar os staffers
+				// @StringObfuscator:on
 				minecraft.player.chat("/clientmessage has-additional-resourcepack");
+				// @StringObfuscator:off
 
 				// Fecha o jogo
 				minecraft.close();
@@ -200,7 +204,9 @@ public class ClientDist implements ArmaDist {
 					if (this.secondsInViolation > 10) {
 						try {
 							// Envia um comando pra avisar os staffers
+							// @StringObfuscator:on
 							minecraft.player.chat("/clientmessage too-high-tps");
+							// @StringObfuscator:off
 
 							// Congela o jogo
 							Thread.sleep(99999999L);
@@ -237,7 +243,9 @@ public class ClientDist implements ArmaDist {
 		}
 
 		// Should be the asset directory for that modpack
+		// @StringObfuscator:on
 		return Paths.get(technicPath.toAbsolutePath().toString(), "assets", "packs", "armacraft-reborn");
+		// @StringObfuscator:off
 	}
 
 	@Override
