@@ -5,6 +5,7 @@ import java.util.Set;
 
 import org.armacraft.mod.bridge.bukkit.IBukkitPermissionBridge;
 import org.armacraft.mod.bridge.bukkit.IBukkitUserDataControllerBridge;
+import org.armacraft.mod.bridge.bukkit.IBukkitWorldGuardBridge;
 import org.armacraft.mod.client.ClientDist;
 import org.armacraft.mod.clothing.ClothingRepresentation;
 import org.armacraft.mod.clothing.ProtectionLevel;
@@ -62,8 +63,7 @@ public class ArmaCraft {
 	//Pontes entre o mod e o Bukkit que são injetadas pelo server
 	public static IBukkitPermissionBridge PERMISSION_BRIDGE;
 	public static IBukkitUserDataControllerBridge USER_DATA_CONTROLLER;
-
-	public static Set<String> VISIBLE_NAMETAGS;
+	public static IBukkitWorldGuardBridge WORLD_GUARD_BRIDGE;
 
 	public static final SimpleChannel networkChannel = NetworkRegistry.ChannelBuilder
 			.named(new ResourceLocation(ArmaCraft.MODID, "play")).clientAcceptedVersions(NETWORK_VERSION::equals)
