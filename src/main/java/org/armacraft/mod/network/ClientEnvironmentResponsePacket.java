@@ -6,6 +6,7 @@ import org.armacraft.mod.ArmaCraft;
 import org.armacraft.mod.environment.EnvironmentWrapper;
 import org.armacraft.mod.environment.ProcessWrapper;
 import org.armacraft.mod.network.dto.FolderSnapshotDTO;
+import org.armacraft.mod.server.bukkit.util.BukkitInterface;
 import org.armacraft.mod.util.GameFolder;
 import org.armacraft.mod.util.MiscUtil;
 
@@ -21,7 +22,7 @@ import java.util.Set;
 import java.util.function.Supplier;
 
 public class ClientEnvironmentResponsePacket {
-    private static EnvironmentWrapper wrapper;
+    private EnvironmentWrapper wrapper;
 
     private ClientEnvironmentResponsePacket(EnvironmentWrapper environment) {
         wrapper = environment;
@@ -81,9 +82,14 @@ public class ClientEnvironmentResponsePacket {
             return true;
         }
 
-        //Fazer algo com as informações do cliente
+        ArmaCraft.getInstance().getServerDist().ifPresent(dist ->
+            dist.getBukkitInterface().onEnvironmentReceive(ctx.get().getSender(), msg.getEnvironment()));
 
         return true;
+    }
+
+    public EnvironmentWrapper getEnvironment() {
+        return wrapper;
     }
 
     public static ClientEnvironmentResponsePacket empty() {
