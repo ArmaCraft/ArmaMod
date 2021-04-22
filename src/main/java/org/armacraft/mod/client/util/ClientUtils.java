@@ -8,14 +8,19 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.armacraft.mod.util.MiscUtil;
+import org.lwjgl.glfw.GLFW;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.audio.SimpleSound;
+import net.minecraft.client.util.InputMappings;
 import net.minecraft.crash.CrashReport;
+import net.minecraft.util.SoundEvent;
 import net.minecraftforge.fml.loading.FMLLoader;
 import net.minecraftforge.fml.loading.moddiscovery.ModFile;
 
@@ -101,6 +106,27 @@ public class ClientUtils {
 		
 		return modFiles;
 		// @StringObfuscator:off
+	}
+	
+	public static void playLocalSound(SoundEvent soundEvent, float pitch, float volume) {
+		Minecraft minecraft = Minecraft.getInstance();
+		minecraft.getSoundManager().play(SimpleSound.forUI(soundEvent, pitch, volume));
+	}
+	
+	public static boolean isAltKeyDown() {
+		return isKeyDown(GLFW.GLFW_KEY_LEFT_ALT) || isKeyDown(GLFW.GLFW_KEY_RIGHT_ALT);
+	}
+	
+	public static boolean isKeyDown(int keyCode) {
+		long windowHandle = Minecraft.getInstance().getWindow().getWindow();
+		return InputMappings.isKeyDown(windowHandle, keyCode);
+	}
+	
+	public static Optional<Integer> getAlphabetKeycode(Character c) {
+		if (!MiscUtil.isValidBindCharacter(c)) {
+			return Optional.empty();
+		}
+		return Optional.of((int) c.charValue());
 	}
 	
 	public static List<File> getAllModsAsFiles() {

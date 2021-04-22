@@ -1,10 +1,13 @@
 package org.armacraft.mod.mixin;
 
+import org.armacraft.mod.client.util.ClientUtils;
 import org.armacraft.mod.event.DoubleTapKeyBindingEvent;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraftforge.common.MinecraftForge;
@@ -16,11 +19,20 @@ public class KeyBindingMixin {
 	private static KeyBinding lastPressedKeyBinding = null;
 	private static long lastPressStart = 0L;
 
-	@Inject(method = "setDown", at = @At("HEAD"))
+	@Inject(method = "setDown", at = @At("HEAD"), cancellable = true)
 	public void setDown(boolean isDown, CallbackInfo info) {
+		
 		if (isDown) {
 			KeyBinding self = (KeyBinding) (Object) this;
 			boolean wasDown = self.isDown();
+			
+			// ALT está pressionado
+			if (ClientUtils.isAltKeyDown()) {
+				// Evita conflito de teclas
+				this.release();
+				info.cancel();
+				return;
+			}
 			
 			if (!wasDown) {
 				long currentTime = System.currentTimeMillis();
@@ -36,4 +48,15 @@ public class KeyBindingMixin {
 			lastPressedKeyBinding = self;
 		}
 	}
+	
+	@Inject(method = "consumeClick", at = @At("HEAD"))
+	public void consumeClick(CallbackInfoReturnable<Void> info) {
+		// ALT está pressionado
+		if (ClientUtils.isAltKeyDown()) {
+			// Solta a tecla, resetando ela. Evita de contar o clique.
+			this.release();
+		}
+	}
+	
+	@Shadow private void release() {}
 }
