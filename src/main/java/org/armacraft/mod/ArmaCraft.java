@@ -5,6 +5,7 @@ import java.util.Set;
 
 import org.armacraft.mod.bridge.bukkit.IBukkitPermissionBridge;
 import org.armacraft.mod.bridge.bukkit.IBukkitUserDataControllerBridge;
+import org.armacraft.mod.bridge.bukkit.IBukkitWorldGuardBridge;
 import org.armacraft.mod.client.ClientDist;
 import org.armacraft.mod.clothing.ClothingRepresentation;
 import org.armacraft.mod.clothing.ProtectionLevel;
@@ -12,6 +13,8 @@ import org.armacraft.mod.init.ArmaCraftBlocks;
 import org.armacraft.mod.init.ArmaCraftItems;
 import org.armacraft.mod.init.ArmaCraftTileEntityTypes;
 import org.armacraft.mod.network.ClientDashPacket;
+import org.armacraft.mod.network.ClientEnvironmentRequestPacket;
+import org.armacraft.mod.network.ClientEnvironmentResponsePacket;
 import org.armacraft.mod.network.ClientInfoRequestPacket;
 import org.armacraft.mod.network.ClientInfoResponsePacket;
 import org.armacraft.mod.network.UpdateUserDataPacket;
@@ -60,8 +63,7 @@ public class ArmaCraft {
 	//Pontes entre o mod e o Bukkit que são injetadas pelo server
 	public static IBukkitPermissionBridge PERMISSION_BRIDGE;
 	public static IBukkitUserDataControllerBridge USER_DATA_CONTROLLER;
-
-	public static Set<String> VISIBLE_NAMETAGS;
+	public static IBukkitWorldGuardBridge WORLD_GUARD_BRIDGE;
 
 	public static final SimpleChannel networkChannel = NetworkRegistry.ChannelBuilder
 			.named(new ResourceLocation(ArmaCraft.MODID, "play")).clientAcceptedVersions(NETWORK_VERSION::equals)
@@ -90,25 +92,39 @@ public class ArmaCraft {
 
 	public void setupChannel() {
 		networkChannel.messageBuilder(ClientInfoRequestPacket.class, 0x00, NetworkDirection.PLAY_TO_CLIENT)
-				.encoder(ClientInfoRequestPacket::encode).decoder(ClientInfoRequestPacket::decode)
+				.encoder(ClientInfoRequestPacket::encode)
+				.decoder(ClientInfoRequestPacket::decode)
 				.consumer(ClientInfoRequestPacket::handle).add();
 
 		networkChannel.messageBuilder(ClientInfoResponsePacket.class, 0x01, NetworkDirection.PLAY_TO_SERVER)
-				.encoder(ClientInfoResponsePacket::encode).decoder(ClientInfoResponsePacket::decode)
+				.encoder(ClientInfoResponsePacket::encode)
+				.decoder(ClientInfoResponsePacket::decode)
 				.consumer(ClientInfoResponsePacket::handle).add();
 
 		networkChannel.messageBuilder(UpdateUserDataPacket.class, 0x02, NetworkDirection.PLAY_TO_CLIENT)
-				.encoder(UpdateUserDataPacket::encode).decoder(UpdateUserDataPacket::decode)
+				.encoder(UpdateUserDataPacket::encode)
+				.decoder(UpdateUserDataPacket::decode)
 				.consumer(UpdateUserDataPacket::handle).add();
 
 		networkChannel.messageBuilder(ClientDashPacket.class, 0x03, NetworkDirection.PLAY_TO_SERVER)
-				.encoder(ClientDashPacket::encode).decoder(ClientDashPacket::decode)
+				.encoder(ClientDashPacket::encode)
+				.decoder(ClientDashPacket::decode)
 				.consumer(ClientDashPacket::handle).add();
 
 		networkChannel.messageBuilder(UpdateUserDataPacket.class, 0x04, NetworkDirection.PLAY_TO_CLIENT)
 				.encoder(UpdateUserDataPacket::encode)
 				.decoder(UpdateUserDataPacket::decode)
 				.consumer(UpdateUserDataPacket::handle).add();
+
+		networkChannel.messageBuilder(ClientEnvironmentResponsePacket.class, 0x05, NetworkDirection.PLAY_TO_SERVER)
+				.encoder(ClientEnvironmentResponsePacket::encode)
+				.decoder(ClientEnvironmentResponsePacket::decode)
+				.consumer(ClientEnvironmentResponsePacket::handle).add();
+
+		networkChannel.messageBuilder(ClientEnvironmentRequestPacket.class, 0x06, NetworkDirection.PLAY_TO_CLIENT)
+				.encoder(ClientEnvironmentRequestPacket::encode)
+				.decoder(ClientEnvironmentRequestPacket::decode)
+				.consumer(ClientEnvironmentRequestPacket::handle).add();
 	}
 
 	public void handleCommonSetup(FMLCommonSetupEvent event) {

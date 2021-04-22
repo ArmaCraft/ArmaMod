@@ -10,9 +10,9 @@ buildscript {
             name 'sponge'
             url 'https://repo.spongepowered.org/repository/maven-public'
         }
-	    maven {
-	    	url "https://plugins.gradle.org/m2/"
-	    }
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
     }
     dependencies {
         classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '4.1+', changing: true
@@ -34,11 +34,11 @@ version = '1.2'
 group = 'org.armacraft'
 
 ext {
-	downloadedFilesFolder = new File(buildDir, 'downloaded-files')
+    downloadedFilesFolder = new File(buildDir, 'downloaded-files')
 }
 
 repositories {
-	maven {
+    maven {
         name 'cursemaven'
         url 'https://www.cursemaven.com'
     }
@@ -54,18 +54,18 @@ minecraft {
     mappings channel: 'official', version: '1.16.5'
     runs {
         client {
-        	taskName 'runClient ArmaCraft'
-        
+            taskName 'runClient ArmaCraft'
+
             workingDirectory project.file('run')
 
-			// Faz com que seja possivel executar o CD pela IDE sem ter problemas com os refMaps
-			// Properties sao enfiadas nos Arguments da Run enquanto a run eh gerada por genEclipseRuns/genIntellijRuns, por exemplo.
-			// E eh adicionado um prefixo -D, ficando tipo assim: '-Dmixin.env...'
+            // Faz com que seja possivel executar o CD pela IDE sem ter problemas com os refMaps
+            // Properties sao enfiadas nos Arguments da Run enquanto a run eh gerada por genEclipseRuns/genIntellijRuns, por exemplo.
+            // E eh adicionado um prefixo -D, ficando tipo assim: '-Dmixin.env...'
             property 'mixin.env.disableRefMap', 'true'
 
             property 'forge.logging.markers', 'REGISTRIES'
             property 'forge.logging.console.level', 'debug'
-            
+
             // Isso aqui acaba indo no "program arguments"
             args '--mixin', 'armacraft.mixins.json'
 
@@ -77,13 +77,13 @@ minecraft {
         }
 
         server {
-        	taskName 'runServer ArmaCraft'
-        	
+            taskName 'runServer ArmaCraft'
+
             workingDirectory project.file('run')
 
-			// Faz com que seja possivel executar o CD pela IDE sem ter problemas com os refMaps
-			// Properties sao enfiadas nos Arguments da Run enquanto a run eh gerada por genEclipseRuns/genIntellijRuns, por exemplo.
-			// E eh adicionado um prefixo -D, ficando tipo assim: '-Dmixin.env...'
+            // Faz com que seja possivel executar o CD pela IDE sem ter problemas com os refMaps
+            // Properties sao enfiadas nos Arguments da Run enquanto a run eh gerada por genEclipseRuns/genIntellijRuns, por exemplo.
+            // E eh adicionado um prefixo -D, ficando tipo assim: '-Dmixin.env...'
             property 'mixin.env.disableRefMap', 'true'
 
             property 'forge.logging.markers', 'REGISTRIES'
@@ -100,8 +100,8 @@ minecraft {
         }
 
         data {
-        	taskName 'runData ArmaCraft'
-        	
+            taskName 'runData ArmaCraft'
+
             workingDirectory project.file('run')
 
             property 'forge.logging.markers', 'REGISTRIES'
@@ -123,25 +123,26 @@ minecraft {
 sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
     minecraft 'net.minecraftforge:forge:1.16.5-36.1.0'
     implementation group: 'org.spongepowered', name: 'mixin', version: "0.8.2"
     annotationProcessor("org.spongepowered:mixin:0.8.2:processor")
     implementation fg.deobf("curse.maven:crafting_dead_core-${cd_curseforge_project_id}:${cd_curseforge_file_id}")
     implementation 'org.spigotmc:spigot-api:1.12.2-R0.1-SNAPSHOT'
-	implementation fileTree(dir: downloadedFilesFolder, include: ['*.jar'])
+    implementation fileTree(dir: downloadedFilesFolder, include: ['*.jar'])
 }
 
 jar {
     manifest {
         attributes([
-            "Specification-Title": "examplemod",
-            "Specification-Vendor": "examplemodsareus",
-            "Specification-Version": "1", // We are version 1 of ourselves
-            "Implementation-Title": project.name,
-            "Implementation-Version": "${version}",
-            "Implementation-Vendor" :"examplemodsareus",
-            "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
-            "MixinConfigs": "armacraft.mixins.json"
+                "Specification-Title": "examplemod",
+                "Specification-Vendor": "examplemodsareus",
+                "Specification-Version": "1", // We are version 1 of ourselves
+                "Implementation-Title": project.name,
+                "Implementation-Version": "${version}",
+                "Implementation-Vendor" :"examplemodsareus",
+                "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
+                "MixinConfigs": "armacraft.mixins.json"
         ])
     }
 }
@@ -166,20 +167,20 @@ mixin {
 }
 
 task deleteDownloads(type: Delete) {
-	delete downloadedFilesFolder
+    delete downloadedFilesFolder
 }
 
 task downloadFiles(type: Download) {
-	dependsOn deleteDownloads
-	doFirst {
-		// Creates the folder
-		downloadedFilesFolder.mkdirs();
-	}
-	src([
-		'https://github.com/IzzelAliz/Arclight/releases/download/1.16%2F1.0.17/arclight-forge-1.16-1.0.17.jar'
-	])
-	dest downloadedFilesFolder
-	overwrite false
+    dependsOn deleteDownloads
+    doFirst {
+        // Creates the folder
+        downloadedFilesFolder.mkdirs();
+    }
+    src([
+            'https://github.com/IzzelAliz/Arclight/releases/download/1.16%2F1.0.17/arclight-forge-1.16-1.0.17.jar'
+    ])
+    dest downloadedFilesFolder
+    overwrite false
 }
 
 compileJava.options.encoding = 'UTF-8'
