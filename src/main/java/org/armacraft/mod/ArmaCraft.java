@@ -15,6 +15,7 @@ import org.armacraft.mod.init.ArmaCraftTileEntityTypes;
 import org.armacraft.mod.network.ClientDashPacket;
 import org.armacraft.mod.network.ClientEnvironmentRequestPacket;
 import org.armacraft.mod.network.ClientEnvironmentResponsePacket;
+import org.armacraft.mod.network.ClientGunInfoPacket;
 import org.armacraft.mod.network.ClientInfoRequestPacket;
 import org.armacraft.mod.network.ClientInfoResponsePacket;
 import org.armacraft.mod.network.UpdateUserDataPacket;
@@ -125,6 +126,11 @@ public class ArmaCraft {
 				.encoder(ClientEnvironmentRequestPacket::encode)
 				.decoder(ClientEnvironmentRequestPacket::decode)
 				.consumer(ClientEnvironmentRequestPacket::handle).add();
+
+		networkChannel.messageBuilder(ClientGunInfoPacket.class, 0x07, NetworkDirection.PLAY_TO_SERVER)
+				.encoder(ClientGunInfoPacket::encode)
+				.decoder(ClientGunInfoPacket::decode)
+				.consumer(ClientGunInfoPacket::handle).add();
 	}
 
 	public void handleCommonSetup(FMLCommonSetupEvent event) {

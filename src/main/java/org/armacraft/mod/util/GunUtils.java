@@ -12,20 +12,25 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.RegistryObject;
 import org.armacraft.mod.ArmaCraft;
+import org.armacraft.mod.network.ClientGunInfoPacket;
 
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
 public class GunUtils {
-	public static Predicate<GunItem> INTEGRITY_VALIDATOR = (gun) -> {
+	public static Predicate<ClientGunInfoPacket> INTEGRITY_VALIDATOR = (info) -> {
 		if(ArmaCraft.getInstance().getServerDist().isPresent()) {
-			if(MiscUtil.GET_CD_REGISTRY.apply(gun.getRegistryName().getPath()).isPresent()) {
-				GunItem serverGun = (GunItem) MiscUtil.GET_CD_REGISTRY.apply(gun.getRegistryName().getPath()).get().get();
-				return serverGun.getAccuracyPct() == gun.getAccuracyPct()
-						&& serverGun.getDamage() == gun.getDamage()
-						&& serverGun.getFireRateRPM() == gun.getFireRateRPM()
-						&& serverGun.getBulletAmountToFire() == gun.getBulletAmountToFire();
+			Optional<RegistryObject<Item>> optItem = MiscUtil.GET_CD_REGISTRY.apply(info.getGunResourceLocation());
+			if(optItem.isPresent()) {
+				Item item = optItem.get().get();
+				if(item instanceof GunItem) {
+					GunItem serverGun = (GunItem) item;
+					return serverGun.getAccuracyPct() == info.getAccuracyPct()
+							&& serverGun.getFireRateRPM() == info.getRpm()
+							&& serverGun.getBulletAmountToFire() == info.getBulletAmountToFire()
+							&& serverGun.getReloadDurationTicks() == info.getReloadDurationTicks();
+				}
 			}
 			return false;
 		}
