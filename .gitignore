@@ -30,3 +30,6 @@ forge*changelog.txt
 src/parsed
 
 /libs
+
+# Map of original names from proguard
+proguard.map
