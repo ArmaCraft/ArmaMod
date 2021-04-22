@@ -13,6 +13,7 @@
     "PlayerImplMixin",
     "GunItemMixin",
     "RemoveMagazineActionMixin",
+    "TriggerPressedMessageMixin"
   ],
   "client": [
     "KeyBindingMixin",
