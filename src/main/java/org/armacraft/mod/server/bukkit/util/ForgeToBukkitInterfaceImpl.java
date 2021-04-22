@@ -2,7 +2,6 @@ package org.armacraft.mod.server.bukkit.util;
 
 import java.util.List;
 
-import io.izzel.arclight.common.bridge.entity.player.ServerPlayerEntityBridge;
 import org.armacraft.mod.environment.EnvironmentWrapper;
 import org.armacraft.mod.network.dto.FileInfoDTO;
 import org.armacraft.mod.server.bukkit.event.PlayerDashEvent;
@@ -13,12 +12,13 @@ import org.armacraft.mod.server.bukkit.event.PlayerTransformationServiceReceiveE
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
+import io.izzel.arclight.common.bridge.entity.player.ServerPlayerEntityBridge;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.DEDICATED_SERVER)
-public enum BukkitInterfaceImpl implements BukkitInterface {
+public enum ForgeToBukkitInterfaceImpl implements ForgeToBukkitInterface {
 	INSTANCE;
 	
 	public void onDash(PlayerEntity entity) {

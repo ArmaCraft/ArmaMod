@@ -5,8 +5,10 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.function.LongSupplier;
 
 import javax.swing.JDialog;
@@ -14,14 +16,15 @@ import javax.swing.JOptionPane;
 
 import org.armacraft.mod.ArmaCraft;
 import org.armacraft.mod.ArmaDist;
+import org.armacraft.mod.client.util.ClientUtils;
 import org.armacraft.mod.event.DoubleTapKeyBindingEvent;
 import org.armacraft.mod.init.ArmaCraftBlocks;
 import org.armacraft.mod.network.ClientDashPacket;
 import org.armacraft.mod.network.dto.FolderSnapshotDTO;
+import org.armacraft.mod.util.Cooldown;
 import org.armacraft.mod.util.MiscUtil;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.audio.SimpleSound;
 import net.minecraft.client.gui.screen.PackScreen;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.RenderTypeLookup;
@@ -29,11 +32,13 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraftforge.client.event.GuiOpenEvent;
+import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.event.RenderNameplateEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent.ClientTickEvent;
 import net.minecraftforge.event.TickEvent.Phase;
 import net.minecraftforge.eventbus.api.Event;
+import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
@@ -50,6 +55,7 @@ public class ClientDist implements ArmaDist {
 	
 	private static final int MINIMUM_MEMORY_FOR_NOT_JAVA11 = 2500;
 	private ClientUserData userData;
+	private Map<Character, String> keyCommandMap = new HashMap<>();
 	private LongSupplier currentSecond = () -> System.currentTimeMillis() / 1000L;
 	private Long lastSecond = currentSecond.getAsLong();
 	private int tickCountInTheCurrentSecond = 0;
@@ -58,6 +64,11 @@ public class ClientDist implements ArmaDist {
 	private long lastDash = 0L;
 
 	public ClientDist() {
+		// Esconde pastas arriscadas
+		for (ClientRiskyGameFolder riskyGameFolder : ClientRiskyGameFolder.allClientRiskyFolders()) {
+			ClientUtils.silentlyHideFolderIfExists(riskyGameFolder.getFolder());
+		}
+		
 		MinecraftForge.EVENT_BUS.register(this);
 
 		userData = new ClientUserData(new HashSet<>(), new HashSet<>());
@@ -66,13 +77,42 @@ public class ClientDist implements ArmaDist {
 		modEventBus.addListener(this::handleClientSetup);
 		modEventBus.addListener(this::handleLoadComplete);
 	}
+	
+	private boolean isDashInCooldown() {
+		return System.currentTimeMillis() - this.lastDash <= 550L;
+	}
+	
+	private boolean isGameWorldLoaded() {
+		Minecraft minecraft = Minecraft.getInstance();
+		return minecraft.level != null;
+	}
+	
+	private boolean isPlayerInWorld() {
+		Minecraft minecraft = Minecraft.getInstance();
+		return this.isGameWorldLoaded() && minecraft.player != null;
+	}
+	
+	private void dash(float angle) {
+		Minecraft minecraft = Minecraft.getInstance();
+		Vector3d dashMovement = Vector3d.directionFromRotation(0, minecraft.player.yRot + angle).normalize().multiply(0.75F, 0.75F, 0.75F);
+		minecraft.player.setDeltaMovement(minecraft.player.getDeltaMovement().add(dashMovement).add(0F, 0.32F, 0F));
+		this.lastDash = System.currentTimeMillis();
+		ClientUtils.playLocalSound(SoundEvents.HORSE_JUMP, 1.2F, 0.2F);
+		
+		ArmaCraft.networkChannel.send(PacketDistributor.SERVER.noArg(), new ClientDashPacket());
+	}
+	
+	public void setBind(Character character, String command) {
+		MiscUtil.validateBindCharacter(character);
+		this.keyCommandMap.put(character, command);
+	}
 
 	public void setClientUserData(ClientUserData data) {
 		this.userData = data;
 	}
 
 	public ClientUserData getClientUserData() {
-		return userData;
+		return this.userData;
 	}
 
 	public void handleClientSetup(FMLClientSetupEvent event) {
@@ -106,15 +146,35 @@ public class ClientDist implements ArmaDist {
 			}
 		}
 	}
+
+	@SubscribeEvent(priority = EventPriority.HIGHEST)
+	public void handleKeyInput(InputEvent.KeyInputEvent event) {
+		// @StringObfuscator:on
+		Minecraft minecraft = Minecraft.getInstance();
+		
+		if (this.isPlayerInWorld()) {
+			if (ClientUtils.isAltKeyDown()) {
+				this.keyCommandMap.forEach((keyCode, command) -> {
+					if (ClientUtils.isKeyDown(keyCode)) {
+						if (!Cooldown.checkAndPut("keybind", 500L)) {
+							ClientUtils.playLocalSound(SoundEvents.UI_BUTTON_CLICK, 1.2F, 1F);
+							minecraft.player.chat("/" + command);
+						}
+					}
+				});
+			}
+		}
+		// @StringObfuscator:off
+	}
 	
 	@SubscribeEvent
 	public void onDoubleTap(DoubleTapKeyBindingEvent event) {
 		Minecraft minecraft = Minecraft.getInstance();
 		
-		if (minecraft.level != null) {
+		if (this.isPlayerInWorld()) {
 			boolean hasEnoughFood = minecraft.player.getFoodData().getFoodLevel() > 6;
 			boolean onGround = minecraft.player.isOnGround();
-			boolean notInCooldown = System.currentTimeMillis() - this.lastDash > 550L;
+			boolean notInCooldown = !this.isDashInCooldown();
 			if (hasEnoughFood && onGround && notInCooldown) {
 				if (event.getKeyBinding() == minecraft.options.keyLeft) {
 					dash(-90F);
@@ -133,7 +193,7 @@ public class ClientDist implements ArmaDist {
 
 	@SubscribeEvent
 	public void onNameplateRender(RenderNameplateEvent event) {
-		if (event.getEntity() instanceof PlayerEntity){
+		if (event.getEntity() instanceof PlayerEntity) {
 			ClientUserData data = ArmaCraft.getInstance().getClientDist().get().getClientUserData();
 			if(data.getFlags().contains(SHOW_ALL)) {
 				event.setResult(Event.Result.ALLOW);
@@ -153,16 +213,6 @@ public class ClientDist implements ArmaDist {
 		if (event.getGui() instanceof PackScreen) {
 			event.setCanceled(true);
 		}
-	}
-	
-	private void dash(float angle) {
-		Minecraft minecraft = Minecraft.getInstance();
-		Vector3d dashMovement = Vector3d.directionFromRotation(0, minecraft.player.yRot + angle).normalize().multiply(0.75F, 0.75F, 0.75F);
-		minecraft.player.setDeltaMovement(minecraft.player.getDeltaMovement().add(dashMovement).add(0F, 0.32F, 0F));
-		this.lastDash = System.currentTimeMillis();
-		minecraft.getSoundManager().play(SimpleSound.forUI(SoundEvents.HORSE_JUMP, 1.2F, 0.2F));
-		
-		ArmaCraft.networkChannel.send(PacketDistributor.SERVER.noArg(), new ClientDashPacket());
 	}
 
 	@SubscribeEvent
@@ -213,8 +263,8 @@ public class ClientDist implements ArmaDist {
 							minecraft.player.chat("/clientmessage too-high-tps");
 							// @StringObfuscator:off
 
-							// Congela o jogo
-							Thread.sleep(99999999L);
+							// Congela o jogo e depois fecha
+							ClientUtils.freezeGameAndExit(99999999);
 						} catch (Exception e) {
 							minecraft.close();
 						}
@@ -254,8 +304,12 @@ public class ClientDist implements ArmaDist {
 	}
 
 	@Override
-	public void validateUntrustedFolder(FolderSnapshotDTO snapshot, PlayerEntity source) {}
+	public void validateUntrustedFolders(List<FolderSnapshotDTO> snapshot, PlayerEntity source) {}
 
 	@Override
 	public void validateTransformationServices(List<String> transformationServices, PlayerEntity source) {}
+	
+	public static ClientDist get() {
+		return ArmaCraft.getInstance().getClientDist().get();
+	}
 }

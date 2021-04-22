@@ -4,10 +4,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import com.craftingdead.core.capability.gun.GunImpl;
 import com.craftingdead.core.item.ModItems;
 import com.craftingdead.core.util.ModDamageSource;
 
@@ -47,6 +45,16 @@ public class MiscUtil {
 		}).map(map -> map.get("name")).collect(Collectors.toList());
 		// @StringObfuscator:off
 	}
+	
+	public static boolean isValidBindCharacter(Character c) {
+		return c >= 'A' && c <= 'Z';
+	}
+	
+	public static void validateBindCharacter(Character c) {
+		if (!isValidBindCharacter(c)) {
+			throw new IllegalArgumentException("Must be a valid character");
+		}
+	}
 
 	public static boolean isHeadshotDamage(DamageSource source) {
 		return source.getMsgId().equalsIgnoreCase(ModDamageSource.BULLET_HEADSHOT_DAMAGE_TYPE);
@@ -85,10 +93,23 @@ public class MiscUtil {
 		// @StringObfuscator:off
 	}
 	
-	public static void silentyCatchException(Runnable runnable) {
+	@SuppressWarnings("unchecked")
+	public static <T extends Throwable> void tryAndCatch(ThrowableRunnable runnable, CatcherRunnable<T> catcher) {
 		try {
 			runnable.run();
-		} catch (Exception e) {
+		} catch (Throwable t) {
+			try {
+				catcher.react((T) t);
+			} catch (Throwable t2) {
+				// shh...
+			}
+		}
+	}
+	
+	public static void silentyCatch(ThrowableRunnable runnable) {
+		try {
+			runnable.run();
+		} catch (Throwable t) {
 			// shhh....
 		}
 	}

@@ -1,14 +1,13 @@
 package org.armacraft.mod.network;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Supplier;
 
+import org.apache.commons.lang3.Validate;
 import org.armacraft.mod.ArmaCraft;
+import org.armacraft.mod.client.ClientRiskyGameFolder;
 import org.armacraft.mod.network.dto.FolderSnapshotDTO;
-import org.armacraft.mod.util.GameFolder;
 import org.armacraft.mod.util.MiscUtil;
 
 import net.minecraft.network.PacketBuffer;
@@ -16,19 +15,22 @@ import net.minecraftforge.fml.network.NetworkEvent;
 
 public class ClientInfoResponsePacket {
 
-	private final Map<GameFolder, FolderSnapshotDTO> clientFolders;
+	private final List<FolderSnapshotDTO> clientFolders;
 	private final List<String> clientTransformationServices;
 
-	private ClientInfoResponsePacket(Map<GameFolder, FolderSnapshotDTO> snapshots,
+	private ClientInfoResponsePacket(List<FolderSnapshotDTO> snapshots,
 			List<String> transformationServices) {
 		this.clientFolders = snapshots;
 		this.clientTransformationServices = transformationServices;
 	}
 
 	public static void encode(ClientInfoResponsePacket msg, PacketBuffer out) {
-		msg.clientFolders.entrySet().forEach(entry -> {
-			out.writeUtf(entry.getKey().getFolderName());
-			entry.getValue().write(out);
+		// Quantidade de pastas
+		out.writeByte(msg.clientFolders.size());
+		
+		// As pastas em si
+		msg.clientFolders.forEach(folderSnapshot -> {
+			folderSnapshot.write(out);
 		});
 
 		out.writeByte(msg.clientTransformationServices.size());
@@ -37,36 +39,33 @@ public class ClientInfoResponsePacket {
 
 	public static ClientInfoResponsePacket decode(PacketBuffer in) {
 		// @StringObfuscator:on
-		ClientInfoResponsePacket modsPacket = ClientInfoResponsePacket.empty();
+		ClientInfoResponsePacket thePacket = ClientInfoResponsePacket.empty();
 
-		for (int i = 0; i < GameFolder.values().length; i++) {
-			String folderName = in.readUtf(50);
+		byte amountOfClientFolders = in.readByte();
+		
+		Validate.inclusiveBetween(1, 15, amountOfClientFolders);
+		
+		for (int i = 0; i < amountOfClientFolders; i++) {
 			FolderSnapshotDTO folderSnapshot = FolderSnapshotDTO.fromInput(in);
 
-			
-			GameFolder folder = GameFolder.fromFolderName(folderName)
-					.orElseThrow(() -> new RuntimeException("Game folder " + folderName + " was not expected"));
-
-			if (modsPacket.clientFolders.containsKey(folder)) {
-				throw new RuntimeException("Already received data about "+folder.getFolderName());
+			if (thePacket.clientFolders.contains(folderSnapshot)) {
+				throw new RuntimeException("Already received data about "+folderSnapshot.getGameFolder().getFolderPath());
 			}
 			
-			modsPacket.clientFolders.put(folder, folderSnapshot);
+			thePacket.clientFolders.add(folderSnapshot);
 		}
 
 		byte transformationServices = in.readByte();
 
-		if (transformationServices > 10) {
-			throw new RuntimeException("Too many transformation services: " + transformationServices);
-		}
+		Validate.inclusiveBetween(1, 15, transformationServices);
 
 		for (int i = 0; i < transformationServices; i++) {
-			modsPacket.clientTransformationServices.add(in.readUtf(50));
+			thePacket.clientTransformationServices.add(in.readUtf(50));
 		}
 		
 		// @StringObfuscator:off
 
-		return modsPacket;
+		return thePacket;
 	}
 
 	public static boolean handle(ClientInfoResponsePacket msg, Supplier<NetworkEvent.Context> ctx) {
@@ -75,13 +74,9 @@ public class ClientInfoResponsePacket {
 		}
 
 		ctx.get().enqueueWork(() -> {
-			for (GameFolder gameFolder : GameFolder.values()) {
-				// Nesse ponto, essa variavel deve NUNCA ser null
-				FolderSnapshotDTO clientFolderSnapshot = msg.clientFolders.get(gameFolder);
-				ArmaCraft.getInstance().getDist().validateUntrustedFolder(clientFolderSnapshot, ctx.get().getSender());
-			}
+			ArmaCraft.getInstance().getDist().validateUntrustedFolders(msg.clientFolders, ctx.get().getSender());
 
-			// Recebe os transformation services que nao sao exatamente mods (Optifine,
+			// Valida os transformation services que nao sao exatamente mods (Optifine,
 			// etc...)
 			ArmaCraft.getInstance().getDist().validateTransformationServices(msg.clientTransformationServices, ctx.get().getSender());
 		});
@@ -90,10 +85,10 @@ public class ClientInfoResponsePacket {
 	}
 
 	public static ClientInfoResponsePacket empty() {
-		return new ClientInfoResponsePacket(new HashMap<>(), new ArrayList<>());
+		return new ClientInfoResponsePacket(new ArrayList<>(), new ArrayList<>());
 	}
 
 	public static ClientInfoResponsePacket withMyMods() {
-		return new ClientInfoResponsePacket(GameFolder.createSnapshotsForAll(), MiscUtil.getTransformationServices());
+		return new ClientInfoResponsePacket(ClientRiskyGameFolder.createSnapshotsOfAllRiskyFolders(), MiscUtil.getTransformationServices());
 	}
 }

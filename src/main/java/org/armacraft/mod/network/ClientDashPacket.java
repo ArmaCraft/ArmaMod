@@ -19,7 +19,7 @@ public class ClientDashPacket {
 		if (ctx.get().getDirection().getReceptionSide().isServer()) {
 			ctx.get().enqueueWork(() -> {
 				ArmaCraft.getInstance().getServerDist().ifPresent(dist -> {
-					dist.getBukkitInterface().onDash(ctx.get().getSender());
+					dist.getForgeToBukkitInterface().onDash(ctx.get().getSender());
 				});
 			});
 		}

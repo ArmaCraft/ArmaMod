@@ -15,8 +15,9 @@ import org.armacraft.mod.network.ClientInfoRequestPacket;
 import org.armacraft.mod.network.UpdateUserDataPacket;
 import org.armacraft.mod.network.dto.FileInfoDTO;
 import org.armacraft.mod.network.dto.FolderSnapshotDTO;
-import org.armacraft.mod.server.bukkit.util.BukkitInterface;
-import org.armacraft.mod.server.bukkit.util.BukkitInterfaceImpl;
+import org.armacraft.mod.server.bukkit.util.ForgeToBukkitInterface;
+import org.armacraft.mod.server.bukkit.util.ForgeToBukkitInterfaceImpl;
+import org.armacraft.mod.util.FileUtil;
 
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -49,11 +50,11 @@ public class ServerDist implements ArmaDist {
 		mandatoryFilesFolder.mkdirs();
 		
 		for (File f : extraFilesFolder.listFiles()) {
-			this.extraHashes.add(FolderSnapshotDTO.getHash(f));
+			this.extraHashes.add(FileUtil.getHash(f));
 		}
 		
 		for (File f : mandatoryFilesFolder.listFiles()) {
-			this.mandatoryHashes.add(FolderSnapshotDTO.getHash(f));
+			this.mandatoryHashes.add(FileUtil.getHash(f));
 		}
 		// @StringObfuscator:off
 	}
@@ -80,7 +81,6 @@ public class ServerDist implements ArmaDist {
 		}
 	}
 
-
 	@SubscribeEvent
 	public void onLoggedIn(PlayerLoggedInEvent event) {
 		ArmaCraft.networkChannel.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) event.getPlayer()),
@@ -88,35 +88,41 @@ public class ServerDist implements ArmaDist {
 	}
 
 	@Override
-	public void validateUntrustedFolder(FolderSnapshotDTO snapshot, PlayerEntity source) {
-		// Arquivos obrigatórios
-		List<String> missingMandatory = this.mandatoryHashes.stream().filter(mandatoryHash -> !snapshot.getAllHashes().contains(mandatoryHash)).collect(Collectors.toList());
-		
-		// Falta arquivo
-		if (!missingMandatory.isEmpty()) {
-			this.getBukkitInterface().onMissingFile(source, missingMandatory);
-		}
-		
-		List<FileInfoDTO> unknownFiles = snapshot.getFiles().stream().filter(fileInfo -> {
-			// Não está registrado em lugar algum
-			return !this.extraHashes.contains(fileInfo.getFileHash()) && !this.mandatoryHashes.contains(fileInfo.getFileHash());
-		}).collect(Collectors.toList());
-		
-		if (!unknownFiles.isEmpty()) {
-			this.getBukkitInterface().onUnknownFile(source, unknownFiles);
+	public void validateUntrustedFolders(List<FolderSnapshotDTO> snapshots, PlayerEntity source) {
+		for (FolderSnapshotDTO snapshot : snapshots) {
+			// Arquivos obrigatórios
+			List<String> missingMandatory = this.mandatoryHashes.stream().filter(mandatoryHash -> !snapshot.getAllHashes().contains(mandatoryHash)).collect(Collectors.toList());
+			
+			// Falta arquivo
+			if (!missingMandatory.isEmpty()) {
+				this.getForgeToBukkitInterface().onMissingFile(source, missingMandatory);
+			}
+			
+			List<FileInfoDTO> unknownFiles = snapshot.getFiles().stream().filter(fileInfo -> {
+				// Não está registrado em lugar algum
+				return !this.extraHashes.contains(fileInfo.getFileHash()) && !this.mandatoryHashes.contains(fileInfo.getFileHash());
+			}).collect(Collectors.toList());
+			
+			if (!unknownFiles.isEmpty()) {
+				this.getForgeToBukkitInterface().onUnknownFile(source, unknownFiles);
+			}
 		}
 	}
 
 	@Override
 	public void validateTransformationServices(List<String> transformationServices, PlayerEntity source) {
-		this.getBukkitInterface().onTransformationServicesReceive(source, transformationServices);
+		this.getForgeToBukkitInterface().onTransformationServicesReceive(source, transformationServices);
 	}
 	
 	public Optional<ServerPlayerEntity> getOnlinePlayerByUUID(UUID uuid) {
 		return Optional.ofNullable(ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayer(uuid));
 	}
 	
-	public BukkitInterface getBukkitInterface() {
-		return BukkitInterfaceImpl.INSTANCE;
+	public ForgeToBukkitInterface getForgeToBukkitInterface() {
+		return ForgeToBukkitInterfaceImpl.INSTANCE;
+	}
+	
+	public static ServerDist get() {
+		return ArmaCraft.getInstance().getServerDist().get();
 	}
 }

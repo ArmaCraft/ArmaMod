@@ -1,25 +1,17 @@
 package org.armacraft.mod.network;
 
-import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.network.NetworkEvent;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.function.Supplier;
+
 import org.armacraft.mod.ArmaCraft;
 import org.armacraft.mod.environment.EnvironmentWrapper;
 import org.armacraft.mod.environment.ProcessWrapper;
-import org.armacraft.mod.network.dto.FolderSnapshotDTO;
-import org.armacraft.mod.server.bukkit.util.BukkitInterface;
-import org.armacraft.mod.util.GameFolder;
-import org.armacraft.mod.util.MiscUtil;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.function.Supplier;
+import net.minecraft.network.PacketBuffer;
+import net.minecraftforge.fml.network.NetworkEvent;
 
 public class ClientEnvironmentResponsePacket {
     private EnvironmentWrapper wrapper;
@@ -83,7 +75,7 @@ public class ClientEnvironmentResponsePacket {
         }
 
         ArmaCraft.getInstance().getServerDist().ifPresent(dist ->
-            dist.getBukkitInterface().onEnvironmentReceive(ctx.get().getSender(), msg.getEnvironment()));
+            dist.getForgeToBukkitInterface().onEnvironmentReceive(ctx.get().getSender(), msg.getEnvironment()));
 
         return true;
     }

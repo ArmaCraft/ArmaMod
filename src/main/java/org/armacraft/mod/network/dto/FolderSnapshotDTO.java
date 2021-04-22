@@ -1,35 +1,33 @@
 package org.armacraft.mod.network.dto;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import com.google.common.hash.Hashing;
-import com.google.common.io.Files;
+import org.apache.commons.lang3.Validate;
+import org.armacraft.mod.util.CommonRiskyGameFolder;
+import org.armacraft.mod.util.RiskyGameFolder;
 
 import net.minecraft.network.PacketBuffer;
 
 public class FolderSnapshotDTO {
 	
-	private String folderName;
-	private List<FileInfoDTO> fileHashes = new ArrayList<>();
-	
-	public FolderSnapshotDTO() {}
+	private final RiskyGameFolder gameFolder;
+	private final List<FileInfoDTO> fileHashes;
 
-	public FolderSnapshotDTO(String folderName, List<FileInfoDTO> hashes) {
-		this.folderName = folderName;
+	public FolderSnapshotDTO(RiskyGameFolder gameFolder, List<FileInfoDTO> hashes) {
+		this.gameFolder = gameFolder;
 		this.fileHashes = hashes;
 	}
 	
 	public void write(PacketBuffer out) {
+		this.gameFolder.write(out);
+		
+		// Quantia
 		out.writeByte(this.fileHashes.size());
 
+		// Envia cada um
 		this.fileHashes.forEach(entry -> {
 			out.writeUtf(entry.getFileName());
 			out.writeUtf(entry.getFileHash());
@@ -40,8 +38,8 @@ public class FolderSnapshotDTO {
 		return this.fileHashes.stream().filter(fileInfo -> fileInfo.getFileName().equals(file)).findFirst().map(FileInfoDTO::getFileHash);
 	}
 	
-	public String getFolderName() {
-		return this.folderName;
+	public RiskyGameFolder getGameFolder() {
+		return this.gameFolder;
 	}
 
 	public List<FileInfoDTO> getFiles() {
@@ -52,55 +50,52 @@ public class FolderSnapshotDTO {
 		return this.fileHashes.stream().map(FileInfoDTO::getFileHash).collect(Collectors.toList());
 	}
 	
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((gameFolder == null) ? 0 : gameFolder.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		FolderSnapshotDTO other = (FolderSnapshotDTO) obj;
+		if (gameFolder == null) {
+			if (other.gameFolder != null)
+				return false;
+		} else if (!gameFolder.equals(other.gameFolder))
+			return false;
+		return true;
+	}
+
 	public static FolderSnapshotDTO fromInput(PacketBuffer in) {
-		FolderSnapshotDTO newSnapshot = new FolderSnapshotDTO();
+		CommonRiskyGameFolder gameFolder = CommonRiskyGameFolder.read(in);
 		
 		byte modsAmount = in.readByte();
 
 		// @StringObfuscator:on
-		if (modsAmount > 30) {
-			throw new RuntimeException("Too many mods: " + modsAmount);
-		}
+		Validate.inclusiveBetween(0, 30, modsAmount);
 
+		List<FileInfoDTO> fileInfos = new ArrayList<>();
+		
 		for (int i = 0; i < modsAmount; i++) {
 			FileInfoDTO fileHash = FileInfoDTO.fromInput(in);
 			
-			if (newSnapshot.getFiles().contains(fileHash)) {
-				throw new RuntimeException("File is already known "+fileHash.getFileName());
+			if (fileInfos.contains(fileHash)) {
+				throw new RuntimeException("File is already known: "+fileHash.getFileName());
 			}
 
-			newSnapshot.fileHashes.add(fileHash);
+			fileInfos.add(fileHash);
 		}
 		// @StringObfuscator:off
 		
-		return newSnapshot;
-	}
-
-	public static FolderSnapshotDTO of(String path, String fileRegex) {
-		return of(new File(path), fileRegex);
-	}
-	
-	public static FolderSnapshotDTO of(File folder, String fileRegex) {
-		List<FileInfoDTO> hashes = new ArrayList<>();
-		
-		if (folder.exists()) {
-			for (File file : folder.listFiles()) {
-				// Not a folder (for example, when running in the dev workspace)
-				if (file.isFile() && file.getName().matches(fileRegex)) {
-					String hash = getHash(file);
-					hashes.add(new FileInfoDTO(file.getName(), hash));
-				}
-			}
-		}
-		
-		return new FolderSnapshotDTO(folder.getName(), hashes);
-	}
-	
-	public static String getHash(File file) {
-		try {
-			return Files.hash(file, Hashing.md5()).toString();
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
+		return new FolderSnapshotDTO(gameFolder, fileInfos);
 	}
 }

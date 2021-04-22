@@ -7,12 +7,19 @@ import org.armacraft.mod.network.dto.FileInfoDTO;
 import org.bukkit.entity.Player;
 
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
-public interface BukkitInterface {
+@OnlyIn(Dist.DEDICATED_SERVER)
+public interface ForgeToBukkitInterface {
 	void onDash(PlayerEntity entity);
 	void onEnvironmentReceive(PlayerEntity who, EnvironmentWrapper environmentWrapper);
 	void onMissingFile(PlayerEntity entity, List<String> missingHashes);
 	void onUnknownFile(PlayerEntity entity, List<FileInfoDTO> unknownFiles);
 	void onTransformationServicesReceive(PlayerEntity entity, List<String> transformationServices);
 	Player getBukkitPlayer(PlayerEntity playerEntity);
+	
+	static ForgeToBukkitInterface getInstance() {
+		return ForgeToBukkitInterfaceImpl.INSTANCE;
+	}
 }
