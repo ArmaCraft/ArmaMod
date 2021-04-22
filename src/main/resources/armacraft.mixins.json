@@ -12,7 +12,7 @@
     "LivingImplMixin",
     "PlayerImplMixin",
     "GunItemMixin",
-    "RemoveMagazineActionMixin",
+    "RemoveMagazineActionMixin"
   ],
   "client": [
     "KeyBindingMixin",
