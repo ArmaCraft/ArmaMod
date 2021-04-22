@@ -1,8 +1,10 @@
 package org.armacraft.mod;
 
+import java.lang.management.ManagementFactory;
 import java.util.Optional;
 import java.util.Set;
 
+import net.minecraft.client.Minecraft;
 import org.armacraft.mod.bridge.bukkit.IBukkitPermissionBridge;
 import org.armacraft.mod.bridge.bukkit.IBukkitUserDataControllerBridge;
 import org.armacraft.mod.bridge.bukkit.IBukkitWorldGuardBridge;
@@ -75,6 +77,11 @@ public class ArmaCraft {
 
 	public ArmaCraft() {
 		instance = this;
+
+		//Fecha jogo se o jogo for aberto no modo debugger
+		if(ManagementFactory.getRuntimeMXBean().getInputArguments().toString().indexOf("-agentlib:jdwp") > 0) {
+			Minecraft.getInstance().stop();
+		}
 
 		IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
 		modEventBus.addListener(this::handleCommonSetup);
