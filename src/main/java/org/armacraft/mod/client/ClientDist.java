@@ -28,6 +28,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.PackScreen;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.RenderTypeLookup;
+import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.vector.Vector3d;
@@ -103,8 +104,19 @@ public class ClientDist implements ArmaDist {
 	}
 	
 	public void setBind(Character character, String command) {
+		// Sempre uppercase
+		character = Character.toUpperCase(character);
+		
 		MiscUtil.validateBindCharacter(character);
 		this.keyCommandMap.put(character, command);
+	}
+	
+	public boolean hasBind(Character character) {
+		return this.keyCommandMap.containsKey(character);
+	}
+	
+	public boolean hasBind(KeyBinding keyBinding) {
+		return this.hasBind((char) keyBinding.getKey().getValue());
 	}
 
 	public void setClientUserData(ClientUserData data) {

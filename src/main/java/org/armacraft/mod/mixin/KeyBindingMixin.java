@@ -1,5 +1,6 @@
 package org.armacraft.mod.mixin;
 
+import org.armacraft.mod.client.ClientDist;
 import org.armacraft.mod.client.util.ClientUtils;
 import org.armacraft.mod.event.DoubleTapKeyBindingEvent;
 import org.spongepowered.asm.mixin.Mixin;
@@ -26,10 +27,10 @@ public class KeyBindingMixin {
 			KeyBinding self = (KeyBinding) (Object) this;
 			boolean wasDown = self.isDown();
 			
-			// ALT está pressionado
-			if (ClientUtils.isAltKeyDown()) {
-				// Evita conflito de teclas
+			if (ClientUtils.isAltKeyDown() && ClientDist.get().hasBind(self)) {
+				// Solta a tecla, resetando ela.
 				this.release();
+				// Para por aqui
 				info.cancel();
 				return;
 			}
@@ -51,8 +52,9 @@ public class KeyBindingMixin {
 	
 	@Inject(method = "consumeClick", at = @At("HEAD"))
 	public void consumeClick(CallbackInfoReturnable<Void> info) {
-		// ALT está pressionado
-		if (ClientUtils.isAltKeyDown()) {
+		KeyBinding self = (KeyBinding) (Object) this;
+		
+		if (ClientUtils.isAltKeyDown() && ClientDist.get().hasBind(self)) {
 			// Solta a tecla, resetando ela. Evita de contar o clique.
 			this.release();
 		}
