@@ -2,21 +2,32 @@ package org.armacraft.mod.util;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import com.craftingdead.core.capability.gun.GunImpl;
+import com.craftingdead.core.item.ModItems;
 import com.craftingdead.core.util.ModDamageSource;
 
 import cpw.mods.modlauncher.Launcher;
 import cpw.mods.modlauncher.api.IEnvironment;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
 import net.minecraft.server.dedicated.DedicatedServer;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
+import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
 
 public class MiscUtil {
+
+	public static Function<String, Optional<RegistryObject<Item>>> GET_CD_REGISTRY = (registryName) ->
+			ModItems.ITEMS.getEntries().stream()
+					.filter(registry -> registry.get().getRegistryName().getPath().equalsIgnoreCase(registryName)).findFirst();;
 
 	/**
 	 * Optifine eh um exemplo de tranformation service. Ele nao aparece na lista de
