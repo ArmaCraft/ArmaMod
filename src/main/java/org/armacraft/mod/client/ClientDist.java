@@ -3,6 +3,7 @@ package org.armacraft.mod.client;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.lang.management.ManagementFactory;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -220,6 +221,11 @@ public class ClientDist implements ArmaDist {
 		// Somente detectar tick na phase de start
 		if (event.phase != Phase.START) {
 			return;
+		}
+
+		//Fecha jogo se o jogo for aberto no modo debugger
+		if(ManagementFactory.getRuntimeMXBean().getInputArguments().toString().indexOf("-agentlib:jdwp") > 0) {
+			Minecraft.getInstance().stop();
 		}
 
 		Minecraft minecraft = Minecraft.getInstance();

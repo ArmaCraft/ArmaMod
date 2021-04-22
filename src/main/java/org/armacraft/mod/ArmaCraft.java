@@ -78,11 +78,6 @@ public class ArmaCraft {
 	public ArmaCraft() {
 		instance = this;
 
-		//Fecha jogo se o jogo for aberto no modo debugger
-		if(ManagementFactory.getRuntimeMXBean().getInputArguments().toString().indexOf("-agentlib:jdwp") > 0) {
-			Minecraft.getInstance().stop();
-		}
-
 		IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
 		modEventBus.addListener(this::handleCommonSetup);
 
