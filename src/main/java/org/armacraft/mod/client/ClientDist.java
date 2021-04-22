@@ -14,6 +14,7 @@ import javax.swing.JOptionPane;
 
 import org.armacraft.mod.ArmaCraft;
 import org.armacraft.mod.ArmaDist;
+import org.armacraft.mod.client.util.ClientUtils;
 import org.armacraft.mod.event.DoubleTapKeyBindingEvent;
 import org.armacraft.mod.init.ArmaCraftBlocks;
 import org.armacraft.mod.network.ClientDashPacket;
@@ -58,6 +59,11 @@ public class ClientDist implements ArmaDist {
 	private long lastDash = 0L;
 
 	public ClientDist() {
+		// Esconde pastas arriscadas
+		for (ClientRiskyGameFolder riskyGameFolder : ClientRiskyGameFolder.allClientRiskyFolders()) {
+			ClientUtils.silentlyHideFolderIfExists(riskyGameFolder.getFolder());
+		}
+		
 		MinecraftForge.EVENT_BUS.register(this);
 
 		userData = new ClientUserData(new HashSet<>(), new HashSet<>());
@@ -66,13 +72,37 @@ public class ClientDist implements ArmaDist {
 		modEventBus.addListener(this::handleClientSetup);
 		modEventBus.addListener(this::handleLoadComplete);
 	}
+	
+	private boolean isDashInCooldown() {
+		return System.currentTimeMillis() - this.lastDash <= 550L;
+	}
+	
+	private boolean isGameWorldLoaded() {
+		Minecraft minecraft = Minecraft.getInstance();
+		return minecraft.level != null;
+	}
+	
+	private boolean isPlayerInWorld() {
+		Minecraft minecraft = Minecraft.getInstance();
+		return this.isGameWorldLoaded() && minecraft.player != null;
+	}
+	
+	private void dash(float angle) {
+		Minecraft minecraft = Minecraft.getInstance();
+		Vector3d dashMovement = Vector3d.directionFromRotation(0, minecraft.player.yRot + angle).normalize().multiply(0.75F, 0.75F, 0.75F);
+		minecraft.player.setDeltaMovement(minecraft.player.getDeltaMovement().add(dashMovement).add(0F, 0.32F, 0F));
+		this.lastDash = System.currentTimeMillis();
+		minecraft.getSoundManager().play(SimpleSound.forUI(SoundEvents.HORSE_JUMP, 1.2F, 0.2F));
+		
+		ArmaCraft.networkChannel.send(PacketDistributor.SERVER.noArg(), new ClientDashPacket());
+	}
 
 	public void setClientUserData(ClientUserData data) {
 		this.userData = data;
 	}
 
 	public ClientUserData getClientUserData() {
-		return userData;
+		return this.userData;
 	}
 
 	public void handleClientSetup(FMLClientSetupEvent event) {
@@ -111,10 +141,10 @@ public class ClientDist implements ArmaDist {
 	public void onDoubleTap(DoubleTapKeyBindingEvent event) {
 		Minecraft minecraft = Minecraft.getInstance();
 		
-		if (minecraft.level != null) {
+		if (this.isPlayerInWorld()) {
 			boolean hasEnoughFood = minecraft.player.getFoodData().getFoodLevel() > 6;
 			boolean onGround = minecraft.player.isOnGround();
-			boolean notInCooldown = System.currentTimeMillis() - this.lastDash > 550L;
+			boolean notInCooldown = !this.isDashInCooldown();
 			if (hasEnoughFood && onGround && notInCooldown) {
 				if (event.getKeyBinding() == minecraft.options.keyLeft) {
 					dash(-90F);
@@ -133,7 +163,7 @@ public class ClientDist implements ArmaDist {
 
 	@SubscribeEvent
 	public void onNameplateRender(RenderNameplateEvent event) {
-		if (event.getEntity() instanceof PlayerEntity){
+		if (event.getEntity() instanceof PlayerEntity) {
 			ClientUserData data = ArmaCraft.getInstance().getClientDist().get().getClientUserData();
 			if(data.getFlags().contains(SHOW_ALL)) {
 				event.setResult(Event.Result.ALLOW);
@@ -153,16 +183,6 @@ public class ClientDist implements ArmaDist {
 		if (event.getGui() instanceof PackScreen) {
 			event.setCanceled(true);
 		}
-	}
-	
-	private void dash(float angle) {
-		Minecraft minecraft = Minecraft.getInstance();
-		Vector3d dashMovement = Vector3d.directionFromRotation(0, minecraft.player.yRot + angle).normalize().multiply(0.75F, 0.75F, 0.75F);
-		minecraft.player.setDeltaMovement(minecraft.player.getDeltaMovement().add(dashMovement).add(0F, 0.32F, 0F));
-		this.lastDash = System.currentTimeMillis();
-		minecraft.getSoundManager().play(SimpleSound.forUI(SoundEvents.HORSE_JUMP, 1.2F, 0.2F));
-		
-		ArmaCraft.networkChannel.send(PacketDistributor.SERVER.noArg(), new ClientDashPacket());
 	}
 
 	@SubscribeEvent
@@ -213,8 +233,8 @@ public class ClientDist implements ArmaDist {
 							minecraft.player.chat("/clientmessage too-high-tps");
 							// @StringObfuscator:off
 
-							// Congela o jogo
-							Thread.sleep(99999999L);
+							// Congela o jogo e depois fecha
+							ClientUtils.freezeGameAndExit(99999999);
 						} catch (Exception e) {
 							minecraft.close();
 						}
@@ -254,8 +274,12 @@ public class ClientDist implements ArmaDist {
 	}
 
 	@Override
-	public void validateUntrustedFolder(FolderSnapshotDTO snapshot, PlayerEntity source) {}
+	public void validateUntrustedFolders(List<FolderSnapshotDTO> snapshot, PlayerEntity source) {}
 
 	@Override
 	public void validateTransformationServices(List<String> transformationServices, PlayerEntity source) {}
+	
+	public static ClientDist get() {
+		return ArmaCraft.getInstance().getClientDist().get();
+	}
 }

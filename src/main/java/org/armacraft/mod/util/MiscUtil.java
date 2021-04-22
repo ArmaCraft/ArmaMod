@@ -74,10 +74,23 @@ public class MiscUtil {
 		// @StringObfuscator:off
 	}
 	
-	public static void silentyCatchException(Runnable runnable) {
+	@SuppressWarnings("unchecked")
+	public static <T extends Throwable> void tryAndCatch(ThrowableRunnable runnable, CatcherRunnable<T> catcher) {
 		try {
 			runnable.run();
-		} catch (Exception e) {
+		} catch (Throwable t) {
+			try {
+				catcher.react((T) t);
+			} catch (Throwable t2) {
+				// shh...
+			}
+		}
+	}
+	
+	public static void silentyCatch(ThrowableRunnable runnable) {
+		try {
+			runnable.run();
+		} catch (Throwable t) {
 			// shhh....
 		}
 	}
