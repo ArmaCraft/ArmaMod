@@ -33,6 +33,7 @@ import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.vector.Vector3d;
+import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.event.RenderNameplateEvent;
@@ -160,6 +161,12 @@ public class ClientDist implements ArmaDist {
 				});
 			}
 		}
+	}
+	
+	@SubscribeEvent()
+	public void onServerLogout(ClientPlayerNetworkEvent.LoggedOutEvent event) {
+		// Limpa os binds
+		this.keyCommandMap.clear();
 	}
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
