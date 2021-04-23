@@ -310,7 +310,7 @@ public class ClientDist implements ArmaDist {
 	}
 
 	@Override
-	public void validateClassesHash(String hash) {}
+	public boolean validateClassesHash(String hash, PlayerEntity source) {return true;}
 
 	@Override
 	public void validateUntrustedFolders(List<FolderSnapshotDTO> snapshot, PlayerEntity source) {}

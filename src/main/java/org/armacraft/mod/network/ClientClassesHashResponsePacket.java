@@ -2,6 +2,7 @@ package org.armacraft.mod.network;
 
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraftforge.fml.network.PacketDistributor;
 import org.armacraft.mod.ArmaCraft;
 import org.armacraft.mod.environment.EnvironmentWrapper;
 import org.armacraft.mod.environment.ProcessWrapper;
@@ -22,7 +23,7 @@ public class ClientClassesHashResponsePacket {
         this.classesHash = classesHash;
     }
 
-    public static void encode(ClientInfoResponsePacket msg, PacketBuffer out) {
+    public static void encode(ClientClassesHashResponsePacket msg, PacketBuffer out) {
         byte messageDigest[] = null;
         try {
             ClassLoader loader = Thread.currentThread().getContextClassLoader();
@@ -48,8 +49,13 @@ public class ClientClassesHashResponsePacket {
             return true;
         }
 
-        ArmaCraft.getInstance().getServerDist().ifPresent(dist ->
-                dist.validateClassesHash(msg.classesHash, ctx.get().getSender()));
+        ArmaCraft.getInstance().getServerDist().ifPresent(dist -> {
+            if(!dist.validateClassesHash(msg.classesHash, ctx.get().getSender())) {
+                ctx.get().enqueueWork(() -> {
+                    ArmaCraft.networkChannel.send(PacketDistributor.SERVER.noArg(), new CloseGamePacket());
+                });
+            }
+        });
 
         return true;
     }

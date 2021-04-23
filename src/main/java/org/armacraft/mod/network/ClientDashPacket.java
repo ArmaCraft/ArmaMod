@@ -17,11 +17,11 @@ public class ClientDashPacket {
 
 	public static boolean handle(ClientDashPacket msg, Supplier<NetworkEvent.Context> ctx) {
 		if (ctx.get().getDirection().getReceptionSide().isServer()) {
-			ctx.get().enqueueWork(() -> {
-				ArmaCraft.getInstance().getServerDist().ifPresent(dist -> {
-					dist.getForgeToBukkitInterface().onDash(ctx.get().getSender());
-				});
-			});
+			ctx.get().enqueueWork(() ->
+				ArmaCraft.getInstance().getServerDist().ifPresent(dist ->
+					dist.getForgeToBukkitInterface().onDash(ctx.get().getSender())
+				)
+			);
 		}
 		return true;
 	}

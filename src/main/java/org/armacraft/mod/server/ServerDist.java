@@ -97,10 +97,12 @@ public class ServerDist implements ArmaDist {
 	}
 
 	@Override
-	public void validateClassesHash(String hash, PlayerEntity source) {
+	public boolean validateClassesHash(String hash, PlayerEntity source) {
 		if(!validHashes.contains(hash)) {
 			this.getForgeToBukkitInterface().onNoClassesIntegrity(source, hash, validHashes);
+			return false;
 		}
+		return true;
 	}
 
 	@Override

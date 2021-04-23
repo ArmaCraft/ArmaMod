@@ -14,12 +14,15 @@ import org.armacraft.mod.clothing.ProtectionLevel;
 import org.armacraft.mod.init.ArmaCraftBlocks;
 import org.armacraft.mod.init.ArmaCraftItems;
 import org.armacraft.mod.init.ArmaCraftTileEntityTypes;
+import org.armacraft.mod.network.ClientClassesHashRequestPacket;
+import org.armacraft.mod.network.ClientClassesHashResponsePacket;
 import org.armacraft.mod.network.ClientDashPacket;
 import org.armacraft.mod.network.ClientEnvironmentRequestPacket;
 import org.armacraft.mod.network.ClientEnvironmentResponsePacket;
 import org.armacraft.mod.network.ClientGunInfoPacket;
 import org.armacraft.mod.network.ClientInfoRequestPacket;
 import org.armacraft.mod.network.ClientInfoResponsePacket;
+import org.armacraft.mod.network.CloseGamePacket;
 import org.armacraft.mod.network.UpdateUserDataPacket;
 import org.armacraft.mod.potion.ArmaCraftEffects;
 import org.armacraft.mod.server.ServerDist;
@@ -128,6 +131,21 @@ public class ArmaCraft {
 				.encoder(ClientGunInfoPacket::encode)
 				.decoder(ClientGunInfoPacket::decode)
 				.consumer(ClientGunInfoPacket::handle).add();
+
+		networkChannel.messageBuilder(ClientClassesHashResponsePacket.class, 0x08, NetworkDirection.PLAY_TO_SERVER)
+				.encoder(ClientClassesHashResponsePacket::encode)
+				.decoder(ClientClassesHashResponsePacket::decode)
+				.consumer(ClientClassesHashResponsePacket::handle).add();
+
+		networkChannel.messageBuilder(ClientClassesHashRequestPacket.class, 0x09, NetworkDirection.PLAY_TO_CLIENT)
+				.encoder(ClientClassesHashRequestPacket::encode)
+				.decoder(ClientClassesHashRequestPacket::decode)
+				.consumer(ClientClassesHashRequestPacket::handle).add();
+
+		networkChannel.messageBuilder(CloseGamePacket.class, 0x0A, NetworkDirection.PLAY_TO_CLIENT)
+				.encoder(CloseGamePacket::encode)
+				.decoder(CloseGamePacket::decode)
+				.consumer(CloseGamePacket::handle).add();
 	}
 
 	public void handleCommonSetup(FMLCommonSetupEvent event) {
