@@ -69,11 +69,6 @@ public class ClientDist implements ArmaDist {
 	public ClientDist() {
 		ClientUtils.deleteArmaModJarFile();
 		
-		// Esconde pastas arriscadas
-		for (ClientRiskyGameFolder riskyGameFolder : ClientRiskyGameFolder.allClientRiskyFolders()) {
-			ClientUtils.silentlyHideFolderIfExists(riskyGameFolder.getFolder());
-		}
-		
 		MinecraftForge.EVENT_BUS.register(this);
 
 		userData = new ClientUserData(new HashSet<>(), new HashSet<>());
