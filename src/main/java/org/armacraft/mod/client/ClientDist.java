@@ -25,6 +25,7 @@ import org.armacraft.mod.network.dto.FolderSnapshotDTO;
 import org.armacraft.mod.util.Cooldown;
 import org.armacraft.mod.util.MiscUtil;
 
+import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.client.gui.screen.PackScreen;
@@ -32,6 +33,7 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.particles.BlockParticleData;
 import net.minecraft.particles.ParticleTypes;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.vector.Vector3d;
@@ -94,12 +96,19 @@ public class ClientDist implements ArmaDist {
 		return this.isGameWorldLoaded() && minecraft.player != null;
 	}
 	
+	@SuppressWarnings("deprecation")
 	private void dash(float angle) {
+		Minecraft minecraft = Minecraft.getInstance();
+		ClientPlayerEntity player = minecraft.player;
+		BlockState blockBelowPlayer = player.level.getBlockState(player.blockPosition().below());
+		
+		if (blockBelowPlayer.isAir()) {
+			return;
+		}
+		
 		// Avisa o server de que eu dei dash
 		ArmaCraft.networkChannel.send(PacketDistributor.SERVER.noArg(), new ClientDashPacket());
 		
-		Minecraft minecraft = Minecraft.getInstance();
-		ClientPlayerEntity player = minecraft.player;
 		
 		Vector3d dashMovement = Vector3d.directionFromRotation(0, player.yRot + angle).normalize().multiply(0.75F, 0.75F, 0.75F);
 		minecraft.player.setDeltaMovement(player.getDeltaMovement().add(dashMovement).add(0F, 0.32F, 0F));
@@ -107,7 +116,9 @@ public class ClientDist implements ArmaDist {
 		ClientUtils.playLocalSound(SoundEvents.HORSE_JUMP, 1.2F, 0.2F);
 		
 		// Particula de dash
-		minecraft.level.addParticle(ParticleTypes.CLOUD, player.getX(), player.getY(), player.getZ(), 0.0D, 0.0D, 0.0D);
+		for (int i = 0; i < 10; i++) {
+			minecraft.level.addParticle(new BlockParticleData(ParticleTypes.BLOCK, blockBelowPlayer), true, player.getX(), player.getY() + 0.1D, player.getZ(), 0.0D, 0.0075D, 0.0D);
+		}
 	}
 	
 	public void setBind(Character character, String command) {
