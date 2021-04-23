@@ -33,3 +33,6 @@ src/parsed
 
 # Map of original names from proguard
 proguard.map
+
+# Proguard configuration output
+proguard-output.conf

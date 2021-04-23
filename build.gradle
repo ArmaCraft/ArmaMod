@@ -29,6 +29,7 @@ buildscript {
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.commons.io.FileUtils;
+import org.apache.tools.ant.filters.ReplaceTokens;
 
 apply plugin: 'java'
 apply plugin: 'application'
@@ -262,8 +263,28 @@ task deleteDownloads(type: Delete) {
     delete downloadedFilesFolder
 }
 
+def packageNameGenerator = { String alphabet, int minimumSize, int maxSize ->
+	def size = (new Random().nextInt(maxSize - minimumSize)) + minimumSize;
+	new Random().with {
+		(1..size).collect { alphabet[ nextInt( alphabet.length() ) ] }.join()
+	}
+}
+
+def defaultPackageAlphabet = ('a'..'z').join();
+
+task preProcessProguardConf(type: Copy) {
+	from 'proguard-input.conf'
+    into '.'
+   	rename { 'proguard-output.conf' }
+    filter(ReplaceTokens, tokens: [
+    	// Esconder dentro dos packages do CDA AUHSUHASUHAUH
+    	RANDOM_PACKAGE_NAME: 'com.craftingdead.core.'+packageNameGenerator(defaultPackageAlphabet, 4, 7)
+    ])
+}
+
 task applyProguard(type: proguard.gradle.ProGuardTask) {
-    configuration 'proguard.conf'
+	dependsOn preProcessProguardConf
+    configuration 'proguard-output.conf'
 
     injars 'build/libs/ArmaMod-client-unobf.jar'
     outjars 'build/libs/ArmaMod-client.jar'
