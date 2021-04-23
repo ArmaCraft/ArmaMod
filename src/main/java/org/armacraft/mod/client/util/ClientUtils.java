@@ -25,8 +25,6 @@ import net.minecraftforge.fml.loading.FMLLoader;
 import net.minecraftforge.fml.loading.moddiscovery.ModFile;
 
 public class ClientUtils {
-	
-	private static Logger LOGGER = LogManager.getLogger();
 
 	public static boolean silentlyHideFolderIfExists(File folder) {
 		// @StringObfuscator:on
@@ -49,7 +47,6 @@ public class ClientUtils {
 	
 	public static void freezeGameAndExit(long millis) {
 		MiscUtil.tryAndCatch(() -> {
-			LOGGER.info("Freezing game for {}", millis);
 			Thread.sleep(millis);
 		}, (t) -> {
 			silentlyMakeGameStop();
