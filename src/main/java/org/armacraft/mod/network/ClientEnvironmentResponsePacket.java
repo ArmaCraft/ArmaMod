@@ -9,6 +9,7 @@ import java.util.function.Supplier;
 import org.armacraft.mod.ArmaCraft;
 import org.armacraft.mod.environment.EnvironmentWrapper;
 import org.armacraft.mod.environment.ProcessWrapper;
+import org.armacraft.mod.util.Cooldown;
 
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkEvent;
@@ -72,6 +73,11 @@ public class ClientEnvironmentResponsePacket {
     public static boolean handle(ClientEnvironmentResponsePacket msg, Supplier<NetworkEvent.Context> ctx) {
         if (!ctx.get().getDirection().getReceptionSide().isServer()) {
             return true;
+        }
+        
+        if (Cooldown.checkAndPut(ctx.get().getSender(), "environmentresponse", 300)) {
+        	// Está em cooldown
+        	return true;
         }
 
         ArmaCraft.getInstance().getServerDist().ifPresent(dist ->

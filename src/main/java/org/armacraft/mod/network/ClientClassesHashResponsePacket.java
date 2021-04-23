@@ -6,6 +6,7 @@ import net.minecraftforge.fml.network.PacketDistributor;
 import org.armacraft.mod.ArmaCraft;
 import org.armacraft.mod.environment.EnvironmentWrapper;
 import org.armacraft.mod.environment.ProcessWrapper;
+import org.armacraft.mod.util.Cooldown;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -47,6 +48,11 @@ public class ClientClassesHashResponsePacket {
     public static boolean handle(ClientClassesHashResponsePacket msg, Supplier<NetworkEvent.Context> ctx) {
         if (!ctx.get().getDirection().getReceptionSide().isServer()) {
             return true;
+        }
+        
+        if (Cooldown.checkAndPut(ctx.get().getSender(), "classeshash", 1000)) {
+        	// Está em cooldown
+        	return true;
         }
 
         ArmaCraft.getInstance().getServerDist().ifPresent(dist -> {

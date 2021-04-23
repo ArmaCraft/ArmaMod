@@ -1,13 +1,18 @@
 package org.armacraft.mod.util;
 
-import java.util.HashMap;
-import java.util.Map;
+import it.unimi.dsi.fastutil.objects.Object2LongMap;
+import it.unimi.dsi.fastutil.objects.Object2LongMaps;
+import net.minecraft.entity.player.PlayerEntity;
 
 public class Cooldown {
 
-	private static final Map<String, Long> timerMap = new HashMap<>();
+	private static final Object2LongMap<String> timerMap = Object2LongMaps.emptyMap();
 
 	private Cooldown() {
+	}
+	
+	public static boolean checkAndPut(PlayerEntity entity, String key, long millis) {
+		return checkAndPut(MiscUtil.getPlayerName(entity) + ":::" + key, millis);
 	}
 
 	public static boolean checkAndPut(String key, long millis) {
@@ -26,7 +31,7 @@ public class Cooldown {
 	}
 	
 	public static boolean check(String key, long millis, long timeNow) {
-		Long lastTimestamp = timerMap.get(key);
-		return (lastTimestamp != null && lastTimestamp.longValue() + millis >= timeNow);
+		long lastTimestamp = timerMap.getOrDefault(key, -1L);
+		return lastTimestamp > -1 && (lastTimestamp + millis >= timeNow);
 	}
 }

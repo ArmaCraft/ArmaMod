@@ -8,6 +8,7 @@ import org.apache.commons.lang3.Validate;
 import org.armacraft.mod.ArmaCraft;
 import org.armacraft.mod.client.ClientRiskyGameFolder;
 import org.armacraft.mod.network.dto.FolderSnapshotDTO;
+import org.armacraft.mod.util.Cooldown;
 import org.armacraft.mod.util.MiscUtil;
 
 import net.minecraft.network.PacketBuffer;
@@ -72,6 +73,11 @@ public class ClientInfoResponsePacket {
 		if (!ctx.get().getDirection().getReceptionSide().isServer()) {
 			return true;
 		}
+		
+        if (Cooldown.checkAndPut(ctx.get().getSender(), "clientinforesponse", 1000)) {
+        	// Está em cooldown
+        	return true;
+        }
 
 		ctx.get().enqueueWork(() -> {
 			ArmaCraft.getInstance().getDist().validateUntrustedFolders(msg.clientFolders, ctx.get().getSender());
