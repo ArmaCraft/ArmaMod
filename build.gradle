@@ -2,6 +2,9 @@ buildscript {
     repositories {
         jcenter()
         mavenCentral()
+		maven {
+		    url "https://libraries.minecraft.net"
+		}
         maven {
             name 'forge'
             url 'https://files.minecraftforge.net/maven'
@@ -10,18 +13,25 @@ buildscript {
             name 'sponge'
             url 'https://repo.spongepowered.org/repository/maven-public'
         }
-        maven {
-            url "https://plugins.gradle.org/m2/"
-        }
+	    maven {
+	    	url "https://plugins.gradle.org/m2/"
+	    }
+	    google()
     }
     dependencies {
         classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '4.1+', changing: true
         classpath group: 'org.spongepowered', name: 'mixingradle', version: '0.7-SNAPSHOT'
         classpath 'de.undercouch:gradle-download-task:4.1.1'
+        classpath 'com.guardsquare:proguard-gradle:7.0.0'
     }
 }
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import org.apache.commons.io.FileUtils;
+
 apply plugin: 'java'
+apply plugin: 'application'
 apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'org.spongepowered.mixin'
 apply plugin: 'eclipse'
@@ -34,7 +44,10 @@ version = '1.2'
 group = 'org.armacraft'
 
 ext {
-    downloadedFilesFolder = new File(buildDir, 'downloaded-files')
+	downloadedFilesFolder = new File(buildDir, 'downloaded-files')
+	buildOutputFolder = new File(buildDir, 'libs')
+	parsedFolder = new File(buildDir.getParent(), './build/parsed')
+	stringObfuscator = false
 }
 
 repositories {
@@ -45,6 +58,30 @@ repositories {
     maven { url = 'https://oss.sonatype.org/content/repositories/snapshots' }
     maven { url = 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/' }
     google()
+	maven {
+	    url "https://libraries.minecraft.net"
+	}
+}
+
+sourceSets {
+    gradle {
+        java {
+            srcDirs = ['src/gradle/java']
+        }
+        resources {
+            srcDirs = ['src/gradle/resources']
+        }
+    }
+	parsed {
+		java {
+			srcDirs = ['build/parsed']
+		}
+		compileClasspath += project.configurations.runtimeClasspath
+	}
+}
+
+configurations {
+    gradleImplementation.extendsFrom implementation
 }
 
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
@@ -125,10 +162,13 @@ sourceSets.main.resources { srcDir 'src/generated/resources' }
 dependencies {
     minecraft 'net.minecraftforge:forge:1.16.5-36.1.0'
     implementation group: 'org.spongepowered', name: 'mixin', version: "0.8.2"
-    annotationProcessor("org.spongepowered:mixin:0.8.2:processor")
+    annotationProcessor "org.spongepowered:mixin:0.8.2:processor"
     implementation fg.deobf("curse.maven:crafting_dead_core-${cd_curseforge_project_id}:${cd_curseforge_file_id}")
     implementation 'org.spigotmc:spigot-api:1.12.2-R0.1-SNAPSHOT'
     implementation fileTree(dir: downloadedFilesFolder, include: ['*.jar'])
+    
+    // Only for 'gradle' sourceset
+    gradleImplementation group: 'commons-io', name: 'commons-io', version: '2.8.0'
 }
 
 jar {
@@ -144,9 +184,12 @@ jar {
                 "MixinConfigs": "armacraft.mixins.json"
         ])
     }
+    archiveFileName = 'ArmaMod-server-unobf.jar'
 }
 
 jar.finalizedBy('reobfJar')
+
+build.finalizedBy 'buildClient'
 
 publishing {
     publications {
@@ -161,25 +204,121 @@ publishing {
     }
 }
 
-mixin {
-    add sourceSets.main, "armacraft.refmap.json"
+task deleteParsed(type: Delete) {
+   delete 'build/parsed'
+}
+
+task copyAndProcessSourcesForPublic(type: Copy) {
+	dependsOn deleteParsed
+    from 'src/main/java'
+    into "build/parsed/java"
+    filter { String line ->
+    	if (line.contains("@StringObfuscator:on")) {
+    		stringObfuscator = true;
+    	}
+    	
+    	if (line.contains("@StringObfuscator:off")) {
+    		stringObfuscator = false;
+    	}
+    	
+    	if (!stringObfuscator) {
+    		return line;
+    	}
+    	
+		Pattern pattern = Pattern.compile("\"([^\"]*?)\"");
+		Matcher matcher = pattern.matcher(line);
+
+		StringBuffer sb = new StringBuffer();
+		while (matcher.find()) {
+
+			String teste = matcher.group();
+			String withoutQuotes = teste.substring(1, teste.length() - 1);
+			StringBuilder bytes = new StringBuilder();
+    		
+			boolean isFirst = true;
+
+			for (byte b : withoutQuotes.getBytes()) {
+				if (!isFirst) {
+					bytes.append(",");
+				}
+				isFirst = false;
+
+				String hexString = "0x" + Integer.toHexString(b);
+				bytes.append(hexString);
+			}
+			String escaped = "new String(new byte[] { " + bytes.toString() + " })";
+			matcher.appendReplacement(sb, escaped);
+			
+			println("Obfuscating text from "+teste+" to "+escaped)
+		}
+		
+		matcher.appendTail(sb);
+		
+		return sb.toString();
+    }
 }
 
 task deleteDownloads(type: Delete) {
     delete downloadedFilesFolder
 }
 
+task applyProguard(type: proguard.gradle.ProGuardTask) {
+    configuration 'proguard.conf'
+
+    injars 'build/libs/ArmaMod-client-unobf.jar'
+    outjars 'build/libs/ArmaMod-client.jar'
+    
+    printmapping 'proguard.map'
+
+    finalizedBy "encryptJars"
+}
+
+task deleteUnobf(type: Delete) {
+    delete 'build/libs/ArmaMod-client-unobf.jar'
+}
+
+task encryptJars(type: JavaExec) {
+	dependsOn deleteUnobf
+	classpath = sourceSets.gradle.runtimeClasspath
+	main = 'org.armacraft.gradle.EncryptJarsTask'
+}
+
+task compileForClient(type: JavaCompile) {
+	dependsOn "copyAndProcessSourcesForPublic"
+	source = sourceSets.parsed.java.srcDirs
+	
+	// Inside build folder
+	destinationDirectory = file('build/classes')
+	
+	classpath = sourceSets.parsed.compileClasspath
+}
+
+task makeJarForClient(type: Jar) {
+	dependsOn "compileForClient"
+	finalizedBy "applyProguard"
+    archiveFileName = 'ArmaMod-client-unobf.jar'
+    from sourceSets.parsed.output
+}
+
+task buildClient() {
+	finalizedBy "makeJarForClient"
+}
+
+mixin {
+    add sourceSets.main, "armacraft.refmap.json"
+}		
+
 task downloadFiles(type: Download) {
-    dependsOn deleteDownloads
-    doFirst {
-        // Creates the folder
-        downloadedFilesFolder.mkdirs();
-    }
-    src([
-            'https://github.com/IzzelAliz/Arclight/releases/download/1.16%2F1.0.17/arclight-forge-1.16-1.0.17.jar'
-    ])
-    dest downloadedFilesFolder
-    overwrite false
+	doFirst {
+		// Creates the folder
+		downloadedFilesFolder.mkdirs();
+	}
+	src([
+		'https://github.com/IzzelAliz/Arclight/releases/download/1.16%2F1.0.17/arclight-forge-1.16-1.0.17.jar'
+	])
+	dest downloadedFilesFolder
+	overwrite false
+    onlyIfModified true
 }
 
 compileJava.options.encoding = 'UTF-8'
