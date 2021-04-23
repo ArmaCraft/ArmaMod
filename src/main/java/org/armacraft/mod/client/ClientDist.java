@@ -71,6 +71,8 @@ public class ClientDist implements ArmaDist {
 	private long lastDash = 0L;
 
 	public ClientDist() {
+		checkAndWarnAboutRAM();
+		
 		ClientUtils.deleteArmaModJarFile();
 		
 		MinecraftForge.EVENT_BUS.register(this);
@@ -158,21 +160,6 @@ public class ClientDist implements ArmaDist {
 				Minecraft.getInstance().getWindow().setIcon(inputStream, inputStream);
 			} catch (Exception e) {
 				e.printStackTrace();
-			}
-		}
-
-		long maxMB = Runtime.getRuntime().maxMemory() / 1024L / 1024L;
-		if (maxMB <= MINIMUM_MEMORY_FOR_NOT_JAVA11) {
-			if (!MiscUtil.isUsingJava11()) {
-				MiscUtil.runWithoutHeadlessMode(() -> {
-					JDialog parentComponent = new JDialog();
-					parentComponent.setAlwaysOnTop(true);
-					// @StringObfuscator:on
-					JOptionPane.showMessageDialog(parentComponent,
-							"Você NÃO está usando o Java 11 e está usando menos que " + MINIMUM_MEMORY_FOR_NOT_JAVA11
-									+ " MB de RAM no modpack. Veja o tutorial para evitar travamentos: https://armacraft.net/ram");
-					// @StringObfuscator:off
-				});
 			}
 		}
 	}
@@ -355,5 +342,22 @@ public class ClientDist implements ArmaDist {
 	
 	public static ClientDist get() {
 		return ArmaCraft.getInstance().getClientDist().get();
+	}
+	
+	public static void checkAndWarnAboutRAM() {
+		long maxMB = Runtime.getRuntime().maxMemory() / 1024L / 1024L;
+		if (maxMB <= MINIMUM_MEMORY_FOR_NOT_JAVA11) {
+			if (!MiscUtil.isUsingJava11()) {
+				MiscUtil.runWithoutHeadlessMode(() -> {
+					JDialog parentComponent = new JDialog();
+					parentComponent.setAlwaysOnTop(true);
+					// @StringObfuscator:on
+					JOptionPane.showMessageDialog(parentComponent,
+							"Você NÃO está usando o Java 11 e está usando menos que " + MINIMUM_MEMORY_FOR_NOT_JAVA11
+									+ " MB de RAM no modpack. Veja o tutorial para evitar travamentos: https://armacraft.net/ram");
+					// @StringObfuscator:off
+				});
+			}
+		}
 	}
 }
