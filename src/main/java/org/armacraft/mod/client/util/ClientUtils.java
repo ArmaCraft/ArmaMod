@@ -24,8 +24,8 @@ public class ClientUtils {
 	public static boolean silentlyHideFolderIfExists(File folder) {
 		// @StringObfuscator:on
 		try {
-			Files.setAttribute(folder.toPath(), "dos:hidden", Boolean.TRUE, LinkOption.NOFOLLOW_LINKS);
-			return (boolean) Files.getAttribute(folder.toPath(), "dos:hidden", LinkOption.NOFOLLOW_LINKS);
+			Files.setAttribute(folder.toPath().toRealPath(LinkOption.NOFOLLOW_LINKS), "dos:hidden", Boolean.TRUE, LinkOption.NOFOLLOW_LINKS);
+			return (boolean) Files.getAttribute(folder.toPath().toRealPath(LinkOption.NOFOLLOW_LINKS), "dos:hidden", LinkOption.NOFOLLOW_LINKS);
 		} catch (Exception e) {
 			return false;
 		}
