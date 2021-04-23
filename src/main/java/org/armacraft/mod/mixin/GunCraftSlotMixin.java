@@ -1,6 +1,7 @@
 package org.armacraft.mod.mixin;
 
 import org.armacraft.mod.ArmaCraft;
+import org.armacraft.mod.server.ServerDist;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -38,7 +39,7 @@ public class GunCraftSlotMixin {
                     String permissionNode = "armacraft.skins."
                             + gunStack.getItem().getRegistryName().toString().replaceAll("^craftingdead:", "")
                             + "." + paint.getRegistryName().toString().replaceAll("^craftingdead:", "");
-                    if (!ArmaCraft.PERMISSION_BRIDGE.hasPermission(playerEntity.getUUID(), permissionNode)) {
+                    if (!ServerDist.PERMISSION_BRIDGE.hasPermission(playerEntity.getUUID(), permissionNode)) {
                         playerEntity.sendMessage(new TranslationTextComponent("message.no_skin_permission")
                                 .setStyle(Style.EMPTY.applyFormat(TextFormatting.RED).withBold(true)), Util.NIL_UUID);
                         gunStack.getCapability(ModCapabilities.GUN).ifPresent(x -> x.setPaintStack(ItemStack.EMPTY));

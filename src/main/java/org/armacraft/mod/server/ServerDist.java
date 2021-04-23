@@ -10,6 +10,9 @@ import java.util.stream.Collectors;
 
 import org.armacraft.mod.ArmaCraft;
 import org.armacraft.mod.ArmaDist;
+import org.armacraft.mod.bridge.bukkit.IBukkitPermissionBridge;
+import org.armacraft.mod.bridge.bukkit.IBukkitUserDataControllerBridge;
+import org.armacraft.mod.bridge.bukkit.IBukkitWorldGuardBridge;
 import org.armacraft.mod.client.ClientUserData;
 import org.armacraft.mod.network.ClientInfoRequestPacket;
 import org.armacraft.mod.network.UpdateUserDataPacket;
@@ -32,7 +35,13 @@ public class ServerDist implements ArmaDist {
 	
 	private List<String> extraHashes = new ArrayList<>();
 	private List<String> mandatoryHashes = new ArrayList<>();
-	
+	private List<String> validHashes = new ArrayList<>();
+
+	//Pontes entre o mod e o Bukkit que são injetadas pelo server
+	public static IBukkitPermissionBridge PERMISSION_BRIDGE;
+	public static IBukkitUserDataControllerBridge USER_DATA_CONTROLLER;
+	public static IBukkitWorldGuardBridge WORLD_GUARD_BRIDGE;
+
 	private int userDataUpdateTickCounter = 0;
 
 	public ServerDist() {
@@ -64,19 +73,19 @@ public class ServerDist implements ArmaDist {
 		if (++this.userDataUpdateTickCounter > 60) {
 			this.userDataUpdateTickCounter = 0;
 			
-			if(ArmaCraft.USER_DATA_CONTROLLER != null) {
-				ArmaCraft.USER_DATA_CONTROLLER.getUserDataUpdateWatcher().entrySet().stream()
+			if(USER_DATA_CONTROLLER != null) {
+				USER_DATA_CONTROLLER.getUserDataUpdateWatcher().entrySet().stream()
 						.filter(Map.Entry::getValue)
 						.map(Map.Entry::getKey)
-						.forEach(uuid -> {
-							ArmaCraft.USER_DATA_CONTROLLER.getUserData(uuid).ifPresent(data -> {
-								this.getOnlinePlayerByUUID(uuid).ifPresent(entity -> {
+						.forEach(uuid ->
+							USER_DATA_CONTROLLER.getUserData(uuid).ifPresent(data ->
+								this.getOnlinePlayerByUUID(uuid).ifPresent(entity ->
 									ArmaCraft.networkChannel.send(PacketDistributor.PLAYER.with(() -> entity),
-											new UpdateUserDataPacket(ClientUserData.from(data)));
-								});
-							});
-						});
-				ArmaCraft.USER_DATA_CONTROLLER.getUserDataUpdateWatcher().clear();
+											new UpdateUserDataPacket(ClientUserData.from(data)))
+								)
+							)
+						);
+				USER_DATA_CONTROLLER.getUserDataUpdateWatcher().clear();
 			}
 		}
 	}
@@ -85,6 +94,15 @@ public class ServerDist implements ArmaDist {
 	public void onLoggedIn(PlayerLoggedInEvent event) {
 		ArmaCraft.networkChannel.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) event.getPlayer()),
 				new ClientInfoRequestPacket());
+	}
+
+	@Override
+	public boolean validateClassesHash(String hash, PlayerEntity source) {
+		if(!validHashes.contains(hash)) {
+			this.getForgeToBukkitInterface().onNoClassesIntegrity(source, hash, validHashes);
+			return false;
+		}
+		return true;
 	}
 
 	@Override

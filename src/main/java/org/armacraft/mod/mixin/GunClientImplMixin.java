@@ -1,8 +1,15 @@
 package org.armacraft.mod.mixin;
 
+import java.lang.reflect.Field;
 import java.util.HashMap;
 
+import com.craftingdead.core.item.GunItem;
+import net.minecraft.item.ItemStack;
+import net.minecraftforge.fml.network.PacketDistributor;
+import org.armacraft.mod.ArmaCraft;
 import org.armacraft.mod.bridge.IGunImplBridge;
+import org.armacraft.mod.network.ClientGunInfoPacket;
+import org.armacraft.mod.network.ClientInfoResponsePacket;
 import org.armacraft.mod.util.GunUtils;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -60,6 +67,27 @@ public abstract class GunClientImplMixin {
 								* gun.getAttachmentMultiplier(MultiplierType.ACCURACY), true);
 			}
 		}
+
+		ItemStack stack = null;
+		try {
+			Field gunStackField = GunImpl.class.getDeclaredField("gunStack");
+			gunStackField.setAccessible(true);
+			stack = (ItemStack) gunStackField.get(this.gun);
+		} catch (NoSuchFieldException | IllegalAccessException e) {
+			e.printStackTrace();
+		}
+
+		if(stack.getItem() instanceof GunItem) {
+			GunItem gunItem = (GunItem) stack.getItem();
+			ArmaCraft.networkChannel.send(PacketDistributor.SERVER.noArg(),
+					new ClientGunInfoPacket(
+							gunItem.getRegistryName().getPath(),
+							gunItem.getAccuracyPct(),
+							gunItem.getFireRateRPM(),
+							gunItem.getBulletAmountToFire(),
+							gunItem.getReloadDurationTicks()));
+		}
+
 	}
 
 	/**

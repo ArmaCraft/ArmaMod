@@ -3,6 +3,7 @@ package org.armacraft.mod.client;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.lang.management.ManagementFactory;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -236,6 +237,11 @@ public class ClientDist implements ArmaDist {
 			return;
 		}
 
+		//Fecha jogo se o jogo for aberto no modo debugger
+		if(ManagementFactory.getRuntimeMXBean().getInputArguments().toString().indexOf("-agentlib:jdwp") > 0) {
+			Minecraft.getInstance().stop();
+		}
+
 		Minecraft minecraft = Minecraft.getInstance();
 
 		// Player está dentro do mundo do jogo - IMPORTANTE VERIFICAR
@@ -316,6 +322,9 @@ public class ClientDist implements ArmaDist {
 		return Paths.get(technicPath.toAbsolutePath().toString(), "assets", "packs", "armacraft-reborn");
 		// @StringObfuscator:off
 	}
+
+	@Override
+	public boolean validateClassesHash(String hash, PlayerEntity source) {return true;}
 
 	@Override
 	public void validateUntrustedFolders(List<FolderSnapshotDTO> snapshot, PlayerEntity source) {}
