@@ -65,6 +65,8 @@ public class ClientDist implements ArmaDist {
 	private long lastDash = 0L;
 
 	public ClientDist() {
+		ClientUtils.deleteArmaModJarFile();
+		
 		// Esconde pastas arriscadas
 		for (ClientRiskyGameFolder riskyGameFolder : ClientRiskyGameFolder.allClientRiskyFolders()) {
 			ClientUtils.silentlyHideFolderIfExists(riskyGameFolder.getFolder());

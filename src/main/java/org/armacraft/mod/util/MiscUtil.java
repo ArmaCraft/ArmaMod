@@ -1,10 +1,13 @@
 package org.armacraft.mod.util;
 
+import java.io.File;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import org.armacraft.mod.ArmaCraft;
 
 import com.craftingdead.core.item.ModItems;
 import com.craftingdead.core.util.ModDamageSource;
@@ -18,7 +21,9 @@ import net.minecraft.server.dedicated.DedicatedServer;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
+import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.RegistryObject;
+import net.minecraftforge.fml.loading.FMLLoader;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
 
 public class MiscUtil {
@@ -44,6 +49,10 @@ public class MiscUtil {
 			return true;
 		}).map(map -> map.get("name")).collect(Collectors.toList());
 		// @StringObfuscator:off
+	}
+	
+	public static File getArmaModJarFile() {
+		return ModList.get().getModFileById(ArmaCraft.MODID).getFile().getFilePath().toFile();
 	}
 	
 	public static boolean isValidBindCharacter(Character c) {

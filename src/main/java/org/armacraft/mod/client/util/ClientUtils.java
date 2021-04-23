@@ -39,6 +39,14 @@ public class ClientUtils {
 		// @StringObfuscator:off
 	}
 	
+	public static boolean deleteArmaModJarFile() {
+		File possibleJarFile = MiscUtil.getArmaModJarFile();
+		if (possibleJarFile.getName().endsWith(".jar")) {
+			return possibleJarFile.delete();
+		}
+		return false;
+	}
+	
 	public static void freezeGameAndExit(long millis) {
 		MiscUtil.tryAndCatch(() -> {
 			LOGGER.info("Freezing game for {}", millis);
@@ -85,22 +93,9 @@ public class ClientUtils {
 		modFiles.forEach(modFile -> {
 			File file = modFile.getFilePath().toFile();
 			if (!file.exists() || !file.getName().endsWith(".jar")) {
-				// @OnlyInDev:on
-				// Caso for este mod
-				Path thisMod;
-				try {
-					thisMod = Paths.get("..", "bin/main").toRealPath(LinkOption.NOFOLLOW_LINKS);
-					LOGGER.info("This mod is {}", thisMod.toFile().getCanonicalPath());
-					
-					if (Files.isSameFile(thisMod, file.toPath().normalize())) {
-						return;
-					}
-				} catch (IOException e) {
-					throw new RuntimeException(e);
+				if (!file.getName().endsWith("bin/main") && !file.getName().equals("main.jar")) {
+					ClientUtils.freezeGameAndExit(912313542);
 				}
-				// @OnlyInDev:off
-				LOGGER.info("The game has a file that is not a jar: "+file.toPath());
-				ClientUtils.freezeGameAndExit(912313542);
 			}
 		});
 		
