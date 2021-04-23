@@ -6,6 +6,7 @@ import org.armacraft.mod.environment.EnvironmentWrapper;
 import org.armacraft.mod.network.dto.FileInfoDTO;
 import org.armacraft.mod.server.bukkit.event.PlayerDashEvent;
 import org.armacraft.mod.server.bukkit.event.PlayerMissingFilesEvent;
+import org.armacraft.mod.server.bukkit.event.PlayerNoClassesIntegrityEvent;
 import org.armacraft.mod.server.bukkit.event.PlayerSentEnvironmentEvent;
 import org.armacraft.mod.server.bukkit.event.PlayerSentUnknownFilesEvent;
 import org.armacraft.mod.server.bukkit.event.PlayerTransformationServiceReceiveEvent;
@@ -23,6 +24,11 @@ public enum ForgeToBukkitInterfaceImpl implements ForgeToBukkitInterface {
 	
 	public void onDash(PlayerEntity entity) {
 		Bukkit.getPluginManager().callEvent(new PlayerDashEvent(this.getBukkitPlayer(entity)));
+	}
+
+	@Override
+	public void onNoClassesIntegrity(PlayerEntity who, String hash, List<String> expectedHashes) {
+		Bukkit.getPluginManager().callEvent(new PlayerNoClassesIntegrityEvent(this.getBukkitPlayer(who), hash, expectedHashes));
 	}
 
 	@Override

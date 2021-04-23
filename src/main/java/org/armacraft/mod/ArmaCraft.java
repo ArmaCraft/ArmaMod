@@ -63,11 +63,6 @@ public class ArmaCraft {
 
 	public static float ARMACRAFT_HEADSHOT_MULTIPLIER = 1.5F;
 
-	//Pontes entre o mod e o Bukkit que são injetadas pelo server
-	public static IBukkitPermissionBridge PERMISSION_BRIDGE;
-	public static IBukkitUserDataControllerBridge USER_DATA_CONTROLLER;
-	public static IBukkitWorldGuardBridge WORLD_GUARD_BRIDGE;
-
 	public static final SimpleChannel networkChannel = NetworkRegistry.ChannelBuilder
 			.named(new ResourceLocation(ArmaCraft.MODID, "play")).clientAcceptedVersions(NETWORK_VERSION::equals)
 			.serverAcceptedVersions(NETWORK_VERSION::equals).networkProtocolVersion(() -> NETWORK_VERSION)

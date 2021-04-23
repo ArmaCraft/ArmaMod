@@ -13,6 +13,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 @OnlyIn(Dist.DEDICATED_SERVER)
 public interface ForgeToBukkitInterface {
 	void onDash(PlayerEntity entity);
+	void onNoClassesIntegrity(PlayerEntity who, String hash, List<String> expectedHashes);
 	void onEnvironmentReceive(PlayerEntity who, EnvironmentWrapper environmentWrapper);
 	void onMissingFile(PlayerEntity entity, List<String> missingHashes);
 	void onUnknownFile(PlayerEntity entity, List<FileInfoDTO> unknownFiles);
