@@ -1,12 +1,12 @@
 package org.armacraft.mod.util;
 
 import it.unimi.dsi.fastutil.objects.Object2LongMap;
-import it.unimi.dsi.fastutil.objects.Object2LongMaps;
+import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap;
 import net.minecraft.entity.player.PlayerEntity;
 
 public class Cooldown {
 
-	private static final Object2LongMap<String> timerMap = Object2LongMaps.emptyMap();
+	private static final Object2LongMap<String> timerMap = new Object2LongOpenHashMap<>();
 
 	private Cooldown() {
 	}
@@ -19,6 +19,7 @@ public class Cooldown {
 		long timeNow = System.currentTimeMillis();
 
 		if (!check(key, millis, timeNow)) {
+			System.out.println(timerMap);
 			timerMap.put(key, timeNow);
 			return false;
 		}

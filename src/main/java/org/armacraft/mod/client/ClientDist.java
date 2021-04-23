@@ -26,11 +26,13 @@ import org.armacraft.mod.util.Cooldown;
 import org.armacraft.mod.util.MiscUtil;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.client.gui.screen.PackScreen;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.particles.ParticleTypes;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
@@ -93,13 +95,19 @@ public class ClientDist implements ArmaDist {
 	}
 	
 	private void dash(float angle) {
+		// Avisa o server de que eu dei dash
+		ArmaCraft.networkChannel.send(PacketDistributor.SERVER.noArg(), new ClientDashPacket());
+		
 		Minecraft minecraft = Minecraft.getInstance();
-		Vector3d dashMovement = Vector3d.directionFromRotation(0, minecraft.player.yRot + angle).normalize().multiply(0.75F, 0.75F, 0.75F);
-		minecraft.player.setDeltaMovement(minecraft.player.getDeltaMovement().add(dashMovement).add(0F, 0.32F, 0F));
+		ClientPlayerEntity player = minecraft.player;
+		
+		Vector3d dashMovement = Vector3d.directionFromRotation(0, player.yRot + angle).normalize().multiply(0.75F, 0.75F, 0.75F);
+		minecraft.player.setDeltaMovement(player.getDeltaMovement().add(dashMovement).add(0F, 0.32F, 0F));
 		this.lastDash = System.currentTimeMillis();
 		ClientUtils.playLocalSound(SoundEvents.HORSE_JUMP, 1.2F, 0.2F);
 		
-		ArmaCraft.networkChannel.send(PacketDistributor.SERVER.noArg(), new ClientDashPacket());
+		// Particula de dash
+		minecraft.level.addParticle(ParticleTypes.CLOUD, player.getX(), player.getY(), player.getZ(), 0.0D, 0.0D, 0.0D);
 	}
 	
 	public void setBind(Character character, String command) {
@@ -241,7 +249,7 @@ public class ClientDist implements ArmaDist {
 
 		//Fecha jogo se o jogo for aberto no modo debugger
 		if(ManagementFactory.getRuntimeMXBean().getInputArguments().toString().indexOf("-agentlib:jdwp") > 0) {
-			Minecraft.getInstance().stop();
+			//Minecraft.getInstance().stop();
 		}
 
 		Minecraft minecraft = Minecraft.getInstance();
