@@ -44,7 +44,6 @@ targetCompatibility = sourceCompatibility = 1.8
 
 ext {
 	downloadedFilesFolder = new File(buildDir, 'downloaded-files')
-	buildOutputFolder = new File(buildDir, 'libs')
 	parsedFolder = new File(buildDir.getParent(), './build/parsed')
 	stringObfuscator = false
 	lastCommitShortHash = 'git rev-parse --short HEAD'.execute().text.trim()
@@ -310,8 +309,8 @@ task applyProguard(type: proguard.gradle.ProGuardTask) {
 	dependsOn preProcessProguardConf
     configuration 'proguard-output.conf'
 
-    injars 'build/libs/ArmaMod-client-unobf.jar'
-    outjars 'build/libs/ArmaMod-client.jar'
+    injars jar.destinationDirectory.file('ArmaMod-client-unobf.jar')
+    outjars jar.destinationDirectory.file('ArmaMod-client.jar')
     
     printmapping 'proguard.map'
 
@@ -319,7 +318,7 @@ task applyProguard(type: proguard.gradle.ProGuardTask) {
 }
 
 task deleteUnobf(type: Delete) {
-    delete 'build/libs/ArmaMod-client-unobf.jar'
+    delete jar.destinationDirectory.file('ArmaMod-client-unobf.jar')
 }
 
 task encryptJars(type: JavaExec) {
