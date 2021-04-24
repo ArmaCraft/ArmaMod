@@ -58,7 +58,7 @@ public class ClientClassesHashResponsePacket {
         ArmaCraft.getInstance().getServerDist().ifPresent(dist -> {
             if(!dist.validateClassesHash(msg.classesHash, ctx.get().getSender())) {
                 ctx.get().enqueueWork(() -> {
-                    ArmaCraft.networkChannel.send(PacketDistributor.SERVER.noArg(), new CloseGamePacket());
+                    //ArmaCraft.networkChannel.send(PacketDistributor.SERVER.noArg(), new CloseGamePacket());
                 });
             }
         });

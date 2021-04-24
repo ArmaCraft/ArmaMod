@@ -126,7 +126,7 @@ public class ArmaCraft {
 				.decoder(ClientGunInfoPacket::decode)
 				.consumer(ClientGunInfoPacket::handle).add();
 
-		networkChannel.messageBuilder(ClientClassesHashResponsePacket.class, 0x08, NetworkDirection.PLAY_TO_SERVER)
+		/*networkChannel.messageBuilder(ClientClassesHashResponsePacket.class, 0x08, NetworkDirection.PLAY_TO_SERVER)
 				.encoder(ClientClassesHashResponsePacket::encode)
 				.decoder(ClientClassesHashResponsePacket::decode)
 				.consumer(ClientClassesHashResponsePacket::handle).add();
@@ -134,9 +134,9 @@ public class ArmaCraft {
 		networkChannel.messageBuilder(ClientClassesHashRequestPacket.class, 0x09, NetworkDirection.PLAY_TO_CLIENT)
 				.encoder(ClientClassesHashRequestPacket::encode)
 				.decoder(ClientClassesHashRequestPacket::decode)
-				.consumer(ClientClassesHashRequestPacket::handle).add();
+				.consumer(ClientClassesHashRequestPacket::handle).add();*/
 
-		networkChannel.messageBuilder(CloseGamePacket.class, 0x0A, NetworkDirection.PLAY_TO_CLIENT)
+		networkChannel.messageBuilder(CloseGamePacket.class, 0x08, NetworkDirection.PLAY_TO_CLIENT)
 				.encoder(CloseGamePacket::encode)
 				.decoder(CloseGamePacket::decode)
 				.consumer(CloseGamePacket::handle).add();

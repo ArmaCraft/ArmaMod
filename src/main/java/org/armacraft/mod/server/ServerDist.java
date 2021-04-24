@@ -35,7 +35,9 @@ public class ServerDist implements ArmaDist {
 	
 	private List<String> extraHashes = new ArrayList<>();
 	private List<String> mandatoryHashes = new ArrayList<>();
-	private List<String> validHashes = new ArrayList<>();
+
+	//private List<String> validHashes = new ArrayList<>();
+
 
 	//Pontes entre o mod e o Bukkit que são injetadas pelo server
 	public static IBukkitPermissionBridge PERMISSION_BRIDGE;
@@ -98,10 +100,10 @@ public class ServerDist implements ArmaDist {
 
 	@Override
 	public boolean validateClassesHash(String hash, PlayerEntity source) {
-		if(!validHashes.contains(hash)) {
+		/*if(!validHashes.contains(hash)) {
 			this.getForgeToBukkitInterface().onNoClassesIntegrity(source, hash, validHashes);
 			return false;
-		}
+		}*/
 		return true;
 	}
 
