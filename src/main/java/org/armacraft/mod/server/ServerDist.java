@@ -2,12 +2,15 @@ package org.armacraft.mod.server;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import net.minecraftforge.event.entity.player.PlayerEvent;
 import org.armacraft.mod.ArmaCraft;
 import org.armacraft.mod.ArmaDist;
 import org.armacraft.mod.bridge.bukkit.IBukkitPermissionBridge;
@@ -30,20 +33,22 @@ import net.minecraftforge.event.entity.player.PlayerEvent.PlayerLoggedInEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.network.PacketDistributor;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
+import org.bukkit.event.player.PlayerQuitEvent;
 
 public class ServerDist implements ArmaDist {
-	
+
 	private List<String> extraHashes = new ArrayList<>();
 	private List<String> mandatoryHashes = new ArrayList<>();
+	private Map<UUID, Long> lastClientInfoRequest = new HashMap<>();
 
 	//private List<String> validHashes = new ArrayList<>();
-
 
 	//Pontes entre o mod e o Bukkit que são injetadas pelo server
 	public static IBukkitPermissionBridge PERMISSION_BRIDGE;
 	public static IBukkitUserDataControllerBridge USER_DATA_CONTROLLER;
 	public static IBukkitWorldGuardBridge WORLD_GUARD_BRIDGE;
 
+	private final int CLIENT_INFO_REQUEST_DELAY_MILLIS = 10000;
 	private int userDataUpdateTickCounter = 0;
 
 	public ServerDist() {
@@ -72,6 +77,13 @@ public class ServerDist implements ArmaDist {
 	
 	@SubscribeEvent
 	public void onServerTick(TickEvent.ServerTickEvent event) {
+		ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayers().forEach(player -> {
+			if(lastClientInfoRequest.get(player.getUUID()) - System.currentTimeMillis() >= CLIENT_INFO_REQUEST_DELAY_MILLIS) {
+				this.requestClientInfo(player);
+				lastClientInfoRequest.put(player.getUUID(), System.currentTimeMillis());
+			}
+		});
+
 		if (++this.userDataUpdateTickCounter > 60) {
 			this.userDataUpdateTickCounter = 0;
 			
@@ -94,8 +106,13 @@ public class ServerDist implements ArmaDist {
 
 	@SubscribeEvent
 	public void onLoggedIn(PlayerLoggedInEvent event) {
-		ArmaCraft.networkChannel.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) event.getPlayer()),
-				new ClientInfoRequestPacket());
+		this.requestClientInfo(event.getPlayer());
+		this.lastClientInfoRequest.put(event.getPlayer().getUUID(), System.currentTimeMillis());
+	}
+
+	@SubscribeEvent
+	public void onLoggedOut(PlayerEvent.PlayerLoggedOutEvent event) {
+		this.lastClientInfoRequest.remove(event.getPlayer().getUUID());
 	}
 
 	@Override
@@ -144,5 +161,10 @@ public class ServerDist implements ArmaDist {
 	
 	public static ServerDist get() {
 		return ArmaCraft.getInstance().getServerDist().get();
+	}
+
+	private void requestClientInfo(PlayerEntity player) {
+		ArmaCraft.networkChannel.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) player),
+				new ClientInfoRequestPacket());
 	}
 }
