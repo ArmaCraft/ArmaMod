@@ -1,13 +1,7 @@
 package org.armacraft.mod;
 
-import java.lang.management.ManagementFactory;
 import java.util.Optional;
-import java.util.Set;
 
-import net.minecraft.client.Minecraft;
-import org.armacraft.mod.bridge.bukkit.IBukkitPermissionBridge;
-import org.armacraft.mod.bridge.bukkit.IBukkitUserDataControllerBridge;
-import org.armacraft.mod.bridge.bukkit.IBukkitWorldGuardBridge;
 import org.armacraft.mod.client.ClientDist;
 import org.armacraft.mod.clothing.ClothingRepresentation;
 import org.armacraft.mod.clothing.ProtectionLevel;
@@ -59,7 +53,7 @@ public class ArmaCraft {
 	// Infelizmente não tem como ofuscar esse field
 	public static final String MODID = "armacraft";
 	// @StringObfuscator:on
-	private static final String NETWORK_VERSION = "1.0.0";
+	private static final String NETWORK_VERSION = "@FULL_MOD_VERSION@";
 	// @StringObfuscator:off
 	
 	private static ArmaCraft instance;
