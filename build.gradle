@@ -49,7 +49,7 @@ apply plugin: 'de.undercouch.download'
 targetCompatibility = sourceCompatibility = 1.8
 
 ext {
-	gitRevision = 'git rev-list --count HEAD'.execute().text.trim()
+	gitRevision = 'git rev-list --all --count'.execute().text.trim()
 }
 
 // Se tiver ${}, é necessário chamar .toString()
