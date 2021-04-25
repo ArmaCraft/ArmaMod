@@ -4,6 +4,7 @@ import java.lang.reflect.Method;
 
 import org.apache.commons.lang.Validate;
 import org.armacraft.mod.ArmaCraft;
+import org.armacraft.mod.network.CloseGamePacket;
 import org.armacraft.mod.network.SetClientBindPacket;
 import org.armacraft.mod.util.MiscUtil;
 import org.bukkit.entity.Player;
@@ -25,6 +26,12 @@ public enum BukkitToForgeInterface {
 		Validate.notNull(command);
 		MiscUtil.validateBindCharacter(character);
 		ArmaCraft.networkChannel.send(PacketDistributor.PLAYER.with(() -> this.getPlayerEntity(player)), new SetClientBindPacket(character, command));
+	}
+	
+	public void closePlayerGame(Player player, String title, String message) {
+		ArmaCraft.networkChannel.send(PacketDistributor.PLAYER.with(() -> this.getPlayerEntity(player)),
+				new CloseGamePacket(title, message));
+		player.kickPlayer(message);
 	}
 	
 	private ServerPlayerEntity getPlayerEntity(Player player) {

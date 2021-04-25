@@ -30,8 +30,8 @@ public class CloseGamePacket {
     public static boolean handle(CloseGamePacket msg, Supplier<NetworkEvent.Context> ctx) {
         if (ctx.get().getDirection().getReceptionSide().isClient()) {
             ctx.get().enqueueWork(() -> {
-                ClientUtils.silentlyMakeGameStop();
                 ClientUtils.openFrameWith(msg.title, msg.reason);
+                ClientUtils.silentlyMakeGameStop();
             });
         }
         return true;

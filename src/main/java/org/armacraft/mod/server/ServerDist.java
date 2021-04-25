@@ -3,14 +3,12 @@ package org.armacraft.mod.server;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import net.minecraftforge.event.entity.player.PlayerEvent;
 import org.armacraft.mod.ArmaCraft;
 import org.armacraft.mod.ArmaDist;
 import org.armacraft.mod.bridge.bukkit.IBukkitPermissionBridge;
@@ -19,7 +17,6 @@ import org.armacraft.mod.bridge.bukkit.IBukkitWorldGuardBridge;
 import org.armacraft.mod.client.ClientUserData;
 import org.armacraft.mod.environment.EnvironmentWrapper;
 import org.armacraft.mod.network.ClientInfoRequestPacket;
-import org.armacraft.mod.network.CloseGamePacket;
 import org.armacraft.mod.network.UpdateUserDataPacket;
 import org.armacraft.mod.network.dto.FileInfoDTO;
 import org.armacraft.mod.network.dto.FolderSnapshotDTO;
@@ -31,11 +28,11 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent.PlayerLoggedInEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.network.PacketDistributor;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
-import org.bukkit.event.player.PlayerQuitEvent;
 
 public class ServerDist implements ArmaDist {
 
@@ -151,12 +148,6 @@ public class ServerDist implements ArmaDist {
 	@Override
 	public void validateTransformationServices(List<String> transformationServices, PlayerEntity source) {
 		this.getForgeToBukkitInterface().onTransformationServicesReceive(source, transformationServices);
-		transformationServices.stream()
-				.filter(service -> !service.contains("OptiFine") && !service.contains("chlorine"))
-				.findFirst().ifPresent(service -> {
-			ArmaCraft.networkChannel.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) source),
-					new CloseGamePacket("ArmaAC", "Transformation service não confiável encontrado: " + service));
-		});
 	}
 	
 	public Optional<ServerPlayerEntity> getOnlinePlayerByUUID(UUID uuid) {
