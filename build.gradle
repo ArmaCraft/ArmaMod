@@ -118,6 +118,7 @@ task deleteParsed(type: Delete) {
 }
 
 task processTokens(type: Copy) {
+	filteringCharset = 'UTF-8'
     from 'src/main/java'
     filter(ReplaceTokens, tokens: [
     	NETWORK_VERSION: version,
@@ -287,19 +288,20 @@ task copyAndProcessSourcesForPublic(type: Copy) {
 	    		
 				boolean isFirst = true;
 	
-				for (byte b : withoutQuotes.getBytes()) {
+				for (byte b : withoutQuotes.getBytes("Cp1252")) {
 					if (!isFirst) {
 						bytes.append(",");
 					}
 					isFirst = false;
 	
-					String hexString = "0x" + Integer.toHexString(b);
+					String hexString = "(byte) (0x" + String.format("%02x", b) + " & 0xFF)";
 					bytes.append(hexString);
 				}
 				String escaped = "new String(new byte[] { " + bytes.toString() + " })";
 				matcher.appendReplacement(sb, escaped);
 				
-				println("Obfuscating text from "+teste+" to "+escaped)
+				println("Obfuscating text from '"+withoutQuotes+"' to "+escaped)
+				println(line);
 			}
 			
 			matcher.appendTail(sb);
@@ -312,6 +314,7 @@ task copyAndProcessSourcesForPublic(type: Copy) {
 }
 
 task overrideJavaSources(type: Copy) {
+	filteringCharset = 'UTF-8'
 	from 'build/parsed/java_out'
 	into 'build/parsed/java'
 }
@@ -349,14 +352,13 @@ task applyProguard(type: proguard.gradle.ProGuardTask) {
     
     printmapping 'proguard.map'
     finalizedBy 'encryptJars'
-}
-
-task deleteUnobf(type: Delete) {
-    delete jar.destinationDirectory.file('ArmaMod-client-unobf.jar')
+    doLast {
+    	// Apaga a jar desofuscada
+    	jar.destinationDirectory.file('ArmaMod-client-unobf.jar').get().getAsFile().delete();
+    }
 }
 
 task encryptJars(type: JavaExec) {
-	dependsOn deleteUnobf
 	classpath = sourceSets.gradle.runtimeClasspath
 	main = 'org.armacraft.gradle.EncryptJarsTask'
 }
