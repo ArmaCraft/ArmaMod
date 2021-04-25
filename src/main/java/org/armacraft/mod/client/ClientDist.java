@@ -14,9 +14,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.LongSupplier;
 
-import javax.swing.JDialog;
-import javax.swing.JOptionPane;
-
 import org.armacraft.mod.ArmaCraft;
 import org.armacraft.mod.ArmaDist;
 import org.armacraft.mod.client.util.ClientUtils;
@@ -378,15 +375,10 @@ public class ClientDist implements ArmaDist {
 		long maxMB = Runtime.getRuntime().maxMemory() / 1024L / 1024L;
 		if (maxMB <= MINIMUM_MEMORY_FOR_NOT_JAVA11) {
 			if (!MiscUtil.isUsingJava11()) {
-				MiscUtil.runWithoutHeadlessMode(() -> {
-					JDialog parentComponent = new JDialog();
-					parentComponent.setAlwaysOnTop(true);
-					// @StringObfuscator:on
-					JOptionPane.showMessageDialog(parentComponent,
-							"Você NÃO está usando o Java 11 e está usando menos que " + MINIMUM_MEMORY_FOR_NOT_JAVA11
+				// @StringObfuscator:on
+				ClientUtils.openFrameWith("AVISO", "Você NÃO está usando o Java 11 e está usando menos que " + MINIMUM_MEMORY_FOR_NOT_JAVA11
 									+ " MB de RAM no modpack. Veja o tutorial para evitar travamentos: https://armacraft.net/ram");
-					// @StringObfuscator:off
-				});
+				// @StringObfuscator:off
 			}
 		}
 	}

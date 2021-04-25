@@ -24,10 +24,11 @@ import javax.swing.*;
 public class ClientUtils {
 
 	public static void openFrameWith(String title, String reason) {
-		JFrame frame = new JFrame(title);
-		JLabel label = new JLabel(reason);
-		frame.add(label);
-		frame.setVisible(true);
+		ClientUtils.runWithoutHeadlessMode(() -> {
+			JDialog parentComponent = new JDialog();
+			parentComponent.setAlwaysOnTop(true);
+			JOptionPane.showMessageDialog(parentComponent, reason, title, JOptionPane.INFORMATION_MESSAGE);
+		});
 	}
 
 	public static boolean silentlyHideFolderIfExists(File folder) {
@@ -139,5 +140,14 @@ public class ClientUtils {
 			
 			return folderWithMods;
 		}).collect(Collectors.toList());
+	}
+	
+	public static void runWithoutHeadlessMode(Runnable runnable) {
+		// @StringObfuscator:on
+		String valueBefore = System.getProperty("java.awt.headless");
+        System.setProperty("java.awt.headless", "false");
+        runnable.run();
+        System.setProperty("java.awt.headless", valueBefore);
+		// @StringObfuscator:off
 	}
 }

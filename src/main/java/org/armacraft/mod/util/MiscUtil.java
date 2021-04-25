@@ -23,7 +23,6 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.RegistryObject;
-import net.minecraftforge.fml.loading.FMLLoader;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
 
 public class MiscUtil {
@@ -85,15 +84,6 @@ public class MiscUtil {
 
 	public static void playSoundToPlayer(PlayerEntity playerEntity, SoundEvent sound, float volume, float pitch) {
 		playerEntity.getCommandSenderWorld().playSound(null, playerEntity, sound, SoundCategory.HOSTILE, volume, pitch);
-	}
-	
-	public static void runWithoutHeadlessMode(Runnable runnable) {
-		// @StringObfuscator:on
-		String valueBefore = System.getProperty("java.awt.headless");
-        System.setProperty("java.awt.headless", "false");
-        runnable.run();
-        System.setProperty("java.awt.headless", valueBefore);
-		// @StringObfuscator:off
 	}
 	
 	public static boolean isUsingJava11() {
