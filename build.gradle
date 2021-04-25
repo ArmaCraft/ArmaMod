@@ -48,6 +48,10 @@ apply plugin: 'de.undercouch.download'
 
 targetCompatibility = sourceCompatibility = 1.8
 
+// Se tiver ${}, é necessário chamar .toString()
+version = "${mod_version}.${revision}".toString()
+group = 'org.armacraft'
+
 ext {
 	target = project.getProperty("target")
 	downloadedFilesFolder = new File(buildDir, 'downloaded-files')
@@ -66,10 +70,6 @@ ext {
                 "MixinConfigs": "armacraft.mixins.json"
     ];
 }
-
-// Se tiver ${}, é necessário chamar .toString()
-version = "${mod_version}.${revision}".toString()
-group = 'org.armacraft'
 
 repositories {
     maven {
