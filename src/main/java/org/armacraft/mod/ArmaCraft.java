@@ -3,6 +3,7 @@ package org.armacraft.mod;
 import java.util.Optional;
 
 import org.armacraft.mod.client.ClientDist;
+import org.armacraft.mod.client.util.ClientUtils;
 import org.armacraft.mod.clothing.ClothingRepresentation;
 import org.armacraft.mod.clothing.ProtectionLevel;
 import org.armacraft.mod.init.ArmaCraftBlocks;

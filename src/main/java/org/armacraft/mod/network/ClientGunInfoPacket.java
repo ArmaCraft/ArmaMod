@@ -2,6 +2,8 @@ package org.armacraft.mod.network;
 
 import java.util.function.Supplier;
 
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.Hand;
 import org.armacraft.mod.util.GunUtils;
 
 import net.minecraft.network.PacketBuffer;
@@ -50,8 +52,7 @@ public class ClientGunInfoPacket {
         }
 
         if(!GunUtils.INTEGRITY_VALIDATOR.test(msg)) {
-            // FIXME Todos os tiros fazem a arma sumir
-        	// ctx.get().getSender().setItemInHand(Hand.MAIN_HAND, ItemStack.EMPTY);
+        	ctx.get().getSender().setItemInHand(Hand.MAIN_HAND, ItemStack.EMPTY);
         }
 
         return true;
