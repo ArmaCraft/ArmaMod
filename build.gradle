@@ -48,8 +48,12 @@ apply plugin: 'de.undercouch.download'
 
 targetCompatibility = sourceCompatibility = 1.8
 
+ext {
+	gitRevision = 'git rev-list --count HEAD'.execute().text.trim()
+}
+
 // Se tiver ${}, é necessário chamar .toString()
-version = "${mod_version}.${revision}".toString()
+version = "${mod_version}.${gitRevision}".toString()
 group = 'org.armacraft'
 
 ext {
@@ -58,7 +62,6 @@ ext {
 	parsedFolder = new File(buildDir.getParent(), './build/parsed')
 	stringObfuscator = false
 	lastCommitShortHash = 'git rev-parse --short HEAD'.execute().text.trim()
-	revision = 'git rev-list --count HEAD'.execute().text.trim()
 	manifestAttributes = [
                 "Specification-Title": "ArmaCraft",
                 "Specification-Vendor": "ArmaCraftMC",

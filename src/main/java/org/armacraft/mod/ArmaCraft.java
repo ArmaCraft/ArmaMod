@@ -17,6 +17,7 @@ import org.armacraft.mod.network.ClientGunInfoPacket;
 import org.armacraft.mod.network.ClientInfoRequestPacket;
 import org.armacraft.mod.network.ClientInfoResponsePacket;
 import org.armacraft.mod.network.CloseGamePacket;
+import org.armacraft.mod.network.SetClientBindPacket;
 import org.armacraft.mod.network.UpdateUserDataPacket;
 import org.armacraft.mod.potion.ArmaCraftEffects;
 import org.armacraft.mod.server.ServerDist;
@@ -86,60 +87,67 @@ public class ArmaCraft {
 	}
 
 	public void setupChannel() {
-		networkChannel.messageBuilder(ClientInfoRequestPacket.class, 0x00, NetworkDirection.PLAY_TO_CLIENT)
+		int packetId = -1;
+		
+		networkChannel.messageBuilder(ClientInfoRequestPacket.class, ++packetId, NetworkDirection.PLAY_TO_CLIENT)
 				.encoder(ClientInfoRequestPacket::encode)
 				.decoder(ClientInfoRequestPacket::decode)
 				.consumer(ClientInfoRequestPacket::handle).add();
 
-		networkChannel.messageBuilder(ClientInfoResponsePacket.class, 0x01, NetworkDirection.PLAY_TO_SERVER)
+		networkChannel.messageBuilder(ClientInfoResponsePacket.class, ++packetId, NetworkDirection.PLAY_TO_SERVER)
 				.encoder(ClientInfoResponsePacket::encode)
 				.decoder(ClientInfoResponsePacket::decode)
 				.consumer(ClientInfoResponsePacket::handle).add();
 
-		networkChannel.messageBuilder(UpdateUserDataPacket.class, 0x02, NetworkDirection.PLAY_TO_CLIENT)
+		networkChannel.messageBuilder(UpdateUserDataPacket.class, ++packetId, NetworkDirection.PLAY_TO_CLIENT)
 				.encoder(UpdateUserDataPacket::encode)
 				.decoder(UpdateUserDataPacket::decode)
 				.consumer(UpdateUserDataPacket::handle).add();
 
-		networkChannel.messageBuilder(ClientDashPacket.class, 0x03, NetworkDirection.PLAY_TO_SERVER)
+		networkChannel.messageBuilder(ClientDashPacket.class, ++packetId, NetworkDirection.PLAY_TO_SERVER)
 				.encoder(ClientDashPacket::encode)
 				.decoder(ClientDashPacket::decode)
 				.consumer(ClientDashPacket::handle).add();
 
-		networkChannel.messageBuilder(UpdateUserDataPacket.class, 0x04, NetworkDirection.PLAY_TO_CLIENT)
+		networkChannel.messageBuilder(UpdateUserDataPacket.class, ++packetId, NetworkDirection.PLAY_TO_CLIENT)
 				.encoder(UpdateUserDataPacket::encode)
 				.decoder(UpdateUserDataPacket::decode)
 				.consumer(UpdateUserDataPacket::handle).add();
 
-		networkChannel.messageBuilder(ClientEnvironmentResponsePacket.class, 0x05, NetworkDirection.PLAY_TO_SERVER)
+		networkChannel.messageBuilder(ClientEnvironmentResponsePacket.class, ++packetId, NetworkDirection.PLAY_TO_SERVER)
 				.encoder(ClientEnvironmentResponsePacket::encode)
 				.decoder(ClientEnvironmentResponsePacket::decode)
 				.consumer(ClientEnvironmentResponsePacket::handle).add();
 
-		networkChannel.messageBuilder(ClientEnvironmentRequestPacket.class, 0x06, NetworkDirection.PLAY_TO_CLIENT)
+		networkChannel.messageBuilder(ClientEnvironmentRequestPacket.class, ++packetId, NetworkDirection.PLAY_TO_CLIENT)
 				.encoder(ClientEnvironmentRequestPacket::encode)
 				.decoder(ClientEnvironmentRequestPacket::decode)
 				.consumer(ClientEnvironmentRequestPacket::handle).add();
 
-		networkChannel.messageBuilder(ClientGunInfoPacket.class, 0x07, NetworkDirection.PLAY_TO_SERVER)
+		networkChannel.messageBuilder(ClientGunInfoPacket.class, ++packetId, NetworkDirection.PLAY_TO_SERVER)
 				.encoder(ClientGunInfoPacket::encode)
 				.decoder(ClientGunInfoPacket::decode)
 				.consumer(ClientGunInfoPacket::handle).add();
 
-		/*networkChannel.messageBuilder(ClientClassesHashResponsePacket.class, DEFINIR, NetworkDirection.PLAY_TO_SERVER)
+		/*networkChannel.messageBuilder(ClientClassesHashResponsePacket.class, ++packetId, NetworkDirection.PLAY_TO_SERVER)
 				.encoder(ClientClassesHashResponsePacket::encode)
 				.decoder(ClientClassesHashResponsePacket::decode)
 				.consumer(ClientClassesHashResponsePacket::handle).add();
 
-		networkChannel.messageBuilder(ClientClassesHashRequestPacket.class, DEFINIR, NetworkDirection.PLAY_TO_CLIENT)
+		networkChannel.messageBuilder(ClientClassesHashRequestPacket.class, ++packetId, NetworkDirection.PLAY_TO_CLIENT)
 				.encoder(ClientClassesHashRequestPacket::encode)
 				.decoder(ClientClassesHashRequestPacket::decode)
 				.consumer(ClientClassesHashRequestPacket::handle).add();*/
 
-		networkChannel.messageBuilder(CloseGamePacket.class, 0x08, NetworkDirection.PLAY_TO_CLIENT)
+		networkChannel.messageBuilder(CloseGamePacket.class, ++packetId, NetworkDirection.PLAY_TO_CLIENT)
 				.encoder(CloseGamePacket::encode)
 				.decoder(CloseGamePacket::decode)
 				.consumer(CloseGamePacket::handle).add();
+		
+		networkChannel.messageBuilder(SetClientBindPacket.class, ++packetId, NetworkDirection.PLAY_TO_CLIENT)
+				.encoder(SetClientBindPacket::encode)
+				.decoder(SetClientBindPacket::decode)
+				.consumer(SetClientBindPacket::handle).add();
 	}
 
 	public void handleCommonSetup(FMLCommonSetupEvent event) {
