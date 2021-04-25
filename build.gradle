@@ -125,7 +125,7 @@ task deleteCurrentSource(type: Delete) {
 task processTokens(type: Copy) {
     from sourceSets.main.java
     filter(ReplaceTokens, tokens: [
-    	FULL_MOD_VERSION: version
+    	NETWORK_VERSION: version
     ])
     into "$buildDir/src"
 }
