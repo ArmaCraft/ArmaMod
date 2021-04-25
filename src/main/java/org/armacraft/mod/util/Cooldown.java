@@ -19,7 +19,6 @@ public class Cooldown {
 		long timeNow = System.currentTimeMillis();
 
 		if (!check(key, millis, timeNow)) {
-			System.out.println(timerMap);
 			timerMap.put(key, timeNow);
 			return false;
 		}
