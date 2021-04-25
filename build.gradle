@@ -120,7 +120,7 @@ task deleteParsed(type: Delete) {
 task processTokens(type: Copy) {
     from 'src/main/java'
     filter(ReplaceTokens, tokens: [
-    	NETWORK_VERSION: version
+    	NETWORK_VERSION: version,
     	MOD_VERSION: version
     ])
 	into 'build/parsed/java'
