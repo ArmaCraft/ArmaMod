@@ -26,6 +26,12 @@ buildscript {
     }
 }
 
+import org.gradle.api.InvalidUserDataException;
+
+if (!project.hasProperty("target")) {
+    throw new InvalidUserDataException("Target must be either 'server' or 'client'");
+}
+
 import java.io.ByteArrayOutputStream;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -43,6 +49,7 @@ apply plugin: 'de.undercouch.download'
 targetCompatibility = sourceCompatibility = 1.8
 
 ext {
+	target = project.getProperty("target")
 	downloadedFilesFolder = new File(buildDir, 'downloaded-files')
 	parsedFolder = new File(buildDir.getParent(), './build/parsed')
 	stringObfuscator = false
@@ -58,6 +65,7 @@ ext {
                 "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
                 "MixinConfigs": "armacraft.mixins.json"
     ];
+    srgFile = new File(".", "build/createMcpToSrg/output.tsrg");
 }
 
 // Se tiver ${}, é necessário chamar .toString()
@@ -86,14 +94,19 @@ sourceSets {
             srcDirs = ['src/gradle/resources']
         }
     }
-	parsed {
-		java {
-			srcDirs = ['build/parsed/java']
+}
+
+if (target == 'client') {
+	sourceSets {
+		main {
+			java {
+				srcDirs = ['build/parsed/java']
+			}
+			resources {
+				srcDirs = ['build/parsed/resources']
+			}
+			compileClasspath += project.configurations.runtimeClasspath
 		}
-		resources {
-			srcDirs = ['build/parsed/resources']
-		}
-		compileClasspath += project.configurations.runtimeClasspath
 	}
 }
 
@@ -213,7 +226,13 @@ jar {
 
 jar.finalizedBy('reobfJar')
 
-build.finalizedBy 'buildClient'
+build.finalizedBy 'encryptJars'
+
+if (target == 'client') {
+    jar.archiveFileName = 'ArmaMod-client-unobf.jar'
+    compileJava.dependsOn "copyAndProcessSourcesForPublic"
+	build.finalizedBy 'processClientJars'
+}
 
 publishing {
     publications {
@@ -235,7 +254,7 @@ task deleteParsed(type: Delete) {
 task copyAndProcessSourcesForPublic(type: Copy) {
 	dependsOn deleteParsed
     from 'src/main'
-    into "build/parsed"
+    into 'build/parsed'
     filter { String line ->
     	if (line.contains("@StringObfuscator:on")) {
     		stringObfuscator = true;
@@ -313,41 +332,21 @@ task applyProguard(type: proguard.gradle.ProGuardTask) {
     outjars jar.destinationDirectory.file('ArmaMod-client.jar')
     
     printmapping 'proguard.map'
-
-    finalizedBy "encryptJars"
 }
 
 task deleteUnobf(type: Delete) {
     delete jar.destinationDirectory.file('ArmaMod-client-unobf.jar')
 }
 
+task processClientJars() {
+	finalizedBy "applyProguard"
+}
+
 task encryptJars(type: JavaExec) {
 	dependsOn deleteUnobf
 	classpath = sourceSets.gradle.runtimeClasspath
 	main = 'org.armacraft.gradle.EncryptJarsTask'
-}
-
-task compileForClient(type: JavaCompile) {
-	dependsOn "copyAndProcessSourcesForPublic"
-	source = sourceSets.parsed.java.srcDirs
-	
-	// Inside build folder
-	destinationDirectory = file('build/classes')
-	classpath = sourceSets.parsed.compileClasspath
-}
-
-task makeJarForClient(type: Jar) {
-	dependsOn "compileForClient"
-	finalizedBy "applyProguard"
-    archiveFileName = 'ArmaMod-client-unobf.jar'
-    manifest {
-        attributes(manifestAttributes)
-    }
-    from sourceSets.parsed.output
-}
-
-task buildClient() {
-	finalizedBy "makeJarForClient"
+	shouldRunAfter 'processClientJars'
 }
 
 mixin {
