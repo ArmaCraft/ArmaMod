@@ -69,7 +69,7 @@ ext {
 }
 
 // Se tiver ${}, é necessário chamar .toString()
-version = "${mod_version}.${revision}-${lastCommitShortHash}".toString()
+version = "${mod_version}.${revision}".toString()
 group = 'org.armacraft'
 
 repositories {
@@ -251,54 +251,65 @@ task deleteParsed(type: Delete) {
    delete 'build/parsed'
 }
 
-task copyAndProcessSourcesForPublic(type: Copy) {
+task copyAndProcessResourcesForPublic(type: Copy) {
 	dependsOn deleteParsed
-    from 'src/main'
-    into 'build/parsed'
-    filter { String line ->
-    	if (line.contains("@StringObfuscator:on")) {
-    		stringObfuscator = true;
-    	}
-    	
-    	if (line.contains("@StringObfuscator:off")) {
-    		stringObfuscator = false;
-    	}
-    	
-    	if (!stringObfuscator) {
-    		return line;
-    	}
-    	
-		Pattern pattern = Pattern.compile("\"([^\"]*?)\"");
-		Matcher matcher = pattern.matcher(line);
+	from('src/main/resources') {
+		include '**'
+	}
+    into 'build/parsed/resources'
+}
 
-		StringBuffer sb = new StringBuffer();
-		while (matcher.find()) {
-
-			String teste = matcher.group();
-			String withoutQuotes = teste.substring(1, teste.length() - 1);
-			StringBuilder bytes = new StringBuilder();
-    		
-			boolean isFirst = true;
-
-			for (byte b : withoutQuotes.getBytes()) {
-				if (!isFirst) {
-					bytes.append(",");
+task copyAndProcessSourcesForPublic(type: Copy) {
+	dependsOn copyAndProcessResourcesForPublic
+	filteringCharset = 'UTF-8'
+    from('src/main/java') {
+    	include '**'
+	    filter { String line ->
+	    	if (line.contains("@StringObfuscator:on")) {
+	    		stringObfuscator = true;
+	    	}
+	    	
+	    	if (line.contains("@StringObfuscator:off")) {
+	    		stringObfuscator = false;
+	    	}
+	    	
+	    	if (!stringObfuscator) {
+	    		return line;
+	    	}
+	    	
+			Pattern pattern = Pattern.compile("\"([^\"]*?)\"");
+			Matcher matcher = pattern.matcher(line);
+	
+			StringBuffer sb = new StringBuffer();
+			while (matcher.find()) {
+	
+				String teste = matcher.group();
+				String withoutQuotes = teste.substring(1, teste.length() - 1);
+				StringBuilder bytes = new StringBuilder();
+	    		
+				boolean isFirst = true;
+	
+				for (byte b : withoutQuotes.getBytes()) {
+					if (!isFirst) {
+						bytes.append(",");
+					}
+					isFirst = false;
+	
+					String hexString = "0x" + Integer.toHexString(b);
+					bytes.append(hexString);
 				}
-				isFirst = false;
-
-				String hexString = "0x" + Integer.toHexString(b);
-				bytes.append(hexString);
+				String escaped = "new String(new byte[] { " + bytes.toString() + " })";
+				matcher.appendReplacement(sb, escaped);
+				
+				println("Obfuscating text from "+teste+" to "+escaped)
 			}
-			String escaped = "new String(new byte[] { " + bytes.toString() + " })";
-			matcher.appendReplacement(sb, escaped);
 			
-			println("Obfuscating text from "+teste+" to "+escaped)
-		}
-		
-		matcher.appendTail(sb);
-		
-		return sb.toString();
+			matcher.appendTail(sb);
+			
+			return sb.toString();
+	    }
     }
+    into 'build/parsed/java'
 }
 
 task deleteDownloads(type: Delete) {
@@ -366,5 +377,5 @@ task downloadFiles(type: Download) {
     onlyIfModified true
 }
 
-compileJava.options.encoding = 'UTF-8'
+compileJava.options.encoding = "UTF-8"
 compileJava.dependsOn(downloadFiles)

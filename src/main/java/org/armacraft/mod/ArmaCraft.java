@@ -53,7 +53,7 @@ public class ArmaCraft {
 	// Infelizmente não tem como ofuscar esse field
 	public static final String MODID = "armacraft";
 	// @StringObfuscator:on
-	private static final String NETWORK_VERSION = "@FULL_MOD_VERSION@";
+	private static final String NETWORK_VERSION = "@NETWORK_VERSION@";
 	// @StringObfuscator:off
 	
 	private static ArmaCraft instance;

@@ -3,6 +3,7 @@ package org.armacraft.gradle;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -21,7 +22,7 @@ public class EncryptJarsTask {
 		for (File jarFile : buildOutputFolder.listFiles()) {
 			Map<String, byte[]> jarFiles = new HashMap<>();
 			
-			if (jarFile.getName().endsWith(".jar")) {
+			if (jarFile.getName().contains("client")) {
 				Manifest manifest = null;
 				
 				try (JarInputStream zis = new JarInputStream(new FileInputStream(jarFile))) {
@@ -39,12 +40,7 @@ public class EncryptJarsTask {
 					String fileName = entry.getKey();
 					System.out.println("Encrypting: " + fileName);
 					
-					byte[] input = entry.getValue();
-					
-					for (int i = 0; i < input.length; i++) {
-						// Inverte todos os bits
-						input[i] = (byte) ~input[i];
-					}
+					entry.setValue(Base64.getEncoder().encode(entry.getValue()));
 				});
 
 				try (JarOutputStream zos = new JarOutputStream(new FileOutputStream(new File(buildOutputFolder, FilenameUtils.removeExtension(jarFile.getName()) + ".cz")), manifest)) {

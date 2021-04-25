@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.lang.management.ManagementFactory;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -76,9 +75,9 @@ public class ClientDist implements ArmaDist {
 	private long lastDash = 0L;
 
 	public ClientDist() {
-		checkAndWarnAboutRAM();
-		
 		ClientUtils.deleteArmaModJarFile();
+		
+		checkAndWarnAboutRAM();
 		
 		MinecraftForge.EVENT_BUS.register(this);
 
