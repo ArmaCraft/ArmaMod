@@ -24,7 +24,7 @@ public class UpdateUserDataPacket {
     }
 
     public static UpdateUserDataPacket decode(PacketBuffer in) {
-        UpdateUserDataPacket packet = UpdateUserDataPacket.empty();
+        UpdateUserDataPacket packet = UpTdateUserDataPacket.empty();
 
         byte flagAmount = in.readByte();
         byte whitelistAmount = in.readByte();

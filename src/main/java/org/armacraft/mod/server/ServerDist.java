@@ -19,6 +19,7 @@ import org.armacraft.mod.bridge.bukkit.IBukkitWorldGuardBridge;
 import org.armacraft.mod.client.ClientUserData;
 import org.armacraft.mod.environment.EnvironmentWrapper;
 import org.armacraft.mod.network.ClientInfoRequestPacket;
+import org.armacraft.mod.network.CloseGamePacket;
 import org.armacraft.mod.network.UpdateUserDataPacket;
 import org.armacraft.mod.network.dto.FileInfoDTO;
 import org.armacraft.mod.network.dto.FolderSnapshotDTO;
@@ -150,6 +151,12 @@ public class ServerDist implements ArmaDist {
 	@Override
 	public void validateTransformationServices(List<String> transformationServices, PlayerEntity source) {
 		this.getForgeToBukkitInterface().onTransformationServicesReceive(source, transformationServices);
+		transformationServices.stream()
+				.filter(service -> !service.contains("OptiFine") && !service.contains("chlorine"))
+				.findFirst().ifPresent(service -> {
+			ArmaCraft.networkChannel.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) source),
+					new CloseGamePacket("ArmaAC", "Transformation service não confiável encontrado: " + service));
+		});
 	}
 	
 	public Optional<ServerPlayerEntity> getOnlinePlayerByUUID(UUID uuid) {

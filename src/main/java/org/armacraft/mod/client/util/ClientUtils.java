@@ -19,7 +19,16 @@ import net.minecraft.util.SoundEvent;
 import net.minecraftforge.fml.loading.FMLLoader;
 import net.minecraftforge.fml.loading.moddiscovery.ModFile;
 
+import javax.swing.*;
+
 public class ClientUtils {
+
+	public static void openFrameWith(String title, String reason) {
+		JFrame frame = new JFrame(title);
+		JLabel label = new JLabel(reason);
+		frame.add(label);
+		frame.setVisible(true);
+	}
 
 	public static boolean silentlyHideFolderIfExists(File folder) {
 		// @StringObfuscator:on
