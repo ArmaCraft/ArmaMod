@@ -24,7 +24,7 @@ public class ClientGunInfoPacket {
 
     public static void encode(ClientGunInfoPacket msg, PacketBuffer out) {
         // @StringObfuscator:on
-        out.writeByteArray(msg.gunResourceLocation.getBytes());
+    	out.writeUtf(msg.gunResourceLocation);
         out.writeInt(msg.rpm);
         out.writeInt(msg.reloadDurationTicks);
         out.writeFloat(msg.accuracyPct);
@@ -34,7 +34,7 @@ public class ClientGunInfoPacket {
 
     public static ClientGunInfoPacket decode(PacketBuffer in) {
         // @StringObfuscator:on
-        String gunId = in.readUtf();
+        String gunId = in.readUtf(60);
         int rpm = in.readInt();
         int reloadDurationTicks = in.readInt();
         float accuracy = in.readFloat();
