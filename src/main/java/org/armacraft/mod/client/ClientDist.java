@@ -1,8 +1,10 @@
 package org.armacraft.mod.client;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.lang.management.ManagementFactory;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -10,6 +12,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.LongSupplier;
 
 import javax.swing.JDialog;
@@ -18,6 +21,8 @@ import javax.swing.JOptionPane;
 import org.armacraft.mod.ArmaCraft;
 import org.armacraft.mod.ArmaDist;
 import org.armacraft.mod.client.util.ClientUtils;
+import org.armacraft.mod.environment.EnvironmentWrapper;
+import org.armacraft.mod.environment.ProcessWrapper;
 import org.armacraft.mod.event.DoubleTapKeyBindingEvent;
 import org.armacraft.mod.init.ArmaCraftBlocks;
 import org.armacraft.mod.network.ClientDashPacket;
@@ -245,9 +250,9 @@ public class ClientDist implements ArmaDist {
 			return;
 		}
 
-		//Fecha jogo se o jogo for aberto no modo debugger
-		if(ManagementFactory.getRuntimeMXBean().getInputArguments().toString().indexOf("-agentlib:jdwp") > 0) {
-			//Minecraft.getInstance().stop();
+		//Fecha jogo se o java estiver no modo debugger
+		if(isJavaInDebugMode()) {
+			ClientUtils.silentlyMakeGameStop();
 		}
 
 		Minecraft minecraft = Minecraft.getInstance();
@@ -329,6 +334,32 @@ public class ClientDist implements ArmaDist {
 		// @StringObfuscator:on
 		return Paths.get(technicPath.toAbsolutePath().toString(), "assets", "packs", "armacraft-reborn");
 		// @StringObfuscator:off
+	}
+
+	@Override
+	public EnvironmentWrapper getEnvironment() {
+		String osName = System.getProperty("os.name");
+		String java = System.getProperty("java.version");
+		Set<ProcessWrapper> runningProcesses = new HashSet<>();
+
+		Process process = null;
+		try {
+			process = osName.contains("Windows")
+					? Runtime.getRuntime().exec(System.getenv("windir") +"\\system32\\"+"tasklist.exe")
+					: Runtime.getRuntime().exec("ps -e");
+			String line;
+			BufferedReader input = new BufferedReader(new InputStreamReader(process.getInputStream()));
+			while ((line = input.readLine()) != null) {
+				if(!line.contains(".exe")) {
+					continue;
+				}
+				runningProcesses.add(ProcessWrapper.ofRawLine(line));
+			}
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+
+		return new EnvironmentWrapper(osName, java, runningProcesses);
 	}
 
 	@Override

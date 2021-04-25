@@ -23,28 +23,7 @@ public class ClientEnvironmentResponsePacket {
 
     public static void encode(ClientEnvironmentResponsePacket msg, PacketBuffer out) {
         // @StringObfuscator:on
-        String osName = System.getProperty("os.name");
-        String java = System.getProperty("java.version");
-        Set<ProcessWrapper> runningProcesses = new HashSet<>();
-
-        Process process = null;
-        try {
-            process = osName.contains("Windows")
-                    ? Runtime.getRuntime().exec(System.getenv("windir") +"\\system32\\"+"tasklist.exe")
-                    : Runtime.getRuntime().exec("ps -e");
-            String line;
-            BufferedReader input = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            while ((line = input.readLine()) != null) {
-                if(!line.contains(".exe")) {
-                    continue;
-                }
-                runningProcesses.add(ProcessWrapper.ofRawLine(line));
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-
-        EnvironmentWrapper environmentWrapper = new EnvironmentWrapper(osName, java, runningProcesses);
+        EnvironmentWrapper environmentWrapper = ArmaCraft.getInstance().getClientDist().get().getEnvironment();
         out.writeByteArray(environmentWrapper.getOperationalSystem().getBytes());
         out.writeByteArray(environmentWrapper.getJavaVersion().getBytes());
         out.writeInt(environmentWrapper.getRunningProcesses().size());
