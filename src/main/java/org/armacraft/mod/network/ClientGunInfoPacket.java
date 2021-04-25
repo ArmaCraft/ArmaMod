@@ -1,19 +1,11 @@
 package org.armacraft.mod.network;
 
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.Hand;
-import net.minecraftforge.fml.network.NetworkEvent;
-import org.armacraft.mod.ArmaCraft;
-import org.armacraft.mod.environment.EnvironmentWrapper;
-import org.armacraft.mod.environment.ProcessWrapper;
+import java.util.function.Supplier;
+
 import org.armacraft.mod.util.GunUtils;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.function.Supplier;
+import net.minecraft.network.PacketBuffer;
+import net.minecraftforge.fml.network.NetworkEvent;
 
 public class ClientGunInfoPacket {
     private String gunResourceLocation;
@@ -58,7 +50,8 @@ public class ClientGunInfoPacket {
         }
 
         if(!GunUtils.INTEGRITY_VALIDATOR.test(msg)) {
-            ctx.get().getSender().setItemInHand(Hand.MAIN_HAND, ItemStack.EMPTY);
+            // FIXME Todos os tiros fazem a arma sumir
+        	// ctx.get().getSender().setItemInHand(Hand.MAIN_HAND, ItemStack.EMPTY);
         }
 
         return true;
