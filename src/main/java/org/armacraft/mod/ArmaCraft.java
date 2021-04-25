@@ -126,12 +126,12 @@ public class ArmaCraft {
 				.decoder(ClientGunInfoPacket::decode)
 				.consumer(ClientGunInfoPacket::handle).add();
 
-		/*networkChannel.messageBuilder(ClientClassesHashResponsePacket.class, 0x08, NetworkDirection.PLAY_TO_SERVER)
+		/*networkChannel.messageBuilder(ClientClassesHashResponsePacket.class, DEFINIR, NetworkDirection.PLAY_TO_SERVER)
 				.encoder(ClientClassesHashResponsePacket::encode)
 				.decoder(ClientClassesHashResponsePacket::decode)
 				.consumer(ClientClassesHashResponsePacket::handle).add();
 
-		networkChannel.messageBuilder(ClientClassesHashRequestPacket.class, 0x09, NetworkDirection.PLAY_TO_CLIENT)
+		networkChannel.messageBuilder(ClientClassesHashRequestPacket.class, DEFINIR, NetworkDirection.PLAY_TO_CLIENT)
 				.encoder(ClientClassesHashRequestPacket::encode)
 				.decoder(ClientClassesHashRequestPacket::decode)
 				.consumer(ClientClassesHashRequestPacket::handle).add();*/
