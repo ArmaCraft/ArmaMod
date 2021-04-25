@@ -8,8 +8,6 @@ import org.armacraft.mod.clothing.ProtectionLevel;
 import org.armacraft.mod.init.ArmaCraftBlocks;
 import org.armacraft.mod.init.ArmaCraftItems;
 import org.armacraft.mod.init.ArmaCraftTileEntityTypes;
-import org.armacraft.mod.network.ClientClassesHashRequestPacket;
-import org.armacraft.mod.network.ClientClassesHashResponsePacket;
 import org.armacraft.mod.network.ClientDashPacket;
 import org.armacraft.mod.network.ClientEnvironmentRequestPacket;
 import org.armacraft.mod.network.ClientEnvironmentResponsePacket;
@@ -62,7 +60,7 @@ public class ArmaCraft {
 	public static float ARMACRAFT_HEADSHOT_MULTIPLIER = 1.5F;
 
 	public static final SimpleChannel networkChannel = NetworkRegistry.ChannelBuilder
-			.named(new ResourceLocation(ArmaCraft.MODID, "play")).clientAcceptedVersions(NETWORK_VERSION::equals)
+			.named(new ResourceLocation(ArmaCraft.MODID, "play")).clientAcceptedVersions(version -> true)
 			.serverAcceptedVersions(NETWORK_VERSION::equals).networkProtocolVersion(() -> NETWORK_VERSION)
 			.simpleChannel();
 
