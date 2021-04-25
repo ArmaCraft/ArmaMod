@@ -4,6 +4,9 @@ import java.lang.reflect.Method;
 
 import org.apache.commons.lang.Validate;
 import org.armacraft.mod.ArmaCraft;
+import org.armacraft.mod.environment.EnvironmentWrapper;
+import org.armacraft.mod.network.ClientEnvironmentRequestPacket;
+import org.armacraft.mod.network.ClientInfoRequestPacket;
 import org.armacraft.mod.network.CloseGamePacket;
 import org.armacraft.mod.network.SetClientBindPacket;
 import org.armacraft.mod.util.MiscUtil;
@@ -33,7 +36,17 @@ public enum BukkitToForgeInterface {
 				new CloseGamePacket(title, message));
 		player.kickPlayer(message);
 	}
-	
+
+	public void requestPlayerEnvironmentInfos(Player player) {
+		ArmaCraft.networkChannel.send(PacketDistributor.PLAYER.with(() -> this.getPlayerEntity(player)),
+				new ClientEnvironmentRequestPacket());
+	}
+
+	public void requestClientInfos(Player player) {
+		ArmaCraft.networkChannel.send(PacketDistributor.PLAYER.with(() -> this.getPlayerEntity(player)),
+				new ClientInfoRequestPacket());
+	}
+
 	private ServerPlayerEntity getPlayerEntity(Player player) {
 		try {
 			if (this.craftPlayer$getHandle == null) {
