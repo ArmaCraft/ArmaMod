@@ -16,7 +16,7 @@ public class MinecraftMixin {
 	@Inject(method = "createTitle", at = @At("RETURN"), cancellable = true)
 	public void createTitle(CallbackInfoReturnable<String> a) {
 		// @StringObfuscator:on
-		a.setReturnValue("ARMACRAFT - "+a.getReturnValue());
+		a.setReturnValue("ARMACRAFT @MOD_VERSION@ - "+a.getReturnValue());
 		// @StringObfuscator:off
 	}
 }
