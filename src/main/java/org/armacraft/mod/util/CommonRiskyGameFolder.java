@@ -43,7 +43,8 @@ public class CommonRiskyGameFolder implements RiskyGameFolder {
 				new CommonRiskyGameFolder("./coremods", ".*"),
 				new CommonRiskyGameFolder("./mods", ".*"),
 				new CommonRiskyGameFolder("./bin", "(zip|jar)$"),
-				new CommonRiskyGameFolder("./resourcepacks", ".*")
+				new CommonRiskyGameFolder("./resourcepacks", ".*"),
+				new CommonRiskyGameFolder("./shaderpacks", ".*")
 		});
 		// @StringObfuscator:off
 	}
