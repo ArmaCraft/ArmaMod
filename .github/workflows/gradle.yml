@@ -31,4 +31,4 @@ jobs:
       uses: actions/upload-artifact@v2.2.3
       with:
         name: armamod
-        path: ./build/libs/.*
+        path: ./build/libs/*
