@@ -1,5 +1,6 @@
 package org.armacraft.mod.mixin;
 
+import net.minecraft.potion.Effect;
 import org.armacraft.mod.ArmaCraft;
 import org.armacraft.mod.bridge.IGunImplBridge;
 import org.armacraft.mod.potion.ArmaCraftEffects;
@@ -37,7 +38,8 @@ import net.minecraft.util.text.TranslationTextComponent;
 
 @Mixin(GunImpl.class)
 public abstract class GunImplMixin implements IGunImplBridge {
-	
+
+	@Shadow @Final protected IGunProvider gunProvider;
 	@Shadow
 	@Final
 	protected ItemStack gunStack;
@@ -97,8 +99,12 @@ public abstract class GunImplMixin implements IGunImplBridge {
 		if (!hitLiving.getEntity().isDeadOrDying()) {
 			// Acertar o tiro
 			this.hitEntity(player, hitLiving.getEntity(), pendingHit.getHitSnapshot().getPos(), false);
-			if(hitLiving.getEntity().getActiveEffectsMap().containsKey(ArmaCraftEffects.ARMACRAFT_SPEED.get())) {
-				hitLiving.getEntity().removeEffect(ArmaCraftEffects.ARMACRAFT_SPEED.get());
+			String gunPath = this.gunStack.getItem().getRegistryName().getPath();
+			if(gunPath.equalsIgnoreCase("awp") || gunPath.equals("m107")) {
+				Effect speedEffect = ArmaCraftEffects.ARMACRAFT_SPEED.get();
+				if(hitLiving.getEntity().getActiveEffectsMap().containsKey(speedEffect)) {
+					hitLiving.getEntity().removeEffect(speedEffect);
+				}
 			}
 		}
 		
