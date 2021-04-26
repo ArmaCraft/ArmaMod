@@ -2,6 +2,7 @@ package org.armacraft.mod.mixin;
 
 import org.armacraft.mod.ArmaCraft;
 import org.armacraft.mod.bridge.IGunImplBridge;
+import org.armacraft.mod.potion.ArmaCraftEffects;
 import org.armacraft.mod.server.ServerDist;
 import org.armacraft.mod.util.GunUtils;
 import org.armacraft.mod.util.MiscUtil;
@@ -96,6 +97,9 @@ public abstract class GunImplMixin implements IGunImplBridge {
 		if (!hitLiving.getEntity().isDeadOrDying()) {
 			// Acertar o tiro
 			this.hitEntity(player, hitLiving.getEntity(), pendingHit.getHitSnapshot().getPos(), false);
+			if(hitLiving.getEntity().getActiveEffectsMap().containsKey(ArmaCraftEffects.ARMACRAFT_SPEED.get())) {
+				hitLiving.getEntity().removeEffect(ArmaCraftEffects.ARMACRAFT_SPEED.get());
+			}
 		}
 		
 		// Som de plim
