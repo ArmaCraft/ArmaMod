@@ -96,19 +96,14 @@ sourceSets {
             srcDirs = ['src/gradle/resources']
         }
     }
-}
-
-if (target == 'client') {
-	sourceSets {
-		main {
-			java {
-				srcDirs = ['build/parsed/java']
-			}
-			resources {
-				srcDirs = ['build/parsed/resources']
-			}
-			compileClasspath += project.configurations.runtimeClasspath
+	main {
+		java {
+			srcDirs = ['build/parsed/java']
 		}
+		resources {
+			srcDirs = ['build/parsed/resources']
+		}
+		compileClasspath += project.configurations.runtimeClasspath
 	}
 }
 
@@ -118,21 +113,31 @@ configurations {
 
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
 
-task deleteCurrentSource(type: Delete) {
-   delete '$buildDir/src'
+task deleteParsed(type: Delete) {
+   delete 'build/parsed'
 }
 
 task processTokens(type: Copy) {
-    from sourceSets.main.java
+	filteringCharset = 'UTF-8'
+    from 'src/main/java'
     filter(ReplaceTokens, tokens: [
-    	NETWORK_VERSION: version
+    	NETWORK_VERSION: version,
+    	MOD_VERSION: version
     ])
-    into "$buildDir/src"
+	into 'build/parsed/java'
+	dependsOn 'deleteParsed'
+	dependsOn 'copyResources'
+}
+
+if (target == 'client') {
+	processTokens.finalizedBy 'copyAndProcessSourcesForPublic'
 }
 
 compileJava {
     source = processTokens.outputs
 }
+
+compileJava.dependsOn processTokens
 
 println('Java: ' + System.getProperty('java.version') + ' JVM: ' + System.getProperty('java.vm.version') + '(' + System.getProperty('java.vendor') + ') Arch: ' + System.getProperty('os.arch'))
 minecraft {
@@ -228,12 +233,9 @@ jar {
 
 jar.finalizedBy('reobfJar')
 
-build.finalizedBy 'encryptJars'
-
 if (target == 'client') {
     jar.archiveFileName = 'ArmaMod-client-unobf.jar'
-    compileJava.dependsOn "copyAndProcessSourcesForPublic"
-	build.finalizedBy 'processClientJars'
+	build.finalizedBy 'applyProguard'
 }
 
 publishing {
@@ -249,12 +251,8 @@ publishing {
     }
 }
 
-task deleteParsed(type: Delete) {
-   delete 'build/parsed'
-}
-
-task copyAndProcessResourcesForPublic(type: Copy) {
-	dependsOn deleteParsed
+task copyResources(type: Copy) {
+	shouldRunAfter 'deleteParsed'
 	from('src/main/resources') {
 		include '**'
 	}
@@ -262,9 +260,8 @@ task copyAndProcessResourcesForPublic(type: Copy) {
 }
 
 task copyAndProcessSourcesForPublic(type: Copy) {
-	dependsOn copyAndProcessResourcesForPublic
 	filteringCharset = 'UTF-8'
-    from('src/main/java') {
+    from('build/parsed/java') {
     	include '**'
 	    filter { String line ->
 	    	if (line.contains("@StringObfuscator:on")) {
@@ -291,19 +288,20 @@ task copyAndProcessSourcesForPublic(type: Copy) {
 	    		
 				boolean isFirst = true;
 	
-				for (byte b : withoutQuotes.getBytes()) {
+				for (byte b : withoutQuotes.getBytes("Cp1252")) {
 					if (!isFirst) {
 						bytes.append(",");
 					}
 					isFirst = false;
 	
-					String hexString = "0x" + Integer.toHexString(b);
+					String hexString = "(byte) (0x" + String.format("%02x", b) + " & 0xFF)";
 					bytes.append(hexString);
 				}
 				String escaped = "new String(new byte[] { " + bytes.toString() + " })";
 				matcher.appendReplacement(sb, escaped);
 				
-				println("Obfuscating text from "+teste+" to "+escaped)
+				println("Obfuscating text from '"+withoutQuotes+"' to "+escaped)
+				println(line);
 			}
 			
 			matcher.appendTail(sb);
@@ -311,8 +309,16 @@ task copyAndProcessSourcesForPublic(type: Copy) {
 			return sb.toString();
 	    }
     }
-    into 'build/parsed/java'
+    into 'build/parsed/java_out'
+    finalizedBy 'overrideJavaSources'
 }
+
+task overrideJavaSources(type: Copy) {
+	filteringCharset = 'UTF-8'
+	from 'build/parsed/java_out'
+	into 'build/parsed/java'
+}
+
 
 task deleteDownloads(type: Delete) {
     delete downloadedFilesFolder
@@ -345,21 +351,16 @@ task applyProguard(type: proguard.gradle.ProGuardTask) {
     outjars jar.destinationDirectory.file('ArmaMod-client.jar')
     
     printmapping 'proguard.map'
-}
-
-task deleteUnobf(type: Delete) {
-    delete jar.destinationDirectory.file('ArmaMod-client-unobf.jar')
-}
-
-task processClientJars() {
-	finalizedBy "applyProguard"
+    finalizedBy 'encryptJars'
+    doLast {
+    	// Apaga a jar desofuscada
+    	jar.destinationDirectory.file('ArmaMod-client-unobf.jar').get().getAsFile().delete();
+    }
 }
 
 task encryptJars(type: JavaExec) {
-	dependsOn deleteUnobf
 	classpath = sourceSets.gradle.runtimeClasspath
 	main = 'org.armacraft.gradle.EncryptJarsTask'
-	shouldRunAfter 'processClientJars'
 }
 
 mixin {
