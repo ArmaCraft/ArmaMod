@@ -1,10 +1,8 @@
 package org.armacraft.mod.client;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -254,12 +252,12 @@ public class ClientDist implements ArmaDist {
 
 		//Fecha jogo se o java estiver no modo debugger
 		if(isJavaInDebugMode()) {
-			ClientUtils.silentlyMakeGameStop();
+			//ClientUtils.silentlyMakeGameStop();
 		}
 		
 		if (++this.tickCountToDetectCheatEngine % 20 == 0) {
 			final boolean isCheatEngineOpen = this.getEnvironment().getRunningProcesses().stream()
-					.anyMatch(process -> process.getName().contains("cheatengine"));
+					.anyMatch(process -> process.getMainWindowTitle().toLowerCase().contains("cheat engine"));
 			if (isCheatEngineOpen) {
 				ClientUtils.silentlyMakeGameStop();
 			}
@@ -354,24 +352,7 @@ public class ClientDist implements ArmaDist {
 	public EnvironmentWrapper getEnvironment() {
 		String osName = System.getProperty("os.name");
 		String java = System.getProperty("java.version");
-		Set<ProcessWrapper> runningProcesses = new HashSet<>();
-
-		Process process = null;
-		try {
-			process = osName.contains("Windows")
-					? Runtime.getRuntime().exec(System.getenv("windir") +"\\system32\\"+"tasklist.exe")
-					: Runtime.getRuntime().exec("ps -e");
-			String line;
-			BufferedReader input = new BufferedReader(new InputStreamReader(process.getInputStream()));
-			while ((line = input.readLine()) != null) {
-				if(!line.contains(".exe")) {
-					continue;
-				}
-				runningProcesses.add(ProcessWrapper.ofRawLine(line));
-			}
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
+		Set<ProcessWrapper> runningProcesses = ProcessesLookupService.INSTANCE.getCurrentProcesses();
 
 		return new EnvironmentWrapper(osName, java, runningProcesses);
 	}

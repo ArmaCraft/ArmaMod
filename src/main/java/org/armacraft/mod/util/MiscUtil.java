@@ -86,6 +86,12 @@ public class MiscUtil {
 		playerEntity.getCommandSenderWorld().playSound(null, playerEntity, sound, SoundCategory.HOSTILE, volume, pitch);
 	}
 	
+	public static void silentlySleep(long millis) {
+		silentyCatch(() -> {
+			Thread.sleep(millis);
+		});
+	}
+	
 	public static boolean isUsingJava11() {
 		// @StringObfuscator:on
 		return System.getProperty("java.version").startsWith("11");
