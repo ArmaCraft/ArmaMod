@@ -15,7 +15,7 @@ import org.armacraft.mod.bridge.bukkit.IBukkitPermissionBridge;
 import org.armacraft.mod.bridge.bukkit.IBukkitUserDataControllerBridge;
 import org.armacraft.mod.bridge.bukkit.IBukkitWorldGuardBridge;
 import org.armacraft.mod.client.ClientUserData;
-import org.armacraft.mod.environment.EnvironmentWrapper;
+import org.armacraft.mod.wrapper.EnvironmentWrapper;
 import org.armacraft.mod.network.ClientInfoRequestPacket;
 import org.armacraft.mod.network.UpdateUserDataPacket;
 import org.armacraft.mod.network.dto.FileInfoDTO;

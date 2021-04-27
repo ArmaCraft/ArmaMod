@@ -1,4 +1,4 @@
-package org.armacraft.mod.environment;
+package org.armacraft.mod.wrapper;
 
 public class ProcessWrapper {
     private String name;

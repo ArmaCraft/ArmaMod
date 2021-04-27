@@ -11,6 +11,7 @@ import org.armacraft.mod.bridge.IGunImplBridge;
 import org.armacraft.mod.network.ClientGunInfoPacket;
 import org.armacraft.mod.network.ClientInfoResponsePacket;
 import org.armacraft.mod.util.GunUtils;
+import org.armacraft.mod.wrapper.GunInfoWrapper;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -80,12 +81,12 @@ public abstract class GunClientImplMixin {
 		if(stack.getItem() instanceof GunItem) {
 			GunItem gunItem = (GunItem) stack.getItem();
 			ArmaCraft.networkChannel.send(PacketDistributor.SERVER.noArg(),
-					new ClientGunInfoPacket(
+					new ClientGunInfoPacket(new GunInfoWrapper(
 							gunItem.getRegistryName().getPath(),
-							gunItem.getAccuracyPct(),
 							gunItem.getFireRateRPM(),
-							gunItem.getBulletAmountToFire(),
-							gunItem.getReloadDurationTicks()));
+							gunItem.getReloadDurationTicks(),
+							gunItem.getAccuracyPct(),
+							gunItem.getBulletAmountToFire())));
 		}
 
 	}

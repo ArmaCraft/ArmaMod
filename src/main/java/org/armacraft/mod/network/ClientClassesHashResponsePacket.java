@@ -2,18 +2,11 @@ package org.armacraft.mod.network;
 
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkEvent;
-import net.minecraftforge.fml.network.PacketDistributor;
 import org.armacraft.mod.ArmaCraft;
-import org.armacraft.mod.environment.EnvironmentWrapper;
-import org.armacraft.mod.environment.ProcessWrapper;
 import org.armacraft.mod.util.Cooldown;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.lang.reflect.Field;
 import java.security.MessageDigest;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.Vector;
 import java.util.function.Supplier;
 

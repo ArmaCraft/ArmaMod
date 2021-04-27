@@ -1,22 +1,21 @@
 package org.armacraft.mod.server.bukkit.event;
 
-import org.armacraft.mod.wrapper.EnvironmentWrapper;
+import org.armacraft.mod.wrapper.GunInfoWrapper;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.player.PlayerEvent;
 
-public class PlayerSentEnvironmentEvent extends PlayerEvent {
-
+public class PlayerNoGunIntegrityEvent extends PlayerEvent {
+    private GunInfoWrapper gunInfo;
     private static final HandlerList handlers = new HandlerList();
-    private EnvironmentWrapper environment;
 
-    public PlayerSentEnvironmentEvent(Player who, EnvironmentWrapper environment) {
+    public PlayerNoGunIntegrityEvent(Player who, GunInfoWrapper wrapper) {
         super(who);
-        this.environment = environment;
+        this.gunInfo = wrapper;
     }
 
-    public EnvironmentWrapper getEnvironment() {
-        return this.environment;
+    public GunInfoWrapper getGunInfo() {
+        return gunInfo;
     }
 
     @Override
@@ -28,4 +27,3 @@ public class PlayerSentEnvironmentEvent extends PlayerEvent {
         return handlers;
     }
 }
-

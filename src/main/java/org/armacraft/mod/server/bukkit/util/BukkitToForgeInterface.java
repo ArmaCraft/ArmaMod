@@ -4,7 +4,6 @@ import java.lang.reflect.Method;
 
 import org.apache.commons.lang.Validate;
 import org.armacraft.mod.ArmaCraft;
-import org.armacraft.mod.environment.EnvironmentWrapper;
 import org.armacraft.mod.network.ClientEnvironmentRequestPacket;
 import org.armacraft.mod.network.ClientInfoRequestPacket;
 import org.armacraft.mod.network.CloseGamePacket;

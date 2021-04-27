@@ -14,14 +14,15 @@ import net.minecraftforge.fml.RegistryObject;
 import org.armacraft.mod.ArmaCraft;
 import org.armacraft.mod.client.ClientDist;
 import org.armacraft.mod.network.ClientGunInfoPacket;
+import org.armacraft.mod.wrapper.GunInfoWrapper;
 
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
 public class GunUtils {
-    public static Predicate<ClientGunInfoPacket> INTEGRITY_VALIDATOR = (info) -> {
-        Optional<RegistryObject<Item>> optItem = MiscUtil.GET_CD_REGISTRY.apply(info.getGunResourceLocation());
+    public static Predicate<GunInfoWrapper> INTEGRITY_VALIDATOR = (info) -> {
+        Optional<RegistryObject<Item>> optItem = MiscUtil.GET_CD_REGISTRY.apply(info.getGunResourcePath());
         if (optItem.isPresent()) {
             Item item = optItem.get().get();
             if (item instanceof GunItem) {

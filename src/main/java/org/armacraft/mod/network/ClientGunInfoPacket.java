@@ -8,29 +8,22 @@ import org.armacraft.mod.util.GunUtils;
 
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkEvent;
+import org.armacraft.mod.wrapper.GunInfoWrapper;
 
 public class ClientGunInfoPacket {
-    private String gunResourceLocation;
-    private int rpm;
-    private int reloadDurationTicks;
-    private float accuracyPct;
-    private int bulletAmountToFire;
+    private GunInfoWrapper gunInfos;
 
-    public ClientGunInfoPacket(String gunResourceLocation, float accuracyPct, int rpm, int bulletAmountToFire, int reloadDurationTicks) {
-        this.gunResourceLocation = gunResourceLocation;
-        this.accuracyPct = accuracyPct;
-        this.bulletAmountToFire = bulletAmountToFire;
-        this.rpm = rpm;
-        this.reloadDurationTicks = reloadDurationTicks;
+    public ClientGunInfoPacket(GunInfoWrapper infos) {
+        this.gunInfos = infos;
     }
 
     public static void encode(ClientGunInfoPacket msg, PacketBuffer out) {
         // @StringObfuscator:on
-    	out.writeUtf(msg.gunResourceLocation);
-        out.writeInt(msg.rpm);
-        out.writeInt(msg.reloadDurationTicks);
-        out.writeFloat(msg.accuracyPct);
-        out.writeInt(msg.bulletAmountToFire);
+    	out.writeUtf(msg.gunInfos.getGunResourcePath());
+        out.writeInt(msg.gunInfos.getRpm());
+        out.writeInt(msg.gunInfos.getReloadDurationTicks());
+        out.writeFloat(msg.gunInfos.getAccuracyPct());
+        out.writeInt(msg.gunInfos.getBulletAmountToFire());
         // @StringObfuscator:off
     }
 
@@ -43,7 +36,7 @@ public class ClientGunInfoPacket {
         int bulletAmountToFire = in.readInt();
         // @StringObfuscator:off
 
-        return new ClientGunInfoPacket(gunId, accuracy, rpm, bulletAmountToFire, reloadDurationTicks);
+        return new ClientGunInfoPacket(new GunInfoWrapper(gunId, rpm, reloadDurationTicks, accuracy, bulletAmountToFire));
     }
 
     public static boolean handle(ClientGunInfoPacket msg, Supplier<NetworkEvent.Context> ctx) {
@@ -51,30 +44,10 @@ public class ClientGunInfoPacket {
             return true;
         }
 
-        if(!GunUtils.INTEGRITY_VALIDATOR.test(msg)) {
+        if(!GunUtils.INTEGRITY_VALIDATOR.test(msg.gunInfos)) {
         	ctx.get().getSender().setItemInHand(Hand.MAIN_HAND, ItemStack.EMPTY);
         }
 
         return true;
-    }
-
-    public String getGunResourceLocation() {
-        return gunResourceLocation;
-    }
-
-    public int getRpm() {
-        return rpm;
-    }
-
-    public int getReloadDurationTicks() {
-        return reloadDurationTicks;
-    }
-
-    public float getAccuracyPct() {
-        return accuracyPct;
-    }
-
-    public int getBulletAmountToFire() {
-        return bulletAmountToFire;
     }
 }

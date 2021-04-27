@@ -2,7 +2,7 @@ package org.armacraft.mod.server.bukkit.util;
 
 import java.util.List;
 
-import org.armacraft.mod.environment.EnvironmentWrapper;
+import org.armacraft.mod.wrapper.EnvironmentWrapper;
 import org.armacraft.mod.network.dto.FileInfoDTO;
 import org.armacraft.mod.server.bukkit.event.PlayerDashEvent;
 import org.armacraft.mod.server.bukkit.event.PlayerMissingFilesEvent;
