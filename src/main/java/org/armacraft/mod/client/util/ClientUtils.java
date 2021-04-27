@@ -78,7 +78,6 @@ public class ClientUtils {
 			// Se por acaso o jogo não fechar no próximo tick...
 			// Escrevi qualquer merda no nome do erro AUHSAUHSUHASUH
 			Minecraft.getInstance().delayCrash(new CrashReport("Failed at 0x00000AAAADE6FBC4", null));
-			System.exit(-1);
 		});
 		// @StringObfuscator:off
 	}
