@@ -1,7 +1,9 @@
 package org.armacraft.mod.mixin;
 
+import net.minecraft.potion.Effect;
 import org.armacraft.mod.ArmaCraft;
 import org.armacraft.mod.bridge.IGunImplBridge;
+import org.armacraft.mod.potion.ArmaCraftEffects;
 import org.armacraft.mod.server.ServerDist;
 import org.armacraft.mod.util.GunUtils;
 import org.armacraft.mod.util.MiscUtil;
@@ -36,7 +38,8 @@ import net.minecraft.util.text.TranslationTextComponent;
 
 @Mixin(GunImpl.class)
 public abstract class GunImplMixin implements IGunImplBridge {
-	
+
+	@Shadow @Final protected IGunProvider gunProvider;
 	@Shadow
 	@Final
 	protected ItemStack gunStack;
@@ -96,6 +99,16 @@ public abstract class GunImplMixin implements IGunImplBridge {
 		if (!hitLiving.getEntity().isDeadOrDying()) {
 			// Acertar o tiro
 			this.hitEntity(player, hitLiving.getEntity(), pendingHit.getHitSnapshot().getPos(), false);
+			String gunPath = this.gunStack.getItem().getRegistryName().getPath();
+			if(gunPath.equalsIgnoreCase("awp") || gunPath.equals("m107")) {
+				Effect speedEffect = ArmaCraftEffects.ARMACRAFT_SPEED.get();
+				if(hitLiving.getEntity().getActiveEffectsMap().containsKey(speedEffect)) {
+					MiscUtil.playSoundAtEntity(hitLiving.getEntity(), SoundEvents.STONE_BREAK, 1.0f, 1.0f);
+					hitLiving.getEntity().sendMessage(new TranslationTextComponent("message.sniper_stun")
+							.setStyle(Style.EMPTY.applyFormat(TextFormatting.RED).withBold(true)), Util.NIL_UUID);
+					hitLiving.getEntity().removeEffect(speedEffect);
+				}
+			}
 		}
 		
 		// Som de plim

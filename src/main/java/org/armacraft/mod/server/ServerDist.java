@@ -171,4 +171,16 @@ public class ServerDist implements ArmaDist {
 	public EnvironmentWrapper getEnvironment() {
 		return null;
 	}
+
+	public List<String> getExtraHashes() {
+		return extraHashes;
+	}
+
+	public List<String> getMandatoryHashes() {
+		return mandatoryHashes;
+	}
+
+	public Map<UUID, Long> getLastClientInfoRequest() {
+		return lastClientInfoRequest;
+	}
 }
