@@ -29,6 +29,10 @@ public class ClientRiskyGameFolder extends CommonRiskyGameFolder {
 		return this.folderFile;
 	}
 	
+	public boolean folderExists() {
+		return this.getFolder().exists();
+	}
+	
 	public static List<ClientRiskyGameFolder> allClientRiskyFolders() {
 		// @StringObfuscator:on
 		
@@ -57,7 +61,7 @@ public class ClientRiskyGameFolder extends CommonRiskyGameFolder {
 	}
 	
 	public static List<FolderSnapshotDTO> createSnapshotsOfAllRiskyFolders() {
-		return allClientRiskyFolders().stream().map(folder -> folder.createSnapshot()).collect(Collectors.toList());
+		return allClientRiskyFolders().stream().filter(folder -> folder.folderExists()).map(folder -> folder.createSnapshot()).collect(Collectors.toList());
 	}
 	
 	public FolderSnapshotDTO createSnapshot() {
