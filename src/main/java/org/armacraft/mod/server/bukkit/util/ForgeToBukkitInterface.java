@@ -15,7 +15,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 public interface ForgeToBukkitInterface {
 	void onDash(PlayerEntity entity);
 	void onCheatEngineOpened(PlayerEntity who);
-	void onGunNoIntegrity(PlayerEntity player, GunInfoWrapper infos);
+	void onGunNoIntegrity(PlayerEntity who, GunInfoWrapper clientInfos, GunInfoWrapper serverInfos);
 	void onNoClassesIntegrity(PlayerEntity who, String hash, List<String> expectedHashes);
 	void onEnvironmentReceive(PlayerEntity who, EnvironmentWrapper environmentWrapper);
 	void onMissingFile(PlayerEntity entity, List<String> missingHashes);

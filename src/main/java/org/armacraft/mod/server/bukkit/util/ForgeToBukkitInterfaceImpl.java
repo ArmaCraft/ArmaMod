@@ -35,8 +35,8 @@ public enum ForgeToBukkitInterfaceImpl implements ForgeToBukkitInterface {
 	}
 
 	@Override
-	public void onGunNoIntegrity(PlayerEntity player, GunInfoWrapper infos) {
-		Bukkit.getPluginManager().callEvent(new PlayerNoGunIntegrityEvent(this.getBukkitPlayer(player), infos));
+	public void onGunNoIntegrity(PlayerEntity player, GunInfoWrapper clientInfos, GunInfoWrapper serverInfos) {
+		Bukkit.getPluginManager().callEvent(new PlayerNoGunIntegrityEvent(this.getBukkitPlayer(player), clientInfos, serverInfos));
 	}
 
 	@Override

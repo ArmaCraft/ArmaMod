@@ -47,7 +47,7 @@ public class ClientGunInfoPacket {
 
         if(!GunUtils.INTEGRITY_VALIDATOR.test(msg.gunInfos)) {
         	ctx.get().getSender().setItemInHand(Hand.MAIN_HAND, ItemStack.EMPTY);
-            ForgeToBukkitInterfaceImpl.INSTANCE.onGunNoIntegrity(ctx.get().getSender(), msg.gunInfos);
+            ForgeToBukkitInterfaceImpl.INSTANCE.onGunNoIntegrity(ctx.get().getSender(), msg.gunInfos, GunUtils.GET_SERVER_GUN_INFO.apply(msg.gunInfos.getGunResourcePath()).get());
         }
 
         return true;

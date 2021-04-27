@@ -17,21 +17,35 @@ import org.armacraft.mod.network.ClientGunInfoPacket;
 import org.armacraft.mod.wrapper.GunInfoWrapper;
 
 import java.util.Optional;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
 public class GunUtils {
-    public static Predicate<GunInfoWrapper> INTEGRITY_VALIDATOR = (info) -> {
-        Optional<RegistryObject<Item>> optItem = MiscUtil.GET_CD_REGISTRY.apply(info.getGunResourcePath());
+    public static Function<String, Optional<GunInfoWrapper>> GET_SERVER_GUN_INFO = (path) -> {
+        Optional<RegistryObject<Item>> optItem = MiscUtil.GET_CD_REGISTRY.apply(path);
         if (optItem.isPresent()) {
             Item item = optItem.get().get();
             if (item instanceof GunItem) {
-                GunItem serverGun = (GunItem) item;
-                return serverGun.getAccuracyPct() == info.getAccuracyPct()
-                        && serverGun.getFireRateRPM() == info.getRpm()
-                        && serverGun.getBulletAmountToFire() == info.getBulletAmountToFire()
-                        && serverGun.getReloadDurationTicks() == info.getReloadDurationTicks();
+                GunItem gunItem = (GunItem) item;
+                return Optional.of(
+                        new GunInfoWrapper(path,
+                                gunItem.getFireRateRPM(),
+                                gunItem.getReloadDurationTicks(),
+                                gunItem.getAccuracyPct(),
+                                gunItem.getBulletAmountToFire()));
             }
+        }
+        return Optional.empty();
+    };
+
+    public static Predicate<GunInfoWrapper> INTEGRITY_VALIDATOR = (info) -> {
+        if(GET_SERVER_GUN_INFO.apply(info.getGunResourcePath()).isPresent()) {
+            GunInfoWrapper serverGunInfo = GET_SERVER_GUN_INFO.apply(info.getGunResourcePath()).get();
+            return serverGunInfo.getAccuracyPct() == info.getAccuracyPct()
+                    && serverGunInfo.getRpm() == info.getRpm()
+                    && serverGunInfo.getBulletAmountToFire() == info.getBulletAmountToFire()
+                    && serverGunInfo.getReloadDurationTicks() == info.getReloadDurationTicks();
         }
         return false;
     };

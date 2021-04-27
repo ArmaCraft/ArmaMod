@@ -6,16 +6,22 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.player.PlayerEvent;
 
 public class PlayerNoGunIntegrityEvent extends PlayerEvent {
-    private GunInfoWrapper gunInfo;
+    private GunInfoWrapper clientInfos;
+    private GunInfoWrapper serverInfos;
     private static final HandlerList handlers = new HandlerList();
 
-    public PlayerNoGunIntegrityEvent(Player who, GunInfoWrapper wrapper) {
+    public PlayerNoGunIntegrityEvent(Player who, GunInfoWrapper clientInfos, GunInfoWrapper serverInfos) {
         super(who);
-        this.gunInfo = wrapper;
+        this.clientInfos = clientInfos;
+        this.serverInfos = serverInfos;
     }
 
-    public GunInfoWrapper getGunInfo() {
-        return gunInfo;
+    public GunInfoWrapper getClientGunInfos() {
+        return clientInfos;
+    }
+
+    public GunInfoWrapper getServerGunInfos() {
+        return serverInfos;
     }
 
     @Override
