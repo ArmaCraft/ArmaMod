@@ -103,6 +103,9 @@ public abstract class GunImplMixin implements IGunImplBridge {
 			if(gunPath.equalsIgnoreCase("awp") || gunPath.equals("m107")) {
 				Effect speedEffect = ArmaCraftEffects.ARMACRAFT_SPEED.get();
 				if(hitLiving.getEntity().getActiveEffectsMap().containsKey(speedEffect)) {
+					MiscUtil.playSoundAtEntity(hitLiving.getEntity(), SoundEvents.STONE_BREAK, 1.0f, 1.0f);
+					hitLiving.getEntity().sendMessage(new TranslationTextComponent("message.sniper_stun")
+							.setStyle(Style.EMPTY.applyFormat(TextFormatting.RED).withBold(true)), Util.NIL_UUID);
 					hitLiving.getEntity().removeEffect(speedEffect);
 				}
 			}

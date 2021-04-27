@@ -7,5 +7,6 @@
     "item.armacraft.silver_medal": "Silver Medal",
     "item.armacraft.gold_medal": "Gold Medal",
   
-    "message.no_skin_permission": "You don't have enough permission."
-  }
+    "message.no_skin_permission": "You don't have enough permission.",
+    "message.sniper_stun": "You was stunned by a sniper"
+}
