@@ -4,6 +4,7 @@ import java.util.function.Supplier;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Hand;
+import org.armacraft.mod.server.bukkit.util.ForgeToBukkitInterfaceImpl;
 import org.armacraft.mod.util.GunUtils;
 
 import net.minecraft.network.PacketBuffer;
@@ -46,6 +47,7 @@ public class ClientGunInfoPacket {
 
         if(!GunUtils.INTEGRITY_VALIDATOR.test(msg.gunInfos)) {
         	ctx.get().getSender().setItemInHand(Hand.MAIN_HAND, ItemStack.EMPTY);
+            ForgeToBukkitInterfaceImpl.INSTANCE.onGunNoIntegrity(ctx.get().getSender(), msg.gunInfos);
         }
 
         return true;
