@@ -394,8 +394,8 @@ public class ClientDist implements ArmaDist {
 		if (maxMB <= MINIMUM_MEMORY_FOR_NOT_JAVA11) {
 			if (!MiscUtil.isUsingJava11()) {
 				// @StringObfuscator:on
-				ClientUtils.openFrameWith("AVISO", "<html><body width='400'>Você NÃO está usando o Java 11 e está usando menos que " + MINIMUM_MEMORY_FOR_NOT_JAVA11
-									+ " MB de RAM no modpack.<br>Use nosso instalador do Java 11 para Technic: https://armacraft.net/java");
+				ClientUtils.openFrameWith("AVISO", "<html><body width='600'><center>Você NÃO está usando o Java 11 e está usando menos que " + MINIMUM_MEMORY_FOR_NOT_JAVA11
+									+ " MB de RAM no modpack.<br>Use nosso instalador do Java 11 para Technic: https://armacraft.net/java<br><br>Você pode continuar jogando com seu Java atual, mas se não aumentar sua RAM<br>ou se não mudar para o Java 11, seu jogo poderá ficar meio lagado.<br>Dado o aviso, você pode continuar jogando como está, se quiser.</center>");
 				// @StringObfuscator:off
 			}
 		}
