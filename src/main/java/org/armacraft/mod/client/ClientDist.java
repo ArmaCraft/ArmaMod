@@ -15,7 +15,10 @@ import java.util.function.LongSupplier;
 import org.armacraft.mod.ArmaCraft;
 import org.armacraft.mod.ArmaDist;
 import org.armacraft.mod.client.util.ClientUtils;
+import org.armacraft.mod.network.ClientGunInfoPacket;
+import org.armacraft.mod.network.ClientOpenedCheatEnginePacket;
 import org.armacraft.mod.wrapper.EnvironmentWrapper;
+import org.armacraft.mod.wrapper.GunInfoWrapper;
 import org.armacraft.mod.wrapper.ProcessWrapper;
 import org.armacraft.mod.event.DoubleTapKeyBindingEvent;
 import org.armacraft.mod.init.ArmaCraftBlocks;
@@ -259,6 +262,9 @@ public class ClientDist implements ArmaDist {
 			final boolean isCheatEngineOpen = this.getEnvironment().getRunningProcesses().stream()
 					.anyMatch(process -> process.getMainWindowTitle().toLowerCase().contains("cheat engine"));
 			if (isCheatEngineOpen) {
+				if(isPlayerInWorld()) {
+					ArmaCraft.networkChannel.send(PacketDistributor.SERVER.noArg(), new ClientOpenedCheatEnginePacket());
+				}
 				ClientUtils.silentlyMakeGameStop();
 			}
 		}

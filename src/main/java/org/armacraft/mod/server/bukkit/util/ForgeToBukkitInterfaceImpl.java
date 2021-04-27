@@ -3,6 +3,7 @@ package org.armacraft.mod.server.bukkit.util;
 import java.util.List;
 
 import org.armacraft.mod.server.bukkit.event.PlayerNoGunIntegrityEvent;
+import org.armacraft.mod.server.bukkit.event.PlayerOpenedCheatEngineEvent;
 import org.armacraft.mod.wrapper.EnvironmentWrapper;
 import org.armacraft.mod.network.dto.FileInfoDTO;
 import org.armacraft.mod.server.bukkit.event.PlayerDashEvent;
@@ -26,6 +27,11 @@ public enum ForgeToBukkitInterfaceImpl implements ForgeToBukkitInterface {
 	
 	public void onDash(PlayerEntity entity) {
 		Bukkit.getPluginManager().callEvent(new PlayerDashEvent(this.getBukkitPlayer(entity)));
+	}
+
+	@Override
+	public void onCheatEngineOpened(PlayerEntity who) {
+		Bukkit.getPluginManager().callEvent(new PlayerOpenedCheatEngineEvent(this.getBukkitPlayer(who)));
 	}
 
 	@Override

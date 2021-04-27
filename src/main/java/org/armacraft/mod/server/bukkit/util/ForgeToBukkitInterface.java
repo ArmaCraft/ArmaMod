@@ -14,6 +14,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 @OnlyIn(Dist.DEDICATED_SERVER)
 public interface ForgeToBukkitInterface {
 	void onDash(PlayerEntity entity);
+	void onCheatEngineOpened(PlayerEntity who);
 	void onGunNoIntegrity(PlayerEntity player, GunInfoWrapper infos);
 	void onNoClassesIntegrity(PlayerEntity who, String hash, List<String> expectedHashes);
 	void onEnvironmentReceive(PlayerEntity who, EnvironmentWrapper environmentWrapper);
