@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.armacraft.mod.client.util.ClientUtils;
 import org.armacraft.mod.network.dto.FileInfoDTO;
 import org.armacraft.mod.network.dto.FolderSnapshotDTO;
 import org.armacraft.mod.util.CommonRiskyGameFolder;
@@ -13,6 +12,10 @@ import org.armacraft.mod.util.FileUtil;
 
 import com.google.common.collect.ImmutableList;
 
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+
+@OnlyIn(value = Dist.CLIENT)
 public class ClientRiskyGameFolder extends CommonRiskyGameFolder {
 
 	private final File folderFile;
@@ -28,17 +31,28 @@ public class ClientRiskyGameFolder extends CommonRiskyGameFolder {
 	
 	public static List<ClientRiskyGameFolder> allClientRiskyFolders() {
 		// @StringObfuscator:on
-		List<ClientRiskyGameFolder> foundRiskyFolders = ClientUtils.getAllFoldersWithMods().stream().map(folder -> {
-			return new ClientRiskyGameFolder(folder.getAbsolutePath(), ".*");
-		}).collect(Collectors.toList());
 		
-		// Adiciona os defaults (bin, mods...)
-		foundRiskyFolders.addAll(CommonRiskyGameFolder.defaults().stream().filter(commonRiskyFolder -> {
-			// Não existe na lista de pastas arriscadas
-			return foundRiskyFolders.stream().noneMatch(riskyFolder -> riskyFolder.isSameFolder(commonRiskyFolder));
-		}).map(CommonRiskyGameFolder::asClient).collect(Collectors.toList()));
-		
-		return ImmutableList.copyOf(foundRiskyFolders);
+		/*
+		 * USAREI ISTO DEPOIS
+		 * 
+		 * List<ClientRiskyGameFolder> foundRiskyFolders =
+		 * ClientUtils.getAllFoldersWithMods().stream().map(folder -> { return new
+		 * ClientRiskyGameFolder(folder.getAbsolutePath(), ".*");
+		 * }).collect(Collectors.toList());
+		 * 
+		 * // Adiciona os defaults (bin, mods...)
+		 * foundRiskyFolders.addAll(CommonRiskyGameFolder.defaults().stream().filter(
+		 * commonRiskyFolder -> { // Não existe na lista de pastas arriscadas return
+		 * foundRiskyFolders.stream().noneMatch(riskyFolder ->
+		 * riskyFolder.isSameFolder(commonRiskyFolder));
+		 * }).map(CommonRiskyGameFolder::asClient).collect(Collectors.toList()));
+		 * 
+		 */
+
+		List<ClientRiskyGameFolder> riskyFolders = CommonRiskyGameFolder.defaults().stream()
+				.map(CommonRiskyGameFolder::asClient).collect(Collectors.toList());
+
+		return ImmutableList.copyOf(riskyFolders);
 		// @StringObfuscator:off
 	}
 	

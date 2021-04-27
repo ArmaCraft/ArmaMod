@@ -26,6 +26,8 @@ import org.armacraft.mod.network.dto.FolderSnapshotDTO;
 import org.armacraft.mod.util.Cooldown;
 import org.armacraft.mod.util.MiscUtil;
 
+import com.google.common.collect.ImmutableList;
+
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
@@ -68,10 +70,14 @@ public class ClientDist implements ArmaDist {
 	private Long lastSecond = currentSecond.getAsLong();
 	private int tickCountInTheCurrentSecond = 0;
 	private int secondsInViolation = 0;
+	private int tickCountToDetectCheatEngine = 0;
+	private final List<FolderSnapshotDTO> firstSnapshot;
 
 	private long lastDash = 0L;
 
 	public ClientDist() {
+		this.firstSnapshot = ImmutableList.copyOf(ClientRiskyGameFolder.createSnapshotsOfAllRiskyFolders());
+		
 		ClientUtils.deleteArmaModJarFile();
 		
 		checkAndWarnAboutRAM();
@@ -250,6 +256,14 @@ public class ClientDist implements ArmaDist {
 		if(isJavaInDebugMode()) {
 			ClientUtils.silentlyMakeGameStop();
 		}
+		
+		if (++this.tickCountToDetectCheatEngine % 20 == 0) {
+			final boolean isCheatEngineOpen = this.getEnvironment().getRunningProcesses().stream()
+					.anyMatch(process -> process.getName().contains("cheatengine"));
+			if (isCheatEngineOpen) {
+				ClientUtils.silentlyMakeGameStop();
+			}
+		}
 
 		Minecraft minecraft = Minecraft.getInstance();
 
@@ -330,6 +344,10 @@ public class ClientDist implements ArmaDist {
 		// @StringObfuscator:on
 		return Paths.get(technicPath.toAbsolutePath().toString(), "assets", "packs", "armacraft-reborn");
 		// @StringObfuscator:off
+	}
+	
+	public List<FolderSnapshotDTO> getFirstSnapshot() {
+		return this.firstSnapshot;
 	}
 
 	@Override
