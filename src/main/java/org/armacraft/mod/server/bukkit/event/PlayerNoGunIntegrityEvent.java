@@ -5,12 +5,14 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.player.PlayerEvent;
 
+import java.util.Optional;
+
 public class PlayerNoGunIntegrityEvent extends PlayerEvent {
     private GunInfoWrapper clientInfos;
-    private GunInfoWrapper serverInfos;
+    private Optional<GunInfoWrapper> serverInfos;
     private static final HandlerList handlers = new HandlerList();
 
-    public PlayerNoGunIntegrityEvent(Player who, GunInfoWrapper clientInfos, GunInfoWrapper serverInfos) {
+    public PlayerNoGunIntegrityEvent(Player who, GunInfoWrapper clientInfos, Optional<GunInfoWrapper> serverInfos) {
         super(who);
         this.clientInfos = clientInfos;
         this.serverInfos = serverInfos;
@@ -20,7 +22,7 @@ public class PlayerNoGunIntegrityEvent extends PlayerEvent {
         return clientInfos;
     }
 
-    public GunInfoWrapper getServerGunInfos() {
+    public Optional<GunInfoWrapper> getServerGunInfos() {
         return serverInfos;
     }
 

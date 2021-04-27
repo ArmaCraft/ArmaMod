@@ -1,6 +1,7 @@
 package org.armacraft.mod.server.bukkit.util;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.armacraft.mod.wrapper.EnvironmentWrapper;
 import org.armacraft.mod.network.dto.FileInfoDTO;
@@ -15,7 +16,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 public interface ForgeToBukkitInterface {
 	void onDash(PlayerEntity entity);
 	void onCheatEngineOpened(PlayerEntity who);
-	void onGunNoIntegrity(PlayerEntity who, GunInfoWrapper clientInfos, GunInfoWrapper serverInfos);
+	void onGunNoIntegrity(PlayerEntity who, GunInfoWrapper clientInfos, Optional<GunInfoWrapper> serverInfos);
 	void onNoClassesIntegrity(PlayerEntity who, String hash, List<String> expectedHashes);
 	void onEnvironmentReceive(PlayerEntity who, EnvironmentWrapper environmentWrapper);
 	void onMissingFile(PlayerEntity entity, List<String> missingHashes);

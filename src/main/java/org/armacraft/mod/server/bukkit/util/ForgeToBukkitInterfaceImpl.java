@@ -1,6 +1,7 @@
 package org.armacraft.mod.server.bukkit.util;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.armacraft.mod.server.bukkit.event.PlayerNoGunIntegrityEvent;
 import org.armacraft.mod.server.bukkit.event.PlayerOpenedCheatEngineEvent;
@@ -35,7 +36,7 @@ public enum ForgeToBukkitInterfaceImpl implements ForgeToBukkitInterface {
 	}
 
 	@Override
-	public void onGunNoIntegrity(PlayerEntity player, GunInfoWrapper clientInfos, GunInfoWrapper serverInfos) {
+	public void onGunNoIntegrity(PlayerEntity player, GunInfoWrapper clientInfos, Optional<GunInfoWrapper> serverInfos) {
 		Bukkit.getPluginManager().callEvent(new PlayerNoGunIntegrityEvent(this.getBukkitPlayer(player), clientInfos, serverInfos));
 	}
 
