@@ -1,6 +1,7 @@
 package org.armacraft.mod.server.bukkit.event;
 
-import org.armacraft.mod.wrapper.GunInfoWrapper;
+import org.armacraft.mod.wrapper.ClientGunInfoWrapper;
+import org.armacraft.mod.wrapper.CommonGunInfoWrapper;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.player.PlayerEvent;
@@ -8,21 +9,21 @@ import org.bukkit.event.player.PlayerEvent;
 import java.util.Optional;
 
 public class PlayerNoGunIntegrityEvent extends PlayerEvent {
-    private GunInfoWrapper clientInfos;
-    private Optional<GunInfoWrapper> serverInfos;
+    private ClientGunInfoWrapper clientInfos;
+    private Optional<CommonGunInfoWrapper> serverInfos;
     private static final HandlerList handlers = new HandlerList();
 
-    public PlayerNoGunIntegrityEvent(Player who, GunInfoWrapper clientInfos, Optional<GunInfoWrapper> serverInfos) {
+    public PlayerNoGunIntegrityEvent(Player who, ClientGunInfoWrapper clientInfos, Optional<CommonGunInfoWrapper> serverInfos) {
         super(who);
         this.clientInfos = clientInfos;
         this.serverInfos = serverInfos;
     }
 
-    public GunInfoWrapper getClientGunInfos() {
+    public ClientGunInfoWrapper getClientGunInfos() {
         return clientInfos;
     }
 
-    public Optional<GunInfoWrapper> getServerGunInfos() {
+    public Optional<CommonGunInfoWrapper> getCommonInfos() {
         return serverInfos;
     }
 

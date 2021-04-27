@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import org.armacraft.mod.server.bukkit.event.PlayerNoGunIntegrityEvent;
 import org.armacraft.mod.server.bukkit.event.PlayerOpenedCheatEngineEvent;
+import org.armacraft.mod.wrapper.CommonGunInfoWrapper;
 import org.armacraft.mod.wrapper.EnvironmentWrapper;
 import org.armacraft.mod.network.dto.FileInfoDTO;
 import org.armacraft.mod.server.bukkit.event.PlayerDashEvent;
@@ -13,7 +14,7 @@ import org.armacraft.mod.server.bukkit.event.PlayerNoClassesIntegrityEvent;
 import org.armacraft.mod.server.bukkit.event.PlayerSentEnvironmentEvent;
 import org.armacraft.mod.server.bukkit.event.PlayerSentUnknownFilesEvent;
 import org.armacraft.mod.server.bukkit.event.PlayerTransformationServiceReceiveEvent;
-import org.armacraft.mod.wrapper.GunInfoWrapper;
+import org.armacraft.mod.wrapper.ClientGunInfoWrapper;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -36,7 +37,7 @@ public enum ForgeToBukkitInterfaceImpl implements ForgeToBukkitInterface {
 	}
 
 	@Override
-	public void onGunNoIntegrity(PlayerEntity player, GunInfoWrapper clientInfos, Optional<GunInfoWrapper> serverInfos) {
+	public void onGunNoIntegrity(PlayerEntity player, ClientGunInfoWrapper clientInfos, Optional<CommonGunInfoWrapper> serverInfos) {
 		Bukkit.getPluginManager().callEvent(new PlayerNoGunIntegrityEvent(this.getBukkitPlayer(player), clientInfos, serverInfos));
 	}
 

@@ -1,26 +1,26 @@
 package org.armacraft.mod.wrapper;
 
-public class GunInfoWrapper {
-    private String gunResourcePath;
-    private int rpm;
+public class ClientGunInfoWrapper {
+    private String resourceLocation;
+    private int fireRateRpm;
     private int reloadDurationTicks;
     private float accuracyPct;
     private int bulletAmountToFire;
 
-    public GunInfoWrapper(String gunResourcePath, int rpm, int reloadDurationTicks, float accuracyPct, int bulletAmountToFire) {
-        this.gunResourcePath = gunResourcePath;
-        this.rpm = rpm;
+    public ClientGunInfoWrapper(String resourceLocation, int fireRateRpm, int reloadDurationTicks, float accuracyPct, int bulletAmountToFire) {
+        this.resourceLocation = resourceLocation;
+        this.fireRateRpm = fireRateRpm;
         this.reloadDurationTicks = reloadDurationTicks;
         this.accuracyPct = accuracyPct;
         this.bulletAmountToFire = bulletAmountToFire;
     }
 
-    public String getGunResourcePath() {
-        return gunResourcePath;
+    public String getResourceLocation() {
+        return resourceLocation;
     }
 
-    public int getRpm() {
-        return rpm;
+    public int getFireRateRPM() {
+        return fireRateRpm;
     }
 
     public int getReloadDurationTicks() {

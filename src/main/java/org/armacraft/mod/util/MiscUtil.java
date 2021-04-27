@@ -7,7 +7,6 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import com.craftingdead.core.item.GunItem;
 import org.armacraft.mod.ArmaCraft;
 
 import com.craftingdead.core.item.ModItems;
@@ -25,13 +24,8 @@ import net.minecraft.util.SoundEvent;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
-import org.armacraft.mod.wrapper.GunInfoWrapper;
 
 public class MiscUtil {
-
-	public static Function<String, Optional<RegistryObject<Item>>> GET_CD_REGISTRY = (registryName) ->
-			ModItems.ITEMS.getEntries().stream()
-					.filter(registry -> registry.get().getRegistryName().getPath().equalsIgnoreCase(registryName)).findFirst();
 
 	/**
 	 * Optifine eh um exemplo de tranformation service. Ele nao aparece na lista de

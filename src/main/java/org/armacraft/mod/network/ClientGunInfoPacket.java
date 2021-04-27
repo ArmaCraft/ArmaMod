@@ -9,19 +9,19 @@ import org.armacraft.mod.util.GunUtils;
 
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkEvent;
-import org.armacraft.mod.wrapper.GunInfoWrapper;
+import org.armacraft.mod.wrapper.ClientGunInfoWrapper;
 
 public class ClientGunInfoPacket {
-    private GunInfoWrapper gunInfos;
+    private ClientGunInfoWrapper gunInfos;
 
-    public ClientGunInfoPacket(GunInfoWrapper infos) {
+    public ClientGunInfoPacket(ClientGunInfoWrapper infos) {
         this.gunInfos = infos;
     }
 
     public static void encode(ClientGunInfoPacket msg, PacketBuffer out) {
         // @StringObfuscator:on
-    	out.writeUtf(msg.gunInfos.getGunResourcePath());
-        out.writeInt(msg.gunInfos.getRpm());
+    	out.writeUtf(msg.gunInfos.getResourceLocation());
+        out.writeInt(msg.gunInfos.getFireRateRPM());
         out.writeInt(msg.gunInfos.getReloadDurationTicks());
         out.writeFloat(msg.gunInfos.getAccuracyPct());
         out.writeInt(msg.gunInfos.getBulletAmountToFire());
@@ -37,7 +37,7 @@ public class ClientGunInfoPacket {
         int bulletAmountToFire = in.readInt();
         // @StringObfuscator:off
 
-        return new ClientGunInfoPacket(new GunInfoWrapper(gunId, rpm, reloadDurationTicks, accuracy, bulletAmountToFire));
+        return new ClientGunInfoPacket(new ClientGunInfoWrapper(gunId, rpm, reloadDurationTicks, accuracy, bulletAmountToFire));
     }
 
     public static boolean handle(ClientGunInfoPacket msg, Supplier<NetworkEvent.Context> ctx) {
@@ -47,7 +47,7 @@ public class ClientGunInfoPacket {
 
         if(!GunUtils.INTEGRITY_VALIDATOR.test(msg.gunInfos)) {
         	ctx.get().getSender().setItemInHand(Hand.MAIN_HAND, ItemStack.EMPTY);
-            ForgeToBukkitInterfaceImpl.INSTANCE.onGunNoIntegrity(ctx.get().getSender(), msg.gunInfos, GunUtils.GET_SERVER_GUN_INFO.apply(msg.gunInfos.getGunResourcePath()));
+            ForgeToBukkitInterfaceImpl.INSTANCE.onGunNoIntegrity(ctx.get().getSender(), msg.gunInfos, GunUtils.getCommonGunSpecsWrapper(msg.gunInfos.getResourceLocation()));
         }
 
         return true;

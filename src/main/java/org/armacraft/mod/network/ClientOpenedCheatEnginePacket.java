@@ -1,12 +1,8 @@
 package org.armacraft.mod.network;
 
-import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.Hand;
 import net.minecraftforge.fml.network.NetworkEvent;
 import org.armacraft.mod.server.bukkit.util.ForgeToBukkitInterfaceImpl;
-import org.armacraft.mod.util.GunUtils;
-import org.armacraft.mod.wrapper.GunInfoWrapper;
 
 import java.util.function.Supplier;
 
