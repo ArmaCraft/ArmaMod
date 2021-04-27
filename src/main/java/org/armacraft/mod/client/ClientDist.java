@@ -394,8 +394,8 @@ public class ClientDist implements ArmaDist {
 		if (maxMB <= MINIMUM_MEMORY_FOR_NOT_JAVA11) {
 			if (!MiscUtil.isUsingJava11()) {
 				// @StringObfuscator:on
-				ClientUtils.openFrameWith("AVISO", "Você NÃO está usando o Java 11 e está usando menos que " + MINIMUM_MEMORY_FOR_NOT_JAVA11
-									+ " MB de RAM no modpack. Veja o tutorial para evitar travamentos: https://armacraft.net/ram");
+				ClientUtils.openFrameWith("AVISO", "<html><body width='400'>Você NÃO está usando o Java 11 e está usando menos que " + MINIMUM_MEMORY_FOR_NOT_JAVA11
+									+ " MB de RAM no modpack.<br>Use nosso instalador do Java 11 para Technic: https://armacraft.net/java");
 				// @StringObfuscator:off
 			}
 		}
