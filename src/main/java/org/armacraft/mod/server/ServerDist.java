@@ -9,12 +9,19 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import com.craftingdead.core.item.GunItem;
+import com.craftingdead.core.item.ModItems;
+import net.minecraftforge.fml.RegistryObject;
 import org.armacraft.mod.ArmaCraft;
 import org.armacraft.mod.ArmaDist;
 import org.armacraft.mod.bridge.bukkit.IBukkitPermissionBridge;
 import org.armacraft.mod.bridge.bukkit.IBukkitUserDataControllerBridge;
 import org.armacraft.mod.bridge.bukkit.IBukkitWorldGuardBridge;
 import org.armacraft.mod.client.ClientUserData;
+import org.armacraft.mod.network.CommonGunSpecsUpdatePacket;
+import org.armacraft.mod.util.GunUtils;
+import org.armacraft.mod.util.RegistryUtil;
+import org.armacraft.mod.wrapper.CommonGunInfoWrapper;
 import org.armacraft.mod.wrapper.EnvironmentWrapper;
 import org.armacraft.mod.network.ClientInfoRequestPacket;
 import org.armacraft.mod.network.UpdateUserDataPacket;
@@ -33,6 +40,7 @@ import net.minecraftforge.event.entity.player.PlayerEvent.PlayerLoggedInEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.network.PacketDistributor;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
+import org.bukkit.Bukkit;
 
 public class ServerDist implements ArmaDist {
 
@@ -106,6 +114,13 @@ public class ServerDist implements ArmaDist {
 	@SubscribeEvent
 	public void onLoggedIn(PlayerLoggedInEvent event) {
 		this.requestClientInfo(event.getPlayer());
+		RegistryUtil.filterRegistries(GunItem.class, ModItems.ITEMS)
+				.stream().map(RegistryObject::get)
+				.forEach(gun -> {
+					ArmaCraft.networkChannel.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) event.getPlayer()),
+							new CommonGunSpecsUpdatePacket(CommonGunInfoWrapper.from(gun))
+					);
+				});
 		this.lastClientInfoRequest.put(event.getPlayer().getUUID(), System.currentTimeMillis());
 	}
 

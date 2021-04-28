@@ -12,6 +12,16 @@ public class CommonGunInfoWrapper {
     private float accuracyPct;
     private int bulletAmountToFire;
 
+    public static CommonGunInfoWrapper from(GunItem item) {
+        return new CommonGunInfoWrapper(item.getRegistryName().toString(),
+                item.getFireRateRPM(),
+                item.getFireDelayMs(),
+                item.getDamage(),
+                item.getReloadDurationTicks(),
+                item.getAccuracyPct(),
+                item.getBulletAmountToFire());
+    }
+
     public CommonGunInfoWrapper(String resourceLocation, int fireRateRpm, int fireDelayMs, float damage, int reloadDurationTicks, float accuracyPct, int bulletAmountToFire) {
         this.resourceLocation = resourceLocation;
         this.fireRateRpm = fireRateRpm;
