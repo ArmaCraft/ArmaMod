@@ -6,14 +6,17 @@ import java.rmi.registry.Registry;
 import com.craftingdead.core.item.GunItem;
 import com.craftingdead.core.item.ModItems;
 import net.minecraftforge.fml.RegistryObject;
+import net.minecraftforge.fml.server.ServerLifecycleHooks;
 import org.apache.commons.lang.Validate;
 import org.armacraft.mod.ArmaCraft;
 import org.armacraft.mod.bridge.IGunItemBridge;
+import org.armacraft.mod.bridge.bukkit.IUserData;
 import org.armacraft.mod.network.ClientEnvironmentRequestPacket;
 import org.armacraft.mod.network.ClientInfoRequestPacket;
 import org.armacraft.mod.network.CloseGamePacket;
 import org.armacraft.mod.network.CommonGunSpecsUpdatePacket;
 import org.armacraft.mod.network.SetClientBindPacket;
+import org.armacraft.mod.network.UpdateUserDataPacket;
 import org.armacraft.mod.util.GunUtils;
 import org.armacraft.mod.util.MiscUtil;
 import org.armacraft.mod.util.RegistryUtil;
@@ -32,7 +35,16 @@ public enum BukkitToForgeInterface {
 	
 	private Method craftPlayer$getHandle;
 
-	public void updateGunSpecs(CommonGunInfoWrapper infos) {
+	public void synchronizeUserData(IUserData data) {
+		ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayers().stream()
+				.filter(player -> player.getUUID().equals(data.getHolder()))
+				.forEach(player ->
+					ArmaCraft.networkChannel.send(PacketDistributor.PLAYER.with(() -> player),
+							new UpdateUserDataPacket(data))
+				);
+	}
+
+	public void synchronizeGuns(CommonGunInfoWrapper infos) {
 		RegistryUtil.filterRegistries(GunItem.class, ModItems.ITEMS).stream()
 				.filter(registry -> registry.getId().toString().equalsIgnoreCase(infos.getResourceLocation()))
 				.map(RegistryObject::get)

@@ -15,6 +15,7 @@ import java.util.function.LongSupplier;
 import net.minecraft.client.gui.screen.MainMenuScreen;
 import org.armacraft.mod.ArmaCraft;
 import org.armacraft.mod.ArmaDist;
+import org.armacraft.mod.bridge.bukkit.IUserData;
 import org.armacraft.mod.client.util.ClientUtils;
 import org.armacraft.mod.network.ClientOpenedCheatEnginePacket;
 import org.armacraft.mod.wrapper.EnvironmentWrapper;
@@ -57,14 +58,9 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.network.PacketDistributor;
 
 public class ClientDist implements ArmaDist {
-
-	// @StringObfuscator:on
-	private static final String SHOW_ALL = "show-all";
-	private static final String HIDE_ALL = "hide-all";
-	// @StringObfuscator:off
 	
 	private static final int MINIMUM_MEMORY_FOR_NOT_JAVA11 = 2500;
-	private ClientUserData userData;
+	private IUserData userData;
 	private Map<Character, String> keyCommandMap = new HashMap<>();
 	private LongSupplier currentSecond = () -> System.currentTimeMillis() / 1000L;
 	private Long lastSecond = currentSecond.getAsLong();
@@ -83,8 +79,6 @@ public class ClientDist implements ArmaDist {
 		checkAndWarnAboutRAM();
 		
 		MinecraftForge.EVENT_BUS.register(this);
-
-		userData = new ClientUserData(new HashSet<>(), new HashSet<>());
 
 		IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
 		modEventBus.addListener(this::handleClientSetup);
@@ -146,11 +140,11 @@ public class ClientDist implements ArmaDist {
 		return this.hasBind((char) keyBinding.getKey().getValue());
 	}
 
-	public void setClientUserData(ClientUserData data) {
+	public void setUserData(IUserData data) {
 		this.userData = data;
 	}
 
-	public ClientUserData getClientUserData() {
+	public IUserData getUserData() {
 		return this.userData;
 	}
 
@@ -224,10 +218,10 @@ public class ClientDist implements ArmaDist {
 	@SubscribeEvent
 	public void onNameplateRender(RenderNameplateEvent event) {
 		if (event.getEntity() instanceof PlayerEntity) {
-			ClientUserData data = ArmaCraft.getInstance().getClientDist().get().getClientUserData();
-			if(data.getFlags().contains(SHOW_ALL)) {
+			IUserData data = ArmaCraft.getInstance().getClientDist().get().getUserData();
+			if(data.getFlags().contains(IUserData.Flags.SHOW_ALL)) {
 				event.setResult(Event.Result.ALLOW);
-			} else if (data.getFlags().contains(HIDE_ALL)) {
+			} else if (data.getFlags().contains(IUserData.Flags.HIDE_ALL)) {
 				event.setResult(Event.Result.DENY);
 			} else {
 				if(!data.getNametagWhitelist().contains(event.getContent().getString())) {
