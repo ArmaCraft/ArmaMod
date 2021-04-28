@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.LongSupplier;
 
+import net.minecraft.client.gui.screen.MainMenuScreen;
 import org.armacraft.mod.ArmaCraft;
 import org.armacraft.mod.ArmaDist;
 import org.armacraft.mod.client.util.ClientUtils;

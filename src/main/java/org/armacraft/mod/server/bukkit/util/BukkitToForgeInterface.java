@@ -7,8 +7,11 @@ import org.armacraft.mod.ArmaCraft;
 import org.armacraft.mod.network.ClientEnvironmentRequestPacket;
 import org.armacraft.mod.network.ClientInfoRequestPacket;
 import org.armacraft.mod.network.CloseGamePacket;
+import org.armacraft.mod.network.CommonGunSpecsUpdatePacket;
 import org.armacraft.mod.network.SetClientBindPacket;
 import org.armacraft.mod.util.MiscUtil;
+import org.armacraft.mod.wrapper.CommonGunInfoWrapper;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -21,6 +24,13 @@ public enum BukkitToForgeInterface {
 	INSTANCE;
 	
 	private Method craftPlayer$getHandle;
+
+	public void updateSpecs(CommonGunInfoWrapper infos) {
+		Bukkit.getServer().getOnlinePlayers().forEach(player -> {
+			ArmaCraft.networkChannel.send(PacketDistributor.PLAYER.with(() -> this.getPlayerEntity(player)),
+					new CommonGunSpecsUpdatePacket(infos));
+		});
+	}
 	
 	public void setBind(Player player, Character character, String command) {
 		Validate.notNull(player);

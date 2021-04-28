@@ -6,5 +6,8 @@
   "item.armacraft.gold_medal": "Medalha de Ouro",
 
   "message.no_skin_permission": "Você não tem permissão para usar essa skin.",
-  "message.sniper_stun": "Você foi stunnado por um sniper."
+  "message.sniper_stun": "Você foi stunnado por um sniper.",
+
+  "screen.menu.connect": "Entrar no ArmaCraft",
+  "screen.menu.title": "ArmaCraft"
 }
