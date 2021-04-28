@@ -157,7 +157,7 @@ public class ArmaCraft {
 				.consumer(ClientOpenedCheatEnginePacket::handle).add();
 
 
-		networkChannel.messageBuilder(CommonGunSpecsUpdatePacket.class, ++packetId, NetworkDirection.PLAY_TO_SERVER)
+		networkChannel.messageBuilder(CommonGunSpecsUpdatePacket.class, ++packetId, NetworkDirection.PLAY_TO_CLIENT)
 				.encoder(CommonGunSpecsUpdatePacket::encode)
 				.decoder(CommonGunSpecsUpdatePacket::decode)
 				.consumer(CommonGunSpecsUpdatePacket::handle).add();
