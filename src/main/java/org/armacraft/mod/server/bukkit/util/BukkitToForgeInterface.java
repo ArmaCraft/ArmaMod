@@ -2,6 +2,7 @@ package org.armacraft.mod.server.bukkit.util;
 
 import java.lang.reflect.Method;
 import java.rmi.registry.Registry;
+import java.util.UUID;
 
 import com.craftingdead.core.item.GunItem;
 import com.craftingdead.core.item.ModItems;
@@ -15,7 +16,6 @@ import org.armacraft.mod.network.ClientEnvironmentRequestPacket;
 import org.armacraft.mod.network.ClientInfoRequestPacket;
 import org.armacraft.mod.network.CloseGamePacket;
 import org.armacraft.mod.network.CommonGunSpecsUpdatePacket;
-import org.armacraft.mod.network.SetClientBindPacket;
 import org.armacraft.mod.network.UpdateUserDataPacket;
 import org.armacraft.mod.util.GunUtils;
 import org.armacraft.mod.util.MiscUtil;
@@ -55,14 +55,6 @@ public enum BukkitToForgeInterface {
 						new CommonGunSpecsUpdatePacket(x))
 			);
 		});
-	}
-	
-	public void setBind(Player player, Character character, String command) {
-		Validate.notNull(player);
-		Validate.notNull(character);
-		Validate.notNull(command);
-		MiscUtil.validateBindCharacter(character);
-		ArmaCraft.networkChannel.send(PacketDistributor.PLAYER.with(() -> this.getPlayerEntity(player)), new SetClientBindPacket(character, command));
 	}
 	
 	public void closePlayerGame(Player player, String title, String message) {

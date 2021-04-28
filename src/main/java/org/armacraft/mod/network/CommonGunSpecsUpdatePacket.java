@@ -4,10 +4,7 @@ import com.craftingdead.core.item.GunItem;
 import com.craftingdead.core.item.ModItems;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkEvent;
-import org.armacraft.mod.ArmaCraft;
-import org.armacraft.mod.bridge.IGunImplBridge;
 import org.armacraft.mod.bridge.IGunItemBridge;
-import org.armacraft.mod.client.ClientUserData;
 import org.armacraft.mod.util.RegistryUtil;
 import org.armacraft.mod.wrapper.CommonGunInfoWrapper;
 

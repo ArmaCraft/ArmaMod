@@ -2,7 +2,9 @@ package org.armacraft.mod.server.bukkit.util;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
+import org.armacraft.mod.bridge.bukkit.IUserData;
 import org.armacraft.mod.server.bukkit.event.PlayerNoGunIntegrityEvent;
 import org.armacraft.mod.server.bukkit.event.PlayerOpenedCheatEngineEvent;
 import org.armacraft.mod.wrapper.CommonGunInfoWrapper;
@@ -29,6 +31,16 @@ public enum ForgeToBukkitInterfaceImpl implements ForgeToBukkitInterface {
 	
 	public void onDash(PlayerEntity entity) {
 		Bukkit.getPluginManager().callEvent(new PlayerDashEvent(this.getBukkitPlayer(entity)));
+	}
+
+	@Override
+	public IUserData retrieveUserData(PlayerEntity holder) {
+		return retrieveUserData(holder.getUUID());
+	}
+
+	@Override
+	public IUserData retrieveUserData(UUID uuid) {
+		return null;
 	}
 
 	@Override

@@ -10,6 +10,8 @@ import org.armacraft.mod.bridge.bukkit.IUserData;
 
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkEvent;
+import org.armacraft.mod.client.ClientUserData;
+import org.armacraft.mod.wrapper.KeyBindWrapper;
 
 public class UpdateUserDataPacket {
     private IUserData userData;
@@ -21,15 +23,19 @@ public class UpdateUserDataPacket {
     public static void encode(UpdateUserDataPacket msg, PacketBuffer out) {
         out.writeByte(msg.userData.getFlags().size());
         out.writeByte(msg.userData.getNametagWhitelist().size());
+        out.writeByte(msg.userData.getKeyBinds().size());
         msg.userData.getFlags().stream().map(IUserData.Flags::toString).forEach(out::writeUtf);
         msg.userData.getNametagWhitelist().forEach(out::writeUtf);
+        msg.userData.getKeyBinds().stream().map(KeyBindWrapper::toString).forEach(out::writeUtf);
     }
 
     public static UpdateUserDataPacket decode(PacketBuffer in) {
         Set<IUserData.Flags> flags = new HashSet<>();
         Set<String> nametagWhitelist = new HashSet<>();
+        Set<KeyBindWrapper> keybinds = new HashSet<>();
         byte flagAmount = in.readByte();
         byte whitelistAmount = in.readByte();
+        byte bindsAmount = in.readByte();
 
         for (int i = 0; i < flagAmount; i++) {
             flags.add(IUserData.Flags.valueOf(in.readUtf(64)));
@@ -39,7 +45,11 @@ public class UpdateUserDataPacket {
             nametagWhitelist.add(in.readUtf(64));
         }
 
-        return new UpdateUserDataPacket(IUserData.of(Minecraft.getInstance().player.getUUID(), flags, nametagWhitelist));
+        for (int i = 0; i < bindsAmount; i++) {
+            keybinds.add(KeyBindWrapper.fromString(in.readUtf(64)));
+        }
+
+        return new UpdateUserDataPacket(new ClientUserData(keybinds, flags, nametagWhitelist));
     }
 
     public static boolean handle(UpdateUserDataPacket msg, Supplier<NetworkEvent.Context> ctx) {

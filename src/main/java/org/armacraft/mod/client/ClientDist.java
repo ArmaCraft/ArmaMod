@@ -19,6 +19,7 @@ import org.armacraft.mod.bridge.bukkit.IUserData;
 import org.armacraft.mod.client.util.ClientUtils;
 import org.armacraft.mod.network.ClientOpenedCheatEnginePacket;
 import org.armacraft.mod.wrapper.EnvironmentWrapper;
+import org.armacraft.mod.wrapper.KeyBindWrapper;
 import org.armacraft.mod.wrapper.ProcessWrapper;
 import org.armacraft.mod.event.DoubleTapKeyBindingEvent;
 import org.armacraft.mod.init.ArmaCraftBlocks;
@@ -61,7 +62,6 @@ public class ClientDist implements ArmaDist {
 	
 	private static final int MINIMUM_MEMORY_FOR_NOT_JAVA11 = 2500;
 	private IUserData userData;
-	private Map<Character, String> keyCommandMap = new HashMap<>();
 	private LongSupplier currentSecond = () -> System.currentTimeMillis() / 1000L;
 	private Long lastSecond = currentSecond.getAsLong();
 	private int tickCountInTheCurrentSecond = 0;
@@ -123,22 +123,6 @@ public class ClientDist implements ArmaDist {
 			minecraft.level.addParticle(new BlockParticleData(ParticleTypes.BLOCK, blockBelowPlayer), true, player.getX(), player.getY() + 0.1D, player.getZ(), 0.0D, 0.0075D, 0.0D);
 		}
 	}
-	
-	public void setBind(Character character, String command) {
-		// Sempre uppercase
-		character = Character.toUpperCase(character);
-		
-		MiscUtil.validateBindCharacter(character);
-		this.keyCommandMap.put(character, command);
-	}
-	
-	public boolean hasBind(Character character) {
-		return this.keyCommandMap.containsKey(character);
-	}
-	
-	public boolean hasBind(KeyBinding keyBinding) {
-		return this.hasBind((char) keyBinding.getKey().getValue());
-	}
 
 	public void setUserData(IUserData data) {
 		this.userData = data;
@@ -167,8 +151,8 @@ public class ClientDist implements ArmaDist {
 	
 	@SubscribeEvent()
 	public void onServerLogout(ClientPlayerNetworkEvent.LoggedOutEvent event) {
-		// Limpa os binds
-		this.keyCommandMap.clear();
+		// Limpa tudo
+		this.userData = null;
 	}
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
@@ -178,11 +162,11 @@ public class ClientDist implements ArmaDist {
 		
 		if (this.isPlayerInWorld()) {
 			if (ClientUtils.isAltKeyDown()) {
-				this.keyCommandMap.forEach((keyCode, command) -> {
-					if (ClientUtils.isKeyDown(keyCode)) {
+				this.userData.getKeyBinds().forEach((keybind) -> {
+					if (ClientUtils.isKeyDown(keybind.getBind())) {
 						if (!Cooldown.checkAndPut("keybind", 500L)) {
 							ClientUtils.playLocalSound(SoundEvents.UI_BUTTON_CLICK, 1.2F, 1F);
-							minecraft.player.chat("/" + command);
+							minecraft.player.chat("/" + keybind.getCommand());
 						}
 					}
 				});

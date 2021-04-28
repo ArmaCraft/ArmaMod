@@ -3,7 +3,6 @@ package org.armacraft.mod;
 import java.util.Optional;
 
 import org.armacraft.mod.client.ClientDist;
-import org.armacraft.mod.client.util.ClientUtils;
 import org.armacraft.mod.clothing.ClothingRepresentation;
 import org.armacraft.mod.clothing.ProtectionLevel;
 import org.armacraft.mod.init.ArmaCraftBlocks;
@@ -18,11 +17,9 @@ import org.armacraft.mod.network.ClientInfoResponsePacket;
 import org.armacraft.mod.network.ClientOpenedCheatEnginePacket;
 import org.armacraft.mod.network.CloseGamePacket;
 import org.armacraft.mod.network.CommonGunSpecsUpdatePacket;
-import org.armacraft.mod.network.SetClientBindPacket;
 import org.armacraft.mod.network.UpdateUserDataPacket;
 import org.armacraft.mod.potion.ArmaCraftEffects;
 import org.armacraft.mod.server.ServerDist;
-import org.armacraft.mod.server.bukkit.event.PlayerOpenedCheatEngineEvent;
 import org.armacraft.mod.util.EnchantUtils;
 import org.armacraft.mod.util.MiscUtil;
 
@@ -145,11 +142,6 @@ public class ArmaCraft {
 				.encoder(CloseGamePacket::encode)
 				.decoder(CloseGamePacket::decode)
 				.consumer(CloseGamePacket::handle).add();
-		
-		networkChannel.messageBuilder(SetClientBindPacket.class, ++packetId, NetworkDirection.PLAY_TO_CLIENT)
-				.encoder(SetClientBindPacket::encode)
-				.decoder(SetClientBindPacket::decode)
-				.consumer(SetClientBindPacket::handle).add();
 
 		networkChannel.messageBuilder(ClientOpenedCheatEnginePacket.class, ++packetId, NetworkDirection.PLAY_TO_SERVER)
 				.encoder(ClientOpenedCheatEnginePacket::encode)
