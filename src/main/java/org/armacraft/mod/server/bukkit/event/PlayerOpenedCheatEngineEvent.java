@@ -5,18 +5,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.player.PlayerEvent;
 
-public class PlayerSentEnvironmentEvent extends PlayerEvent {
-
+public class PlayerOpenedCheatEngineEvent extends PlayerEvent {
     private static final HandlerList handlers = new HandlerList();
-    private EnvironmentWrapper environment;
 
-    public PlayerSentEnvironmentEvent(Player who, EnvironmentWrapper environment) {
+    public PlayerOpenedCheatEngineEvent(Player who) {
         super(who);
-        this.environment = environment;
-    }
-
-    public EnvironmentWrapper getEnvironment() {
-        return this.environment;
     }
 
     @Override
@@ -28,4 +21,3 @@ public class PlayerSentEnvironmentEvent extends PlayerEvent {
         return handlers;
     }
 }
-

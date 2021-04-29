@@ -1,14 +1,12 @@
 package org.armacraft.mod.network;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Supplier;
 
 import org.armacraft.mod.ArmaCraft;
-import org.armacraft.mod.environment.EnvironmentWrapper;
-import org.armacraft.mod.environment.ProcessWrapper;
+import org.armacraft.mod.wrapper.EnvironmentWrapper;
+import org.armacraft.mod.wrapper.ProcessWrapper;
 import org.armacraft.mod.util.Cooldown;
 
 import net.minecraft.network.PacketBuffer;

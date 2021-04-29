@@ -1,8 +1,14 @@
 package org.armacraft.mod.server.bukkit.util;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
-import org.armacraft.mod.environment.EnvironmentWrapper;
+import org.armacraft.mod.bridge.bukkit.IUserData;
+import org.armacraft.mod.server.bukkit.event.PlayerNoGunIntegrityEvent;
+import org.armacraft.mod.server.bukkit.event.PlayerOpenedCheatEngineEvent;
+import org.armacraft.mod.wrapper.CommonGunInfoWrapper;
+import org.armacraft.mod.wrapper.EnvironmentWrapper;
 import org.armacraft.mod.network.dto.FileInfoDTO;
 import org.armacraft.mod.server.bukkit.event.PlayerDashEvent;
 import org.armacraft.mod.server.bukkit.event.PlayerMissingFilesEvent;
@@ -10,6 +16,7 @@ import org.armacraft.mod.server.bukkit.event.PlayerNoClassesIntegrityEvent;
 import org.armacraft.mod.server.bukkit.event.PlayerSentEnvironmentEvent;
 import org.armacraft.mod.server.bukkit.event.PlayerSentUnknownFilesEvent;
 import org.armacraft.mod.server.bukkit.event.PlayerTransformationServiceReceiveEvent;
+import org.armacraft.mod.wrapper.ClientGunInfoWrapper;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -24,6 +31,26 @@ public enum ForgeToBukkitInterfaceImpl implements ForgeToBukkitInterface {
 	
 	public void onDash(PlayerEntity entity) {
 		Bukkit.getPluginManager().callEvent(new PlayerDashEvent(this.getBukkitPlayer(entity)));
+	}
+
+	@Override
+	public IUserData retrieveUserData(PlayerEntity holder) {
+		return retrieveUserData(holder.getUUID());
+	}
+
+	@Override
+	public IUserData retrieveUserData(UUID uuid) {
+		return null;
+	}
+
+	@Override
+	public void onCheatEngineOpened(PlayerEntity who) {
+		Bukkit.getPluginManager().callEvent(new PlayerOpenedCheatEngineEvent(this.getBukkitPlayer(who)));
+	}
+
+	@Override
+	public void onGunNoIntegrity(PlayerEntity player, ClientGunInfoWrapper clientInfos, Optional<CommonGunInfoWrapper> serverInfos) {
+		Bukkit.getPluginManager().callEvent(new PlayerNoGunIntegrityEvent(this.getBukkitPlayer(player), clientInfos, serverInfos));
 	}
 
 	@Override

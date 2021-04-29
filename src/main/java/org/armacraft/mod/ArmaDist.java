@@ -3,7 +3,7 @@ package org.armacraft.mod;
 import java.lang.management.ManagementFactory;
 import java.util.List;
 
-import org.armacraft.mod.environment.EnvironmentWrapper;
+import org.armacraft.mod.wrapper.EnvironmentWrapper;
 import org.armacraft.mod.network.dto.FolderSnapshotDTO;
 
 import net.minecraft.entity.player.PlayerEntity;

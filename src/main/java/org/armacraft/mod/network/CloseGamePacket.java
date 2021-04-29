@@ -30,7 +30,9 @@ public class CloseGamePacket {
     public static boolean handle(CloseGamePacket msg, Supplier<NetworkEvent.Context> ctx) {
         if (ctx.get().getDirection().getReceptionSide().isClient()) {
             ctx.get().enqueueWork(() -> {
-                ClientUtils.openFrameWith(msg.title, msg.reason);
+                if((msg.title != null && msg.title.isEmpty()) || (msg.reason != null && msg.reason.isEmpty())) {
+                    ClientUtils.openFrameWith(msg.title, msg.reason);
+                }
                 ClientUtils.silentlyMakeGameStop();
             });
         }

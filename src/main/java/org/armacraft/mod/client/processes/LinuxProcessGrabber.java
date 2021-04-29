@@ -5,7 +5,7 @@ import java.io.InputStreamReader;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.armacraft.mod.environment.ProcessWrapper;
+import org.armacraft.mod.wrapper.ProcessWrapper;
 
 public enum LinuxProcessGrabber implements ProcessGrabber {
 	INSTANCE;

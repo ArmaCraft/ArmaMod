@@ -1,6 +1,5 @@
-package org.armacraft.mod.environment;
+package org.armacraft.mod.wrapper;
 
-import java.util.HashSet;
 import java.util.Set;
 
 public class EnvironmentWrapper {

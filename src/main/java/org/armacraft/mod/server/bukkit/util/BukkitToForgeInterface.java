@@ -1,15 +1,27 @@
 package org.armacraft.mod.server.bukkit.util;
 
 import java.lang.reflect.Method;
+import java.rmi.registry.Registry;
+import java.util.UUID;
 
+import com.craftingdead.core.item.GunItem;
+import com.craftingdead.core.item.ModItems;
+import net.minecraftforge.fml.RegistryObject;
+import net.minecraftforge.fml.server.ServerLifecycleHooks;
 import org.apache.commons.lang.Validate;
 import org.armacraft.mod.ArmaCraft;
-import org.armacraft.mod.environment.EnvironmentWrapper;
+import org.armacraft.mod.bridge.IGunItemBridge;
+import org.armacraft.mod.bridge.bukkit.IUserData;
 import org.armacraft.mod.network.ClientEnvironmentRequestPacket;
 import org.armacraft.mod.network.ClientInfoRequestPacket;
 import org.armacraft.mod.network.CloseGamePacket;
-import org.armacraft.mod.network.SetClientBindPacket;
+import org.armacraft.mod.network.CommonGunSpecsUpdatePacket;
+import org.armacraft.mod.network.UpdateUserDataPacket;
+import org.armacraft.mod.util.GunUtils;
 import org.armacraft.mod.util.MiscUtil;
+import org.armacraft.mod.util.RegistryUtil;
+import org.armacraft.mod.wrapper.CommonGunInfoWrapper;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -22,13 +34,27 @@ public enum BukkitToForgeInterface {
 	INSTANCE;
 	
 	private Method craftPlayer$getHandle;
-	
-	public void setBind(Player player, Character character, String command) {
-		Validate.notNull(player);
-		Validate.notNull(character);
-		Validate.notNull(command);
-		MiscUtil.validateBindCharacter(character);
-		ArmaCraft.networkChannel.send(PacketDistributor.PLAYER.with(() -> this.getPlayerEntity(player)), new SetClientBindPacket(character, command));
+
+	public void synchronizeUserData(IUserData data) {
+		ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayers().stream()
+				.filter(player -> player.getUUID().equals(data.getHolder()))
+				.forEach(player ->
+					ArmaCraft.networkChannel.send(PacketDistributor.PLAYER.with(() -> player),
+							new UpdateUserDataPacket(data))
+				);
+	}
+
+	public void synchronizeGuns(CommonGunInfoWrapper infos) {
+		RegistryUtil.filterRegistries(GunItem.class, ModItems.ITEMS).stream()
+				.filter(registry -> registry.getId().toString().equalsIgnoreCase(infos.getResourceLocation()))
+				.map(RegistryObject::get)
+				.forEach(gun -> ((IGunItemBridge) gun).bridge$updateSpecs(infos));
+		GunUtils.getCommonGunSpecsWrapper(infos.getResourceLocation()).ifPresent(x -> {
+			Bukkit.getServer().getOnlinePlayers().forEach(player ->
+				ArmaCraft.networkChannel.send(PacketDistributor.PLAYER.with(() -> this.getPlayerEntity(player)),
+						new CommonGunSpecsUpdatePacket(x))
+			);
+		});
 	}
 	
 	public void closePlayerGame(Player player, String title, String message) {

@@ -15,8 +15,9 @@ import org.armacraft.mod.network.ClientEnvironmentResponsePacket;
 import org.armacraft.mod.network.ClientGunInfoPacket;
 import org.armacraft.mod.network.ClientInfoRequestPacket;
 import org.armacraft.mod.network.ClientInfoResponsePacket;
+import org.armacraft.mod.network.ClientOpenedCheatEnginePacket;
 import org.armacraft.mod.network.CloseGamePacket;
-import org.armacraft.mod.network.SetClientBindPacket;
+import org.armacraft.mod.network.CommonGunSpecsUpdatePacket;
 import org.armacraft.mod.network.UpdateUserDataPacket;
 import org.armacraft.mod.potion.ArmaCraftEffects;
 import org.armacraft.mod.server.ServerDist;
@@ -143,11 +144,17 @@ public class ArmaCraft {
 				.encoder(CloseGamePacket::encode)
 				.decoder(CloseGamePacket::decode)
 				.consumer(CloseGamePacket::handle).add();
-		
-		networkChannel.messageBuilder(SetClientBindPacket.class, ++packetId, NetworkDirection.PLAY_TO_CLIENT)
-				.encoder(SetClientBindPacket::encode)
-				.decoder(SetClientBindPacket::decode)
-				.consumer(SetClientBindPacket::handle).add();
+
+		networkChannel.messageBuilder(ClientOpenedCheatEnginePacket.class, ++packetId, NetworkDirection.PLAY_TO_SERVER)
+				.encoder(ClientOpenedCheatEnginePacket::encode)
+				.decoder(ClientOpenedCheatEnginePacket::decode)
+				.consumer(ClientOpenedCheatEnginePacket::handle).add();
+
+
+		networkChannel.messageBuilder(CommonGunSpecsUpdatePacket.class, ++packetId, NetworkDirection.PLAY_TO_CLIENT)
+				.encoder(CommonGunSpecsUpdatePacket::encode)
+				.decoder(CommonGunSpecsUpdatePacket::decode)
+				.consumer(CommonGunSpecsUpdatePacket::handle).add();
 	}
 
 	public void handleCommonSetup(FMLCommonSetupEvent event) {

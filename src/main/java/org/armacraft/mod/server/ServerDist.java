@@ -9,15 +9,18 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import com.craftingdead.core.item.GunItem;
+import com.craftingdead.core.item.ModItems;
+import net.minecraftforge.fml.RegistryObject;
 import org.armacraft.mod.ArmaCraft;
 import org.armacraft.mod.ArmaDist;
 import org.armacraft.mod.bridge.bukkit.IBukkitPermissionBridge;
-import org.armacraft.mod.bridge.bukkit.IBukkitUserDataControllerBridge;
 import org.armacraft.mod.bridge.bukkit.IBukkitWorldGuardBridge;
-import org.armacraft.mod.client.ClientUserData;
-import org.armacraft.mod.environment.EnvironmentWrapper;
+import org.armacraft.mod.network.CommonGunSpecsUpdatePacket;
+import org.armacraft.mod.util.RegistryUtil;
+import org.armacraft.mod.wrapper.CommonGunInfoWrapper;
+import org.armacraft.mod.wrapper.EnvironmentWrapper;
 import org.armacraft.mod.network.ClientInfoRequestPacket;
-import org.armacraft.mod.network.UpdateUserDataPacket;
 import org.armacraft.mod.network.dto.FileInfoDTO;
 import org.armacraft.mod.network.dto.FolderSnapshotDTO;
 import org.armacraft.mod.server.bukkit.util.ForgeToBukkitInterface;
@@ -33,6 +36,7 @@ import net.minecraftforge.event.entity.player.PlayerEvent.PlayerLoggedInEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.network.PacketDistributor;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
+import org.bukkit.Bukkit;
 
 public class ServerDist implements ArmaDist {
 
@@ -44,7 +48,6 @@ public class ServerDist implements ArmaDist {
 
 	//Pontes entre o mod e o Bukkit que são injetadas pelo server
 	public static IBukkitPermissionBridge PERMISSION_BRIDGE;
-	public static IBukkitUserDataControllerBridge USER_DATA_CONTROLLER;
 	public static IBukkitWorldGuardBridge WORLD_GUARD_BRIDGE;
 
 	private final int CLIENT_INFO_REQUEST_DELAY_MILLIS = 10000;
@@ -82,30 +85,18 @@ public class ServerDist implements ArmaDist {
 				lastClientInfoRequest.put(player.getUUID(), System.currentTimeMillis());
 			}
 		});
-
-		if (++this.userDataUpdateTickCounter > 60) {
-			this.userDataUpdateTickCounter = 0;
-			
-			if(USER_DATA_CONTROLLER != null) {
-				USER_DATA_CONTROLLER.getUserDataUpdateWatcher().entrySet().stream()
-						.filter(Map.Entry::getValue)
-						.map(Map.Entry::getKey)
-						.forEach(uuid ->
-							USER_DATA_CONTROLLER.getUserData(uuid).ifPresent(data ->
-								this.getOnlinePlayerByUUID(uuid).ifPresent(entity ->
-									ArmaCraft.networkChannel.send(PacketDistributor.PLAYER.with(() -> entity),
-											new UpdateUserDataPacket(ClientUserData.from(data)))
-								)
-							)
-						);
-				USER_DATA_CONTROLLER.getUserDataUpdateWatcher().clear();
-			}
-		}
 	}
 
 	@SubscribeEvent
 	public void onLoggedIn(PlayerLoggedInEvent event) {
 		this.requestClientInfo(event.getPlayer());
+		RegistryUtil.filterRegistries(GunItem.class, ModItems.ITEMS)
+				.stream().map(RegistryObject::get)
+				.forEach(gun -> {
+					ArmaCraft.networkChannel.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) event.getPlayer()),
+							new CommonGunSpecsUpdatePacket(CommonGunInfoWrapper.from(gun))
+					);
+				});
 		this.lastClientInfoRequest.put(event.getPlayer().getUUID(), System.currentTimeMillis());
 	}
 

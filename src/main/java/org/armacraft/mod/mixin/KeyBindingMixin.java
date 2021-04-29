@@ -27,7 +27,7 @@ public class KeyBindingMixin {
 			KeyBinding self = (KeyBinding) (Object) this;
 			boolean wasDown = self.isDown();
 			
-			if (ClientUtils.isAltKeyDown() && ClientDist.get().hasBind(self)) {
+			if (ClientUtils.isAltKeyDown() && ClientDist.get().getUserData().hasBind(self)) {
 				// Solta a tecla, resetando ela.
 				this.release();
 				// Para por aqui
@@ -54,7 +54,7 @@ public class KeyBindingMixin {
 	public void consumeClick(CallbackInfoReturnable<Void> info) {
 		KeyBinding self = (KeyBinding) (Object) this;
 		
-		if (ClientUtils.isAltKeyDown() && ClientDist.get().hasBind(self)) {
+		if (ClientUtils.isAltKeyDown() && ClientDist.get().getUserData().hasBind(self)) {
 			// Solta a tecla, resetando ela. Evita de contar o clique.
 			this.release();
 		}
