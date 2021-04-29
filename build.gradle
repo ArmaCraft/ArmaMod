@@ -28,10 +28,6 @@ buildscript {
 
 import org.gradle.api.InvalidUserDataException;
 
-if (!project.hasProperty("target")) {
-    throw new InvalidUserDataException("Target must be either 'server' or 'client'");
-}
-
 import java.io.ByteArrayOutputStream;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -57,7 +53,6 @@ version = "${mod_version}.${gitRevision}".toString()
 group = 'org.armacraft'
 
 ext {
-	target = project.getProperty("target")
 	downloadedFilesFolder = new File(buildDir, 'downloaded-files')
 	parsedFolder = new File(buildDir.getParent(), './build/parsed')
 	stringObfuscator = false
@@ -127,10 +122,6 @@ task processTokens(type: Copy) {
 	into 'build/parsed/java'
 	dependsOn 'deleteParsed'
 	dependsOn 'copyResources'
-}
-
-if (target == 'client') {
-	processTokens.finalizedBy 'copyAndProcessSourcesForPublic'
 }
 
 compileJava {
@@ -233,9 +224,18 @@ jar {
 
 jar.finalizedBy('reobfJar')
 
-if (target == 'client') {
-    jar.archiveFileName = 'ArmaMod-client-unobf.jar'
-	build.finalizedBy 'applyProguard'
+build.doFirst {
+	if (!project.hasProperty("target")) {
+	    throw new InvalidUserDataException("Target must be either 'server' or 'client'");
+	}
+	
+	ext.target = project.getProperty("target")
+	
+	if (target == 'client') {
+		processTokens.finalizedBy 'copyAndProcessSourcesForPublic'
+	    jar.archiveFileName = 'ArmaMod-client-unobf.jar'
+		build.finalizedBy 'applyProguard'
+	}
 }
 
 publishing {
