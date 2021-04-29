@@ -3,11 +3,11 @@ package org.armacraft.mod;
 import java.util.Optional;
 
 import org.armacraft.mod.client.ClientDist;
-import org.armacraft.mod.client.util.ClientUtils;
 import org.armacraft.mod.clothing.ClothingRepresentation;
 import org.armacraft.mod.clothing.ProtectionLevel;
 import org.armacraft.mod.init.ArmaCraftBlocks;
 import org.armacraft.mod.init.ArmaCraftItems;
+import org.armacraft.mod.init.ArmaCraftSounds;
 import org.armacraft.mod.init.ArmaCraftTileEntityTypes;
 import org.armacraft.mod.network.ClientDashPacket;
 import org.armacraft.mod.network.ClientEnvironmentRequestPacket;
@@ -75,6 +75,7 @@ public class ArmaCraft {
 
 		MinecraftForge.EVENT_BUS.register(this);
 
+	    ArmaCraftSounds.SOUNDS.register(modEventBus);
 		ArmaCraftBlocks.BLOCKS.register(modEventBus);
 		ArmaCraftItems.ITEMS.register(modEventBus);
 		ArmaCraftEffects.EFFECTS.register(modEventBus);

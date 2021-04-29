@@ -1,0 +1,9 @@
+{
+  "jump": {
+    "sounds": [
+      {
+        "name": "armacraft:jump"
+      }
+    ]
+  }
+}

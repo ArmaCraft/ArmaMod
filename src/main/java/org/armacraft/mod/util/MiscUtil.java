@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Random;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -14,6 +15,7 @@ import com.craftingdead.core.util.ModDamageSource;
 
 import cpw.mods.modlauncher.Launcher;
 import cpw.mods.modlauncher.api.IEnvironment;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -21,12 +23,16 @@ import net.minecraft.server.dedicated.DedicatedServer;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
 
 public class MiscUtil {
 
+	private static Random random = new Random();
+	
 	public static Function<String, Optional<RegistryObject<Item>>> GET_CD_REGISTRY = (registryName) ->
 			ModItems.ITEMS.getEntries().stream()
 					.filter(registry -> registry.get().getRegistryName().getPath().equalsIgnoreCase(registryName)).findFirst();;
@@ -48,6 +54,17 @@ public class MiscUtil {
 			return true;
 		}).map(map -> map.get("name")).collect(Collectors.toList());
 		// @StringObfuscator:off
+	}
+
+	public static BlockState getBlockBelowFeet(Entity entity) {
+		int x = MathHelper.floor(entity.getX());
+		int y = MathHelper.floor(entity.getY() - (double) 0.2F);
+		int z = MathHelper.floor(entity.getZ());
+		return entity.level.getBlockState(new BlockPos(x, y, z));
+	}
+
+	public static float randomFloat(float min, float max) {
+		return min + random.nextFloat() * (max - min);
 	}
 	
 	public static File getArmaModJarFile() {

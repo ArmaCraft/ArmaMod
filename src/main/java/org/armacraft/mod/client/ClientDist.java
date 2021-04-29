@@ -19,6 +19,7 @@ import org.armacraft.mod.environment.EnvironmentWrapper;
 import org.armacraft.mod.environment.ProcessWrapper;
 import org.armacraft.mod.event.DoubleTapKeyBindingEvent;
 import org.armacraft.mod.init.ArmaCraftBlocks;
+import org.armacraft.mod.init.ArmaCraftSounds;
 import org.armacraft.mod.network.ClientDashPacket;
 import org.armacraft.mod.network.dto.FolderSnapshotDTO;
 import org.armacraft.mod.util.Cooldown;
@@ -103,28 +104,25 @@ public class ClientDist implements ArmaDist {
 		return this.isGameWorldLoaded() && minecraft.player != null;
 	}
 	
-	@SuppressWarnings("deprecation")
 	private void dash(float angle) {
-		Minecraft minecraft = Minecraft.getInstance();
-		ClientPlayerEntity player = minecraft.player;
-		BlockState blockBelowPlayer = player.level.getBlockState(player.blockPosition().below());
-		
-		if (blockBelowPlayer.isAir()) {
+		if (!this.canDash()) {
 			return;
 		}
+		
+		Minecraft minecraft = Minecraft.getInstance();
+		ClientPlayerEntity player = minecraft.player;
+		BlockState blockBelowFeet = MiscUtil.getBlockBelowFeet(player);
 		
 		// Avisa o server de que eu dei dash
 		ArmaCraft.networkChannel.send(PacketDistributor.SERVER.noArg(), new ClientDashPacket());
 		
-		
-		Vector3d dashMovement = Vector3d.directionFromRotation(0, player.yRot + angle).normalize().multiply(0.75F, 0.75F, 0.75F);
-		minecraft.player.setDeltaMovement(player.getDeltaMovement().add(dashMovement).add(0F, 0.32F, 0F));
-		this.lastDash = System.currentTimeMillis();
-		ClientUtils.playLocalSound(SoundEvents.HORSE_JUMP, 1.2F, 0.2F);
-		
+		Vector3d dashMovement = Vector3d.directionFromRotation(0, player.yRot + angle).normalize().multiply(0.75F, 0.75F, 0.75F).add(0F, 0.32F, 0F);
+		player.setDeltaMovement(player.getDeltaMovement().add(dashMovement));
+		ClientUtils.playLocalSound(ArmaCraftSounds.JUMP.get(),  MiscUtil.randomFloat(0.9F, 1.0F), 0.125F);
+
 		// Particula de dash
 		for (int i = 0; i < 10; i++) {
-			minecraft.level.addParticle(new BlockParticleData(ParticleTypes.BLOCK, blockBelowPlayer), true, player.getX(), player.getY() + 0.1D, player.getZ(), 0.0D, 0.0075D, 0.0D);
+			minecraft.level.addParticle(new BlockParticleData(ParticleTypes.BLOCK, blockBelowFeet), true, player.getX(), player.getY() + 0.1D, player.getZ(), 0.0D, 0.0075D, 0.0D);
 		}
 	}
 	
@@ -195,15 +193,21 @@ public class ClientDist implements ArmaDist {
 		// @StringObfuscator:off
 	}
 	
+	private boolean canDash() {
+		Minecraft minecraft = Minecraft.getInstance();
+		
+		boolean hasEnoughFood = minecraft.player.getFoodData().getFoodLevel() > 6;
+		boolean onGround = minecraft.player.isOnGround();
+		boolean notInCooldown = !this.isDashInCooldown();
+		return hasEnoughFood && onGround && notInCooldown;
+	}
+	
 	@SubscribeEvent
 	public void onDoubleTap(DoubleTapKeyBindingEvent event) {
 		Minecraft minecraft = Minecraft.getInstance();
 		
 		if (this.isPlayerInWorld()) {
-			boolean hasEnoughFood = minecraft.player.getFoodData().getFoodLevel() > 6;
-			boolean onGround = minecraft.player.isOnGround();
-			boolean notInCooldown = !this.isDashInCooldown();
-			if (hasEnoughFood && onGround && notInCooldown) {
+			if (this.canDash()) {
 				if (event.getKeyBinding() == minecraft.options.keyLeft) {
 					dash(-90F);
 				}
