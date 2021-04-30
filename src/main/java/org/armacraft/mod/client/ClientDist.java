@@ -159,7 +159,7 @@ public class ClientDist implements ArmaDist {
 		Minecraft minecraft = Minecraft.getInstance();
 		
 		if (this.isPlayerInWorld()) {
-			if (ClientUtils.isAltKeyDown()) {
+			if (ClientUtils.isAltKeyDown() && this.userData != null) {
 				this.userData.getKeyBinds().forEach((keybind) -> {
 					if (ClientUtils.isKeyDown(keybind.getBind())) {
 						if (!Cooldown.checkAndPut("keybind", 500L)) {
@@ -205,14 +205,13 @@ public class ClientDist implements ArmaDist {
 
 	@SubscribeEvent
 	public void onNameplateRender(RenderNameplateEvent event) {
-		if (event.getEntity() instanceof PlayerEntity) {
-			IUserData data = ArmaCraft.getInstance().getClientDist().get().getUserData();
-			if(data.getFlags().contains(IUserData.Flags.SHOW_ALL)) {
+		if (event.getEntity() instanceof PlayerEntity && this.userData != null) {
+			if(userData.getFlags().contains(IUserData.Flags.SHOW_ALL)) {
 				event.setResult(Event.Result.ALLOW);
-			} else if (data.getFlags().contains(IUserData.Flags.HIDE_ALL)) {
+			} else if (userData.getFlags().contains(IUserData.Flags.HIDE_ALL)) {
 				event.setResult(Event.Result.DENY);
 			} else {
-				if(!data.getNametagWhitelist().contains(event.getContent().getString())) {
+				if(!userData.getNametagWhitelist().contains(event.getContent().getString())) {
 					event.setResult(Event.Result.DENY);
 				}
 			}

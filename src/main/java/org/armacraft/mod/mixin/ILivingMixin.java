@@ -17,7 +17,7 @@ public interface ILivingMixin<T extends LivingEntity> {
     /*
      * Faz mira não abrir ao andar
      */
-    @Overwrite(remap = false)
+	@Overwrite(remap = false)
     default float getModifiedAccuracy(float accuracy, Random random) {
 		if (this.isCrouching()) {
 			accuracy += 0.15F;

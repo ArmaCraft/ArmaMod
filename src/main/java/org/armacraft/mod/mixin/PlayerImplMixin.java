@@ -11,14 +11,6 @@ import com.craftingdead.core.living.PlayerImpl;
 public class PlayerImplMixin {
 
 	/**
-	 * Impede que o player seja infectado
-	 */
-	@Inject(method = "infect", remap = false, at = @At("HEAD"), cancellable = true)
-	public void infect(float chance, CallbackInfo ci) {
-		ci.cancel();
-	}
-
-	/**
 	 * Impede que a perna seja quebrada
 	 */
 	@Inject(method = "updateBrokenLeg", remap = false, at = @At("HEAD"), cancellable = true)
