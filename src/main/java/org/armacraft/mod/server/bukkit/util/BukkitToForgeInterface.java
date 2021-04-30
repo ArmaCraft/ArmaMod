@@ -1,16 +1,13 @@
 package org.armacraft.mod.server.bukkit.util;
 
 import java.lang.reflect.Method;
-import java.rmi.registry.Registry;
-import java.util.UUID;
 
 import com.craftingdead.core.item.GunItem;
 import com.craftingdead.core.item.ModItems;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
-import org.apache.commons.lang.Validate;
 import org.armacraft.mod.ArmaCraft;
-import org.armacraft.mod.bridge.IGunItemBridge;
+import org.armacraft.mod.bridge.IAbstractGunTypeBridge;
 import org.armacraft.mod.bridge.bukkit.IUserData;
 import org.armacraft.mod.network.ClientEnvironmentRequestPacket;
 import org.armacraft.mod.network.ClientInfoRequestPacket;
@@ -18,7 +15,6 @@ import org.armacraft.mod.network.CloseGamePacket;
 import org.armacraft.mod.network.CommonGunSpecsUpdatePacket;
 import org.armacraft.mod.network.UpdateUserDataPacket;
 import org.armacraft.mod.util.GunUtils;
-import org.armacraft.mod.util.MiscUtil;
 import org.armacraft.mod.util.RegistryUtil;
 import org.armacraft.mod.wrapper.CommonGunInfoWrapper;
 import org.bukkit.Bukkit;
@@ -48,7 +44,7 @@ public enum BukkitToForgeInterface {
 		RegistryUtil.filterRegistries(GunItem.class, ModItems.ITEMS).stream()
 				.filter(registry -> registry.getId().toString().equalsIgnoreCase(infos.getResourceLocation()))
 				.map(RegistryObject::get)
-				.forEach(gun -> ((IGunItemBridge) gun).bridge$updateSpecs(infos));
+				.forEach(gun -> ((IAbstractGunTypeBridge) gun.getGunType()).bridge$updateSpecs(infos));
 		GunUtils.getCommonGunSpecsWrapper(infos.getResourceLocation()).ifPresent(x -> {
 			Bukkit.getServer().getOnlinePlayers().forEach(player ->
 				ArmaCraft.networkChannel.send(PacketDistributor.PLAYER.with(() -> this.getPlayerEntity(player)),

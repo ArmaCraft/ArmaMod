@@ -4,7 +4,7 @@ import com.craftingdead.core.item.GunItem;
 import com.craftingdead.core.item.ModItems;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkEvent;
-import org.armacraft.mod.bridge.IGunItemBridge;
+import org.armacraft.mod.bridge.IAbstractGunTypeBridge;
 import org.armacraft.mod.util.RegistryUtil;
 import org.armacraft.mod.wrapper.CommonGunInfoWrapper;
 
@@ -43,7 +43,7 @@ public class CommonGunSpecsUpdatePacket {
     public static boolean handle(CommonGunSpecsUpdatePacket msg, Supplier<NetworkEvent.Context> ctx) {
         RegistryUtil.filterRegistries(GunItem.class, ModItems.ITEMS).stream()
                 .filter(registry -> registry.getId().toString().equals(msg.infos.getResourceLocation()))
-                .forEach(gun -> ((IGunItemBridge) gun.get()).bridge$updateSpecs(msg.infos));
+                .forEach(gun -> ((IAbstractGunTypeBridge) gun.get().getGunType()).bridge$updateSpecs(msg.infos));
         return true;
     }
 }

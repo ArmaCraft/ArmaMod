@@ -4,25 +4,27 @@
   "compatibilityLevel": "JAVA_8",
   "refmap": "armacraft.refmap.json",
   "mixins": [
+    "AbstractGunMixin",
+    "AbstractGunTypeMixin",
     "AbstractReloadActionMixin",
+    "CraftingDeadVirusMixin",
     "FastZombieEntityMixin",
     "GunCraftSlotMixin",
-    "AbstractGunMixin",
+    "GunItemMixin",
     "ILivingMixin",
     "LivingImplMixin",
     "PlayerImplMixin",
-    "GunItemMixin",
     "RemoveMagazineActionMixin"
   ],
   "client": [
-    "KeyBindingMixin",
-    "IngameGuiMixin",
-    "MinecraftMixin",
-    "SimpleGunClientMixin",
-    "GunAnimationControllerMixin",
-    "GameRendererMixin",
+    "CameraManagerMixin",
     "ClothingItemMixin",
-    "CameraManagerMixin"
+    "GameRendererMixin",
+    "GunAnimationControllerMixin",
+    "IngameGuiMixin",
+    "KeyBindingMixin",
+    "MinecraftMixin",
+    "SimpleGunClientMixin"
   ],
   "injectors": {
     "defaultRequire": 1
