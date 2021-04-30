@@ -1,8 +1,6 @@
 package org.armacraft.mod.mixin;
 
-import net.minecraft.potion.Effect;
-import org.armacraft.mod.ArmaCraft;
-import org.armacraft.mod.bridge.IGunImplBridge;
+import org.armacraft.mod.bridge.AbstractGunBridge;
 import org.armacraft.mod.potion.ArmaCraftEffects;
 import org.armacraft.mod.server.ServerDist;
 import org.armacraft.mod.util.GunUtils;
@@ -18,17 +16,18 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import com.craftingdead.core.capability.ModCapabilities;
-import com.craftingdead.core.capability.gun.GunImpl;
-import com.craftingdead.core.capability.gun.IGunProvider;
-import com.craftingdead.core.capability.gun.PendingHit;
-import com.craftingdead.core.capability.living.ILiving;
-import com.craftingdead.core.capability.living.IPlayer;
 import com.craftingdead.core.item.PaintItem;
+import com.craftingdead.core.item.gun.AbstractGun;
+import com.craftingdead.core.item.gun.AbstractGunType;
+import com.craftingdead.core.item.gun.PendingHit;
+import com.craftingdead.core.living.ILiving;
+import com.craftingdead.core.living.IPlayer;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.potion.Effect;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.vector.Vector3d;
@@ -36,15 +35,16 @@ import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 
-@Mixin(GunImpl.class)
-public abstract class GunImplMixin implements IGunImplBridge {
+@Mixin(AbstractGun.class)
+public abstract class AbstractGunMixin<T extends AbstractGunType<SELF>, SELF extends AbstractGun<T, SELF>> implements AbstractGunBridge<T, SELF> {
 
-	@Shadow @Final protected IGunProvider gunProvider;
+	@Shadow @Final protected T type;
+	
 	@Shadow
 	@Final
 	protected ItemStack gunStack;
 	
-	@Accessor(value = "gunProvider", remap = false) public abstract IGunProvider bridge$getGunProvider();
+	@Accessor(value = "type", remap = false) public abstract T bridge$getGunType();
 
 	/**
 	 * Remove skins ao atirar, se não tiver perm

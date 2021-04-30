@@ -1,20 +1,19 @@
 package org.armacraft.mod.util;
 
-import com.craftingdead.core.capability.ModCapabilities;
-import com.craftingdead.core.capability.gun.AimableGun;
+import java.util.Optional;
+import java.util.function.Predicate;
 
-import com.craftingdead.core.item.GunItem;
-import com.craftingdead.core.item.ModItems;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraftforge.fml.RegistryObject;
 import org.armacraft.mod.wrapper.ClientGunInfoWrapper;
 import org.armacraft.mod.wrapper.CommonGunInfoWrapper;
 
-import java.util.Optional;
-import java.util.function.Function;
-import java.util.function.Predicate;
+import com.craftingdead.core.capability.ModCapabilities;
+import com.craftingdead.core.item.GunItem;
+import com.craftingdead.core.item.ModItems;
+import com.craftingdead.core.item.gun.aimable.AimableGun;
+
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraftforge.fml.RegistryObject;
 
 public class GunUtils {
 
@@ -37,12 +36,12 @@ public class GunUtils {
             GunItem gunItem = gunItemOpt.get();
             return Optional.of(new CommonGunInfoWrapper(
                     gunItem.getRegistryName().toString(),
-                    gunItem.getFireRateRPM(),
-                    gunItem.getFireDelayMs(),
-                    gunItem.getDamage(),
-                    gunItem.getReloadDurationTicks(),
-                    gunItem.getAccuracyPct(),
-                    gunItem.getBulletAmountToFire()));
+                    gunItem.getGunType().getFireRateRPM(),
+                    gunItem.getGunType().getFireDelayMs(),
+                    gunItem.getGunType().getDamage(),
+                    gunItem.getGunType().getReloadDurationTicks(),
+                    gunItem.getGunType().getAccuracyPct(),
+                    gunItem.getGunType().getBulletAmountToFire()));
         }
         return Optional.empty();
     }

@@ -3,8 +3,8 @@ package org.armacraft.mod.mixin;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 
-import com.craftingdead.core.entity.monster.AdvancedZombieEntity;
-import com.craftingdead.core.entity.monster.FastZombieEntity;
+import com.craftingdead.virus.entity.monster.AdvancedZombieEntity;
+import com.craftingdead.virus.entity.monster.FastZombieEntity;
 
 import net.minecraft.entity.ai.attributes.AttributeModifierMap;
 import net.minecraft.entity.ai.attributes.Attributes;

@@ -1,7 +1,6 @@
 package org.armacraft.mod.wrapper;
 
 import com.craftingdead.core.item.GunItem;
-import net.minecraft.util.ResourceLocation;
 
 public class CommonGunInfoWrapper {
     private String resourceLocation;
@@ -14,12 +13,12 @@ public class CommonGunInfoWrapper {
 
     public static CommonGunInfoWrapper from(GunItem item) {
         return new CommonGunInfoWrapper(item.getRegistryName().toString(),
-                item.getFireRateRPM(),
-                item.getFireDelayMs(),
-                item.getDamage(),
-                item.getReloadDurationTicks(),
-                item.getAccuracyPct(),
-                item.getBulletAmountToFire());
+                item.getGunType().getFireRateRPM(),
+                item.getGunType().getFireDelayMs(),
+                item.getGunType().getDamage(),
+                item.getGunType().getReloadDurationTicks(),
+                item.getGunType().getAccuracyPct(),
+                item.getGunType().getBulletAmountToFire());
     }
 
     public CommonGunInfoWrapper(String resourceLocation, int fireRateRpm, int fireDelayMs, float damage, int reloadDurationTicks, float accuracyPct, int bulletAmountToFire) {

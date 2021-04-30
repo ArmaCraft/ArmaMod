@@ -5,7 +5,7 @@ import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
 
-import com.craftingdead.core.capability.living.LivingImpl;
+import com.craftingdead.core.living.LivingImpl;
 import com.craftingdead.core.util.ModSoundEvents;
 
 import net.minecraft.entity.LivingEntity;

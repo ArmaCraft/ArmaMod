@@ -25,10 +25,10 @@ import org.armacraft.mod.util.EnchantUtils;
 import org.armacraft.mod.util.MiscUtil;
 
 import com.craftingdead.core.capability.ModCapabilities;
-import com.craftingdead.core.capability.gun.GunImpl;
 import com.craftingdead.core.event.GunEvent;
 import com.craftingdead.core.inventory.InventorySlotType;
 import com.craftingdead.core.item.ModItems;
+import com.craftingdead.core.item.gun.AbstractGun;
 
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.item.ItemStack;
@@ -226,7 +226,7 @@ public class ArmaCraft {
 		if (event.isHeadshot()) {
 			// Matematicamente remove o multiplier de headshot do dano e aplica o nosso no
 			// lugar
-			event.setDamage((event.getDamage() / GunImpl.HEADSHOT_MULTIPLIER) * ARMACRAFT_HEADSHOT_MULTIPLIER);
+			event.setDamage((event.getDamage() / AbstractGun.HEADSHOT_MULTIPLIER) * ARMACRAFT_HEADSHOT_MULTIPLIER);
 		}
 	}
 

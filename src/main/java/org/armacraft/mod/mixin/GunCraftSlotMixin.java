@@ -1,6 +1,5 @@
 package org.armacraft.mod.mixin;
 
-import org.armacraft.mod.ArmaCraft;
 import org.armacraft.mod.server.ServerDist;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;

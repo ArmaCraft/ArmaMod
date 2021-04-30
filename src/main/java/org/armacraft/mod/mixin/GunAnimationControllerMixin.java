@@ -7,7 +7,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import com.craftingdead.core.capability.animationprovider.gun.GunAnimationController;
+import com.craftingdead.core.item.animation.gun.GunAnimationController;
 
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;

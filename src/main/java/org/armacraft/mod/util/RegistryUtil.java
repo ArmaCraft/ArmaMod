@@ -1,14 +1,13 @@
 package org.armacraft.mod.util;
 
-import com.craftingdead.core.item.GunItem;
-import net.minecraftforge.fml.RegistryObject;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.IForgeRegistryEntry;
-
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import net.minecraftforge.fml.RegistryObject;
+import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.IForgeRegistryEntry;
 
 public class RegistryUtil {
     public static <G extends IForgeRegistryEntry<? super G>> Collection<RegistryObject<G>> filterRegistries(Class<G> clazz, DeferredRegister<?> register) {

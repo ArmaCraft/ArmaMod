@@ -3,11 +3,8 @@ package org.armacraft.mod.mixin;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 
-import com.craftingdead.core.item.GunItem;
-import net.minecraft.item.ItemStack;
-import net.minecraftforge.fml.network.PacketDistributor;
 import org.armacraft.mod.ArmaCraft;
-import org.armacraft.mod.bridge.IGunImplBridge;
+import org.armacraft.mod.bridge.AbstractGunBridge;
 import org.armacraft.mod.network.ClientGunInfoPacket;
 import org.armacraft.mod.util.GunUtils;
 import org.armacraft.mod.wrapper.ClientGunInfoWrapper;
@@ -18,12 +15,13 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import com.craftingdead.core.capability.gun.GunClientImpl;
-import com.craftingdead.core.capability.gun.GunImpl;
-import com.craftingdead.core.capability.gun.PendingHit;
-import com.craftingdead.core.capability.living.ILiving;
 import com.craftingdead.core.client.ClientDist;
 import com.craftingdead.core.item.AttachmentItem.MultiplierType;
+import com.craftingdead.core.item.GunItem;
+import com.craftingdead.core.item.gun.AbstractGun;
+import com.craftingdead.core.item.gun.PendingHit;
+import com.craftingdead.core.item.gun.simple.SimpleGunClient;
+import com.craftingdead.core.living.ILiving;
 import com.craftingdead.core.network.NetworkChannel;
 import com.craftingdead.core.network.message.play.ValidatePendingHitMessage;
 import com.google.common.collect.Multimap;
@@ -31,10 +29,12 @@ import com.google.common.collect.Multimap;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.vector.Vector3d;
+import net.minecraftforge.fml.network.PacketDistributor;
 
-@Mixin(GunClientImpl.class)
-public abstract class GunClientImplMixin {
+@Mixin(SimpleGunClient.class)
+public abstract class SimpleGunClientMixin {
 
 	@Shadow()
 	@Final()
@@ -46,7 +46,7 @@ public abstract class GunClientImplMixin {
 
 	@Shadow()
 	@Final()
-	private GunImpl gun;
+	private AbstractGun<?, ?> gun;
 	
 	@Shadow()
 	@Final()
@@ -63,14 +63,14 @@ public abstract class GunClientImplMixin {
 		if (GunUtils.isAiming(theEntity)) {
 			if (theEntity == this.minecraft.getCameraEntity()) {
 				this.client.getCameraManager()
-						.joltCamera(1.0F - ((IGunImplBridge) this.gun).bridge$getGunProvider().getAccuracyPct()
+						.joltCamera(1.0F - ((AbstractGunBridge<?, ?>) this.gun).bridge$getGunType().getAccuracyPct()
 								* gun.getAttachmentMultiplier(MultiplierType.ACCURACY), true);
 			}
 		}
 
 		ItemStack stack = null;
 		try {
-			Field gunStackField = GunImpl.class.getDeclaredField("gunStack");
+			Field gunStackField = AbstractGun.class.getDeclaredField("gunStack");
 			gunStackField.setAccessible(true);
 			stack = (ItemStack) gunStackField.get(this.gun);
 		} catch (NoSuchFieldException | IllegalAccessException e) {
@@ -82,10 +82,10 @@ public abstract class GunClientImplMixin {
 			ArmaCraft.networkChannel.send(PacketDistributor.SERVER.noArg(),
 					new ClientGunInfoPacket(new ClientGunInfoWrapper(
 							gunItem.getRegistryName().toString(),
-							gunItem.getFireRateRPM(),
-							gunItem.getReloadDurationTicks(),
-							gunItem.getAccuracyPct(),
-							gunItem.getBulletAmountToFire())));
+							gunItem.getGunType().getFireRateRPM(),
+							gunItem.getGunType().getReloadDurationTicks(),
+							gunItem.getGunType().getAccuracyPct(),
+							gunItem.getGunType().getBulletAmountToFire())));
 		}
 
 	}

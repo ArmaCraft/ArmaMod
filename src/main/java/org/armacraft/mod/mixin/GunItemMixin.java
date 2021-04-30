@@ -50,7 +50,7 @@ public class GunItemMixin implements IGunItemBridge {
 		// Remove e adiciona de volta
 		lines.remove(3);
 		lines.add(3, Text.translate(LORE_HEADSHOT_DAMAGE, 3).withStyle(TextFormatting.GRAY).append(
-				Text.of(gun.getDamage() * ArmaCraft.ARMACRAFT_HEADSHOT_MULTIPLIER).withStyle(TextFormatting.RED)));
+				Text.of(gun.getGunType().getDamage() * ArmaCraft.ARMACRAFT_HEADSHOT_MULTIPLIER).withStyle(TextFormatting.RED)));
 	}
 
 	@Override
