@@ -30,6 +30,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.potion.Effect;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.Util;
+import net.minecraft.util.concurrent.ThreadTaskExecutor;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TextFormatting;
@@ -51,7 +52,10 @@ public abstract class AbstractGunMixin<T extends AbstractGunType<SELF>, SELF ext
 	 */
 
 	@Inject(method = "processShot", remap = false, at = @At("TAIL"))
-	private void processShot(ILiving<?, ?> living, CallbackInfo ci) {
+	private void processShot(ILiving<?, ?> living, ThreadTaskExecutor<?> threadTaskExecutor, CallbackInfo ci) {
+		// TODO Verificar se devemos usar o ThreadTaskExecutor. Para isso,
+		// ver a source do CD oficial, ver como usam ele.
+		
 		if (living.getEntity() instanceof PlayerEntity) {
 			PlayerEntity playerEntity = (PlayerEntity) living.getEntity();
 			gunStack.getCapability(ModCapabilities.GUN).ifPresent(gunController -> {
