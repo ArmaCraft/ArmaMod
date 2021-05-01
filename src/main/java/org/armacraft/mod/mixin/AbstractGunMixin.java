@@ -53,25 +53,24 @@ public abstract class AbstractGunMixin<T extends AbstractGunType<SELF>, SELF ext
 
 	@Inject(method = "processShot", remap = false, at = @At("TAIL"))
 	private void processShot(ILiving<?, ?> living, ThreadTaskExecutor<?> threadTaskExecutor, CallbackInfo ci) {
-		// TODO Verificar se devemos usar o ThreadTaskExecutor. Para isso,
-		// ver a source do CD oficial, ver como usam ele.
-		
-		if (living.getEntity() instanceof PlayerEntity) {
-			PlayerEntity playerEntity = (PlayerEntity) living.getEntity();
-			gunStack.getCapability(ModCapabilities.GUN).ifPresent(gunController -> {
-				if (gunController.getPaint().isPresent()) {
-					PaintItem paint = (PaintItem) gunController.getPaintStack().getItem();
-					String permissionNode = "armacraft.skins."
-							+ gunStack.getItem().getRegistryName().getPath() + "."
-							+ paint.getRegistryName().getPath();
-					if (!ServerDist.PERMISSION_BRIDGE.hasPermission(playerEntity.getUUID(), permissionNode)) {
-						playerEntity.sendMessage(new TranslationTextComponent("message.no_skin_permission")
-								.setStyle(Style.EMPTY.applyFormat(TextFormatting.RED).withBold(true)), Util.NIL_UUID);
-						gunStack.getCapability(ModCapabilities.GUN).ifPresent(x -> x.setPaintStack(ItemStack.EMPTY));
+		threadTaskExecutor.execute(() -> {
+			if (living.getEntity() instanceof PlayerEntity) {
+				PlayerEntity playerEntity = (PlayerEntity) living.getEntity();
+				gunStack.getCapability(ModCapabilities.GUN).ifPresent(gunController -> {
+					if (gunController.getPaint().isPresent()) {
+						PaintItem paint = (PaintItem) gunController.getPaintStack().getItem();
+						String permissionNode = "armacraft.skins."
+								+ gunStack.getItem().getRegistryName().getPath() + "."
+								+ paint.getRegistryName().getPath();
+						if (!ServerDist.PERMISSION_BRIDGE.hasPermission(playerEntity.getUUID(), permissionNode)) {
+							playerEntity.sendMessage(new TranslationTextComponent("message.no_skin_permission")
+									.setStyle(Style.EMPTY.applyFormat(TextFormatting.RED).withBold(true)), Util.NIL_UUID);
+							gunStack.getCapability(ModCapabilities.GUN).ifPresent(x -> x.setPaintStack(ItemStack.EMPTY));
+						}
 					}
-				}
-			});
-		}
+				});
+			}
+		});
 	}
 
 	/**
