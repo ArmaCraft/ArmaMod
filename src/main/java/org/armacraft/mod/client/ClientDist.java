@@ -120,6 +120,8 @@ public class ClientDist implements ArmaDist {
 		for (int i = 0; i < 10; i++) {
 			minecraft.level.addParticle(new BlockParticleData(ParticleTypes.BLOCK, blockBelowFeet), true, player.getX(), player.getY() + 0.1D, player.getZ(), 0.0D, 0.0075D, 0.0D);
 		}
+
+		this.lastDash = System.currentTimeMillis();
 	}
 
 	public void setUserData(IUserData data) {
