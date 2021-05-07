@@ -161,7 +161,7 @@ public class ClientDist implements ArmaDist {
 		Minecraft minecraft = Minecraft.getInstance();
 		
 		if (this.isPlayerInWorld()) {
-			if (ClientUtils.isAltKeyDown() && this.userData != null) {
+			if (ClientUtils.isAltKeyDown() && this.userData != null && this.userData.areKeybindsEnabled()) {
 				this.userData.getKeyBinds().forEach((keybind) -> {
 					if (ClientUtils.isKeyDown(keybind.getBind())) {
 						if (!Cooldown.checkAndPut("keybind", 500L)) {

@@ -12,9 +12,11 @@ public class ClientUserData implements IUserData {
     private Set<KeyBindWrapper> keybinds;
     private Set<Flags> flags;
     private Set<String> nametagWhitelist;
+    private boolean areKeybindsEnabled;
 
-    public ClientUserData(Set<KeyBindWrapper> keybinds, Set<Flags> flags, Set<String> nametagWhitelist) {
+    public ClientUserData(Set<KeyBindWrapper> keybinds, Set<Flags> flags, Set<String> nametagWhitelist, boolean areKeybindsEnabled) {
         this.keybinds = keybinds;
+        this.areKeybindsEnabled = areKeybindsEnabled;
         this.flags = flags;
         this.nametagWhitelist = nametagWhitelist;
     }
@@ -63,5 +65,10 @@ public class ClientUserData implements IUserData {
     @Override
     public boolean hasBind(KeyBinding bind) {
         return hasBind((char) bind.getKey().getValue());
+    }
+
+    @Override
+    public boolean areKeybindsEnabled() {
+        return false;
     }
 }

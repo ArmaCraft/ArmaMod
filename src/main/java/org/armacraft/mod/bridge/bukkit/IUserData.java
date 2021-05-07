@@ -17,4 +17,5 @@ public interface IUserData {
     void setFlags(Set<Flags> flags);
     boolean hasBind(Character character);
     boolean hasBind(KeyBinding bind);
+    boolean areKeybindsEnabled();
 }
