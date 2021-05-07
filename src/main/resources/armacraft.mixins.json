@@ -9,7 +9,6 @@
     "AbstractReloadActionMixin",
     "CraftingDeadVirusMixin",
     "FastZombieEntityMixin",
-    "GunCraftSlotMixin",
     "GunItemMixin",
     "ILivingMixin",
     "LivingImplMixin",

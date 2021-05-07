@@ -1,7 +1,16 @@
 package org.armacraft.mod;
 
 import java.util.Optional;
+import java.util.UUID;
 
+import com.craftingdead.core.item.PaintItem;
+import net.minecraft.client.Minecraft;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.Util;
+import net.minecraft.util.text.Style;
+import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.TranslationTextComponent;
 import org.armacraft.mod.client.ClientDist;
 import org.armacraft.mod.clothing.ClothingRepresentation;
 import org.armacraft.mod.clothing.ProtectionLevel;
@@ -47,6 +56,7 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.network.NetworkDirection;
 import net.minecraftforge.fml.network.NetworkRegistry;
 import net.minecraftforge.fml.network.simple.SimpleChannel;
+import org.bukkit.entity.LivingEntity;
 
 @Mod(ArmaCraft.MODID)
 public class ArmaCraft {
@@ -202,6 +212,34 @@ public class ArmaCraft {
 		ClothingRepresentation.register(ModItems.SCUBA_CLOTHING.get(), ProtectionLevel.MEDIUM);
 		ClothingRepresentation.register(ModItems.DDPAT_CLOTHING.get(), ProtectionLevel.HIGH);
 		ClothingRepresentation.register(ModItems.CONTRACTOR_CLOTHING.get(), ProtectionLevel.NONE);
+	}
+
+	@SubscribeEvent
+	public void handleGunFire(GunEvent.TriggerPressed event) {
+		//Fazer cast direto de PlayerEntity player = event.getLiving().getEntity() da ClassCast
+		Entity entity = event.getLiving().getEntity();
+		entity.getCapability(ModCapabilities.LIVING).ifPresent(living -> {
+			if(living.getEntity() instanceof PlayerEntity) {
+				PlayerEntity player = (PlayerEntity) living.getEntity();
+				ItemStack stack = event.getItemStack();
+				stack.getCapability(ModCapabilities.GUN).ifPresent(gunController -> {
+					if (gunController.getPaint().isPresent()) {
+						PaintItem paint = (PaintItem) gunController.getPaintStack().getItem();
+						String permissionNode = "armacraft.skins."
+								+ stack.getItem().getRegistryName().getPath() + "."
+								+ paint.getRegistryName().getPath();
+						if (ServerDist.PERMISSION_BRIDGE != null && !ServerDist.PERMISSION_BRIDGE.hasPermission(player.getUUID(), permissionNode)) {
+							entity.sendMessage(new TranslationTextComponent("message.no_skin_permission")
+									.setStyle(Style.EMPTY.applyFormat(TextFormatting.RED).withBold(true)), Util.NIL_UUID);
+							stack.getCapability(ModCapabilities.GUN).ifPresent(x -> x.setPaintStack(ItemStack.EMPTY));
+						}
+					}
+				});
+			}
+		});
+			/*
+			});*/
+
 	}
 
 	@SubscribeEvent

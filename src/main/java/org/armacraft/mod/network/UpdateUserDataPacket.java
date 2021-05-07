@@ -21,6 +21,7 @@ public class UpdateUserDataPacket {
     }
 
     public static void encode(UpdateUserDataPacket msg, PacketBuffer out) {
+        System.out.println("ENCODANDO O NEGOCIO");
         out.writeByte(msg.userData.getFlags().size());
         out.writeByte(msg.userData.getNametagWhitelist().size());
         out.writeByte(msg.userData.getKeyBinds().size());
@@ -30,6 +31,7 @@ public class UpdateUserDataPacket {
     }
 
     public static UpdateUserDataPacket decode(PacketBuffer in) {
+        System.out.println("DECODANDO");
         Set<IUserData.Flags> flags = new HashSet<>();
         Set<String> nametagWhitelist = new HashSet<>();
         Set<KeyBindWrapper> keybinds = new HashSet<>();
@@ -53,6 +55,7 @@ public class UpdateUserDataPacket {
     }
 
     public static boolean handle(UpdateUserDataPacket msg, Supplier<NetworkEvent.Context> ctx) {
+        System.out.println("HANDLING");
         if (ctx.get().getDirection().getReceptionSide().isClient()) {
             ctx.get().enqueueWork(() -> ArmaCraft.getInstance().getClientDist().get().setUserData(msg.userData));
         }
