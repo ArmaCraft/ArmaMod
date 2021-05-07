@@ -54,7 +54,7 @@ public abstract class AbstractGunMixin<T extends AbstractGunType<SELF>, SELF ext
 	@Inject(method = "processShot", remap = false, at = @At("TAIL"))
 	private void processShot(ILiving<?, ?> living, ThreadTaskExecutor<?> threadTaskExecutor, CallbackInfo ci) {
 		threadTaskExecutor.execute(() -> {
-			if (living.getEntity() instanceof PlayerEntity) {
+			/*if (living.getEntity() instanceof PlayerEntity) {
 				PlayerEntity playerEntity = (PlayerEntity) living.getEntity();
 				gunStack.getCapability(ModCapabilities.GUN).ifPresent(gunController -> {
 					if (gunController.getPaint().isPresent()) {
@@ -69,7 +69,7 @@ public abstract class AbstractGunMixin<T extends AbstractGunType<SELF>, SELF ext
 						}
 					}
 				});
-			}
+			}*/
 		});
 	}
 

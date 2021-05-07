@@ -217,29 +217,28 @@ public class ArmaCraft {
 	@SubscribeEvent
 	public void handleGunFire(GunEvent.TriggerPressed event) {
 		//Fazer cast direto de PlayerEntity player = event.getLiving().getEntity() da ClassCast
-		Entity entity = event.getLiving().getEntity();
-		entity.getCapability(ModCapabilities.LIVING).ifPresent(living -> {
-			if(living.getEntity() instanceof PlayerEntity) {
-				PlayerEntity player = (PlayerEntity) living.getEntity();
-				ItemStack stack = event.getItemStack();
-				stack.getCapability(ModCapabilities.GUN).ifPresent(gunController -> {
-					if (gunController.getPaint().isPresent()) {
-						PaintItem paint = (PaintItem) gunController.getPaintStack().getItem();
-						String permissionNode = "armacraft.skins."
-								+ stack.getItem().getRegistryName().getPath() + "."
-								+ paint.getRegistryName().getPath();
-						if (ServerDist.PERMISSION_BRIDGE != null && !ServerDist.PERMISSION_BRIDGE.hasPermission(player.getUUID(), permissionNode)) {
-							entity.sendMessage(new TranslationTextComponent("message.no_skin_permission")
-									.setStyle(Style.EMPTY.applyFormat(TextFormatting.RED).withBold(true)), Util.NIL_UUID);
-							stack.getCapability(ModCapabilities.GUN).ifPresent(x -> x.setPaintStack(ItemStack.EMPTY));
+		getServerDist().ifPresent(server -> {
+			Entity entity = event.getLiving().getEntity();
+			entity.getCapability(ModCapabilities.LIVING).ifPresent(living -> {
+				if(living.getEntity() instanceof PlayerEntity) {
+					PlayerEntity player = (PlayerEntity) living.getEntity();
+					ItemStack stack = event.getItemStack();
+					stack.getCapability(ModCapabilities.GUN).ifPresent(gunController -> {
+						if (gunController.getPaint().isPresent()) {
+							PaintItem paint = (PaintItem) gunController.getPaintStack().getItem();
+							String permissionNode = "armacraft.skins."
+									+ stack.getItem().getRegistryName().getPath() + "."
+									+ paint.getRegistryName().getPath();
+							if (ServerDist.PERMISSION_BRIDGE != null && !ServerDist.PERMISSION_BRIDGE.hasPermission(player.getUUID(), permissionNode)) {
+								entity.sendMessage(new TranslationTextComponent("message.no_skin_permission")
+										.setStyle(Style.EMPTY.applyFormat(TextFormatting.RED).withBold(true)), Util.NIL_UUID);
+								stack.getCapability(ModCapabilities.GUN).ifPresent(x -> x.setPaintStack(ItemStack.EMPTY));
+							}
 						}
-					}
-				});
-			}
+					});
+				}
+			});
 		});
-			/*
-			});*/
-
 	}
 
 	@SubscribeEvent

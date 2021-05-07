@@ -7,7 +7,7 @@
     "AbstractGunMixin",
     "AbstractGunTypeMixin",
     "AbstractReloadActionMixin",
-    "CraftingDeadVirusMixin",
+    "InfectionEffectMixin",
     "FastZombieEntityMixin",
     "GunItemMixin",
     "ILivingMixin",
