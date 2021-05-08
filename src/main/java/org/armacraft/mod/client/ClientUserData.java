@@ -63,11 +63,6 @@ public class ClientUserData implements IUserData {
     }
 
     @Override
-    public boolean hasBind(KeyBinding bind) {
-        return hasBind((char) bind.getKey().getValue());
-    }
-
-    @Override
     public boolean areKeybindsEnabled() {
         return false;
     }

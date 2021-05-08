@@ -18,7 +18,7 @@ public class KeyBindWrapper {
     }
 
     public static KeyBindWrapper fromString(String str) {
-        return new KeyBindWrapper(str.split("%")[0].charAt(0), str.split("%")[1]);
+        return new KeyBindWrapper(str.split(";")[0].charAt(0), str.split(";")[1]);
     }
 
     @Override

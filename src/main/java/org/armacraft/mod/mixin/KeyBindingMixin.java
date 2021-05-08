@@ -29,7 +29,7 @@ public class KeyBindingMixin {
 			
 			if (ClientUtils.isAltKeyDown()
 					&& ClientDist.get().getUserData() != null
-					&& ClientDist.get().getUserData().hasBind(self)) {
+					&& ClientDist.get().getUserData().hasBind((char) self.getKey().getValue())) {
 				// Solta a tecla, resetando ela.
 				this.release();
 				// Para por aqui
@@ -58,7 +58,7 @@ public class KeyBindingMixin {
 		
 		if (ClientUtils.isAltKeyDown()
 				&& ClientDist.get().getUserData() != null
-				&& ClientDist.get().getUserData().hasBind(self)) {
+				&& ClientDist.get().getUserData().hasBind((char) self.getKey().getValue())) {
 			// Solta a tecla, resetando ela. Evita de contar o clique.
 			this.release();
 		}
