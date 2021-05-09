@@ -64,6 +64,6 @@ public class ClientUserData implements IUserData {
 
     @Override
     public boolean areKeybindsEnabled() {
-        return false;
+        return areKeybindsEnabled;
     }
 }

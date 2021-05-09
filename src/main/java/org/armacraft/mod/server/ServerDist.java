@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 import com.craftingdead.core.item.GunItem;
@@ -36,7 +37,6 @@ import net.minecraftforge.event.entity.player.PlayerEvent.PlayerLoggedInEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.network.PacketDistributor;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
-import org.bukkit.Bukkit;
 
 public class ServerDist implements ArmaDist {
 
@@ -117,12 +117,15 @@ public class ServerDist implements ArmaDist {
 	@Override
 	public void validateUntrustedFolders(List<FolderSnapshotDTO> snapshots, PlayerEntity source) {
 		for (FolderSnapshotDTO snapshot : snapshots) {
-			// Arquivos obrigatórios
-			List<String> missingMandatory = this.mandatoryHashes.stream().filter(mandatoryHash -> !snapshot.getAllHashes().contains(mandatoryHash)).collect(Collectors.toList());
-			
-			// Falta arquivo
-			if (!missingMandatory.isEmpty()) {
-				this.getForgeToBukkitInterface().onMissingFile(source, missingMandatory);
+
+			if(snapshot.getGameFolder().getFolderPath().equals("./mods")) {
+				// Arquivos obrigatórios
+				List<String> missingMandatory = this.mandatoryHashes.stream().filter(mandatory -> !snapshot.getAllHashes().contains(mandatory)).collect(Collectors.toList());
+
+				// Falta arquivo
+				if (!missingMandatory.isEmpty()) {
+					this.getForgeToBukkitInterface().onMissingFile(source, missingMandatory);
+				}
 			}
 			
 			List<FileInfoDTO> unknownFiles = snapshot.getFiles().stream().filter(fileInfo -> {

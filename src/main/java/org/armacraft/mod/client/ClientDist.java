@@ -161,10 +161,17 @@ public class ClientDist implements ArmaDist {
 		Minecraft minecraft = Minecraft.getInstance();
 		
 		if (this.isPlayerInWorld()) {
+			System.out.println("ALT DOWN: " + ClientUtils.isAltKeyDown());
+			System.out.println(this.userData == null);
+			System.out.println("Keybind enabled: " + this.userData.areKeybindsEnabled());
 			if (ClientUtils.isAltKeyDown() && this.userData != null && this.userData.areKeybindsEnabled()) {
+				System.out.println("3");
 				this.userData.getKeyBinds().forEach((keybind) -> {
+					System.out.println("Encontrou uma bind:: " + keybind.getCommand());
 					if (ClientUtils.isKeyDown(keybind.getBind())) {
+						System.out.println("4");
 						if (!Cooldown.checkAndPut("keybind", 500L)) {
+							System.out.println("5");
 							ClientUtils.playLocalSound(SoundEvents.UI_BUTTON_CLICK, 1.2F, 1F);
 							minecraft.player.chat("/" + keybind.getCommand());
 						}

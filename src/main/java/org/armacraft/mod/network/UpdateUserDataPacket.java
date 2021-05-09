@@ -56,6 +56,11 @@ public class UpdateUserDataPacket {
 
     public static boolean handle(UpdateUserDataPacket msg, Supplier<NetworkEvent.Context> ctx) {
         if (ctx.get().getDirection().getReceptionSide().isClient()) {
+            System.out.println("Keybinds enabled: " + msg.userData.areKeybindsEnabled());
+            System.out.println("Keybinds:");
+            msg.userData.getKeyBinds().forEach(key -> {
+                System.out.println(key.getBind() + " para o comando " + key.getCommand());
+            });
             ctx.get().enqueueWork(() -> ArmaCraft.getInstance().getClientDist().get().setUserData(msg.userData));
         }
         return true;
