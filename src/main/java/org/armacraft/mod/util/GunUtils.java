@@ -31,7 +31,7 @@ public class GunUtils {
     public static Optional<CommonGunInfoWrapper> getCommonGunSpecsWrapper(String resourceLocation) {
         Optional<GunItem> gunItemOpt = RegistryUtil.filterRegistries(GunItem.class, ModItems.ITEMS)
                 .stream().filter(registry -> registry.getId().toString().equalsIgnoreCase(resourceLocation))
-                .map(RegistryObject::get).findFirst();
+                .map(gun -> (GunItem) gun.get()).findFirst();
         if(gunItemOpt.isPresent()) {
             GunItem gunItem = gunItemOpt.get();
             return Optional.of(new CommonGunInfoWrapper(

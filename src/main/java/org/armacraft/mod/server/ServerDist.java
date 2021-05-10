@@ -94,7 +94,7 @@ public class ServerDist implements ArmaDist {
 				.stream().map(RegistryObject::get)
 				.forEach(gun -> {
 					ArmaCraft.networkChannel.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) event.getPlayer()),
-							new CommonGunSpecsUpdatePacket(CommonGunInfoWrapper.from(gun))
+							new CommonGunSpecsUpdatePacket(CommonGunInfoWrapper.from((GunItem) gun))
 					);
 				});
 		this.lastClientInfoRequest.put(event.getPlayer().getUUID(), System.currentTimeMillis());

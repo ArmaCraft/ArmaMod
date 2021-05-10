@@ -10,10 +10,10 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.IForgeRegistryEntry;
 
 public class RegistryUtil {
-    public static <G extends IForgeRegistryEntry<? super G>> Collection<RegistryObject<G>> filterRegistries(Class<G> clazz, DeferredRegister<?> register) {
+    public static <G> Collection<RegistryObject> filterRegistries(Class<G> clazz, DeferredRegister<?> register) {
         return register.getEntries().stream()
                 .filter(entry -> clazz.isInstance(entry.get()))
-                .map(entry -> (RegistryObject<G>) entry)
+                .map(entry -> (RegistryObject) entry)
                 .collect(Collectors.toCollection(HashSet::new));
     }
 

@@ -43,7 +43,7 @@ public enum BukkitToForgeInterface {
 	public void synchronizeGuns(CommonGunInfoWrapper infos) {
 		RegistryUtil.filterRegistries(GunItem.class, ModItems.ITEMS).stream()
 				.filter(registry -> registry.getId().toString().equalsIgnoreCase(infos.getResourceLocation()))
-				.map(RegistryObject::get)
+				.map(gun -> (GunItem) gun.get())
 				.forEach(gun -> ((IAbstractGunTypeBridge) gun.getGunType()).bridge$updateSpecs(infos));
 		GunUtils.getCommonGunSpecsWrapper(infos.getResourceLocation()).ifPresent(x -> {
 			Bukkit.getServer().getOnlinePlayers().forEach(player ->
