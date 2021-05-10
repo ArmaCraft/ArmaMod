@@ -1,8 +1,11 @@
 package org.armacraft.mod.util;
 
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.function.Predicate;
 
+import com.craftingdead.core.item.gun.AbstractGunType;
 import org.armacraft.mod.wrapper.ClientGunInfoWrapper;
 import org.armacraft.mod.wrapper.CommonGunInfoWrapper;
 
@@ -44,6 +47,18 @@ public class GunUtils {
                     gunItem.getGunType().getBulletAmountToFire()));
         }
         return Optional.empty();
+    }
+
+    public static Collection<CommonGunInfoWrapper> getCommonGunsSpecs() {
+        Collection<CommonGunInfoWrapper> guns = new HashSet<>();
+        RegistryUtil.filterRegistries(GunItem.class, ModItems.ITEMS).stream().map(gun -> (GunItem) gun.get()).forEach(gunItem -> {
+            String id = gunItem.getItem().getRegistryName().toString();
+            AbstractGunType<?> type = gunItem.getGunType();
+            guns.add(new CommonGunInfoWrapper(id, type.getFireRateRPM(),
+                    type.getFireDelayMs(), type.getDamage(), type.getReloadDurationTicks(),
+                    type.getAccuracyPct(), type.getBulletAmountToFire()));
+        });
+        return guns;
     }
 
     public static boolean isAiming(LivingEntity livingEntity) {
