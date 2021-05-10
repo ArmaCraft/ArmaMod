@@ -6,6 +6,7 @@ import java.util.Optional;
 import java.util.function.Predicate;
 
 import com.craftingdead.core.item.gun.AbstractGunType;
+import org.armacraft.mod.bridge.IAbstractGunTypeBridge;
 import org.armacraft.mod.wrapper.ClientGunInfoWrapper;
 import org.armacraft.mod.wrapper.CommonGunInfoWrapper;
 
@@ -17,12 +18,13 @@ import com.craftingdead.core.item.gun.aimable.AimableGun;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.RegistryObject;
+import org.armacraft.mod.wrapper.ResourceLocationWrapper;
 
 public class GunUtils {
 
     public static Predicate<ClientGunInfoWrapper> INTEGRITY_VALIDATOR = (clientInfo) -> {
-        if(getCommonGunSpecsWrapper(clientInfo.getResourceLocation()).isPresent()) {
-            CommonGunInfoWrapper serverGunInfo = getCommonGunSpecsWrapper(clientInfo.getResourceLocation()).get();
+        if(getCommonGunSpecsWrapper(clientInfo.getResourceLocation().toString()).isPresent()) {
+            CommonGunInfoWrapper serverGunInfo = getCommonGunSpecsWrapper(clientInfo.getResourceLocation().toString()).get();
             return serverGunInfo.getAccuracyPct() == clientInfo.getAccuracyPct()
                     && serverGunInfo.getFireRateRPM() == clientInfo.getFireRateRPM()
                     && serverGunInfo.getBulletAmountToFire() == clientInfo.getBulletAmountToFire()
@@ -38,7 +40,7 @@ public class GunUtils {
         if(gunItemOpt.isPresent()) {
             GunItem gunItem = gunItemOpt.get();
             return Optional.of(new CommonGunInfoWrapper(
-                    gunItem.getRegistryName().toString(),
+                    ResourceLocationWrapper.of(gunItem.getRegistryName().toString()),
                     gunItem.getGunType().getFireRateRPM(),
                     gunItem.getGunType().getFireDelayMs(),
                     gunItem.getGunType().getDamage(),
@@ -49,12 +51,18 @@ public class GunUtils {
         return Optional.empty();
     }
 
+    public static void updateGun(CommonGunInfoWrapper wrapper) {
+        RegistryUtil.filterRegistries(wrapper.getResourceLocation().toString(), ModItems.ITEMS)
+                .map(gun -> (GunItem) gun.get())
+                .ifPresent(gun -> ((IAbstractGunTypeBridge) gun.getGunType()).bridge$updateSpecs(wrapper));
+    }
+
     public static Collection<CommonGunInfoWrapper> getCommonGunsSpecs() {
         Collection<CommonGunInfoWrapper> guns = new HashSet<>();
         RegistryUtil.filterRegistries(GunItem.class, ModItems.ITEMS).stream().map(gun -> (GunItem) gun.get()).forEach(gunItem -> {
             String id = gunItem.getItem().getRegistryName().toString();
             AbstractGunType<?> type = gunItem.getGunType();
-            guns.add(new CommonGunInfoWrapper(id, type.getFireRateRPM(),
+            guns.add(new CommonGunInfoWrapper(ResourceLocationWrapper.of(id), type.getFireRateRPM(),
                     type.getFireDelayMs(), type.getDamage(), type.getReloadDurationTicks(),
                     type.getAccuracyPct(), type.getBulletAmountToFire()));
         });

@@ -20,7 +20,7 @@ public class ClientGunInfoPacket {
 
     public static void encode(ClientGunInfoPacket msg, PacketBuffer out) {
         // @StringObfuscator:on
-    	out.writeUtf(msg.gunInfos.getResourceLocation());
+    	out.writeUtf(msg.gunInfos.getResourceLocation().toString());
         out.writeInt(msg.gunInfos.getFireRateRPM());
         out.writeInt(msg.gunInfos.getReloadDurationTicks());
         out.writeFloat(msg.gunInfos.getAccuracyPct());
@@ -47,7 +47,7 @@ public class ClientGunInfoPacket {
 
         if(!GunUtils.INTEGRITY_VALIDATOR.test(msg.gunInfos)) {
         	ctx.get().getSender().setItemInHand(Hand.MAIN_HAND, ItemStack.EMPTY);
-            ForgeToBukkitInterfaceImpl.INSTANCE.onGunNoIntegrity(ctx.get().getSender(), msg.gunInfos, GunUtils.getCommonGunSpecsWrapper(msg.gunInfos.getResourceLocation()));
+            ForgeToBukkitInterfaceImpl.INSTANCE.onGunNoIntegrity(ctx.get().getSender(), msg.gunInfos, GunUtils.getCommonGunSpecsWrapper(msg.gunInfos.getResourceLocation().toString()));
         }
 
         return true;

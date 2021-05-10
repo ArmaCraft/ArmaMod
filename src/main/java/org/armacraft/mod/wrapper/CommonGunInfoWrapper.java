@@ -3,7 +3,7 @@ package org.armacraft.mod.wrapper;
 import com.craftingdead.core.item.GunItem;
 
 public class CommonGunInfoWrapper {
-    private String resourceLocation;
+    private ResourceLocationWrapper resourceLocation;
     private int fireRateRpm;
     private int fireDelayMs;
     private float damage;
@@ -12,7 +12,7 @@ public class CommonGunInfoWrapper {
     private int bulletAmountToFire;
 
     public static CommonGunInfoWrapper from(GunItem item) {
-        return new CommonGunInfoWrapper(item.getRegistryName().toString(),
+        return new CommonGunInfoWrapper(ResourceLocationWrapper.of(item.getRegistryName().toString()),
                 item.getGunType().getFireRateRPM(),
                 item.getGunType().getFireDelayMs(),
                 item.getGunType().getDamage(),
@@ -21,7 +21,7 @@ public class CommonGunInfoWrapper {
                 item.getGunType().getBulletAmountToFire());
     }
 
-    public CommonGunInfoWrapper(String resourceLocation, int fireRateRpm, int fireDelayMs, float damage, int reloadDurationTicks, float accuracyPct, int bulletAmountToFire) {
+    public CommonGunInfoWrapper(ResourceLocationWrapper resourceLocation, int fireRateRpm, int fireDelayMs, float damage, int reloadDurationTicks, float accuracyPct, int bulletAmountToFire) {
         this.resourceLocation = resourceLocation;
         this.fireRateRpm = fireRateRpm;
         this.fireDelayMs = fireDelayMs;
@@ -35,7 +35,7 @@ public class CommonGunInfoWrapper {
         return fireRateRpm;
     }
 
-    public String getResourceLocation() {
+    public ResourceLocationWrapper getResourceLocation() {
         return resourceLocation;
     }
 

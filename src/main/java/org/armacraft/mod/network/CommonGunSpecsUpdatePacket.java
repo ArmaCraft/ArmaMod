@@ -7,6 +7,7 @@ import net.minecraftforge.fml.network.NetworkEvent;
 import org.armacraft.mod.bridge.IAbstractGunTypeBridge;
 import org.armacraft.mod.util.RegistryUtil;
 import org.armacraft.mod.wrapper.CommonGunInfoWrapper;
+import org.armacraft.mod.wrapper.ResourceLocationWrapper;
 
 import java.util.function.Supplier;
 
@@ -18,7 +19,7 @@ public class CommonGunSpecsUpdatePacket {
     }
 
     public static void encode(CommonGunSpecsUpdatePacket msg, PacketBuffer out) {
-        out.writeUtf(msg.infos.getResourceLocation());
+        out.writeUtf(msg.infos.getResourceLocation().toString());
         out.writeInt(msg.infos.getFireRateRPM());
         out.writeFloat(msg.infos.getAccuracyPct());
         out.writeInt(msg.infos.getFireDelayMs());
@@ -37,7 +38,7 @@ public class CommonGunSpecsUpdatePacket {
         int bulletAmount = in.readInt();
 
         return new CommonGunSpecsUpdatePacket(
-                new CommonGunInfoWrapper(id, rpm, fireDelay, damage, reloadTicks, accuracy, bulletAmount));
+                new CommonGunInfoWrapper(ResourceLocationWrapper.of(id), rpm, fireDelay, damage, reloadTicks, accuracy, bulletAmount));
     }
 
     public static boolean handle(CommonGunSpecsUpdatePacket msg, Supplier<NetworkEvent.Context> ctx) {
