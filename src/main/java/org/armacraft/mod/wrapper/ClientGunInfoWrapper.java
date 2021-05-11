@@ -7,7 +7,7 @@ public class ClientGunInfoWrapper {
     private float accuracyPct;
     private int bulletAmountToFire;
 
-    public ClientGunInfoWrapper(String ResourceLocationWrapper, int fireRateRpm, int reloadDurationTicks, float accuracyPct, int bulletAmountToFire) {
+    public ClientGunInfoWrapper(ResourceLocationWrapper resourceLocation, int fireRateRpm, int reloadDurationTicks, float accuracyPct, int bulletAmountToFire) {
         this.resourceLocation = resourceLocation;
         this.fireRateRpm = fireRateRpm;
         this.reloadDurationTicks = reloadDurationTicks;

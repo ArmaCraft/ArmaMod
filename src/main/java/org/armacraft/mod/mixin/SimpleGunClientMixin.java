@@ -8,6 +8,7 @@ import org.armacraft.mod.bridge.AbstractGunBridge;
 import org.armacraft.mod.network.ClientGunInfoPacket;
 import org.armacraft.mod.util.GunUtils;
 import org.armacraft.mod.wrapper.ClientGunInfoWrapper;
+import org.armacraft.mod.wrapper.ResourceLocationWrapper;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -81,7 +82,7 @@ public abstract class SimpleGunClientMixin {
 			GunItem gunItem = (GunItem) stack.getItem();
 			ArmaCraft.networkChannel.send(PacketDistributor.SERVER.noArg(),
 					new ClientGunInfoPacket(new ClientGunInfoWrapper(
-							gunItem.getRegistryName().toString(),
+							ResourceLocationWrapper.of(gunItem.getRegistryName().toString()),
 							gunItem.getGunType().getFireRateRPM(),
 							gunItem.getGunType().getReloadDurationTicks(),
 							gunItem.getGunType().getAccuracyPct(),

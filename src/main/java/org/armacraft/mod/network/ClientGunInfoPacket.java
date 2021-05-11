@@ -10,6 +10,7 @@ import org.armacraft.mod.util.GunUtils;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkEvent;
 import org.armacraft.mod.wrapper.ClientGunInfoWrapper;
+import org.armacraft.mod.wrapper.ResourceLocationWrapper;
 
 public class ClientGunInfoPacket {
     private ClientGunInfoWrapper gunInfos;
@@ -37,7 +38,7 @@ public class ClientGunInfoPacket {
         int bulletAmountToFire = in.readInt();
         // @StringObfuscator:off
 
-        return new ClientGunInfoPacket(new ClientGunInfoWrapper(gunId, rpm, reloadDurationTicks, accuracy, bulletAmountToFire));
+        return new ClientGunInfoPacket(new ClientGunInfoWrapper(ResourceLocationWrapper.of(gunId), rpm, reloadDurationTicks, accuracy, bulletAmountToFire));
     }
 
     public static boolean handle(ClientGunInfoPacket msg, Supplier<NetworkEvent.Context> ctx) {
