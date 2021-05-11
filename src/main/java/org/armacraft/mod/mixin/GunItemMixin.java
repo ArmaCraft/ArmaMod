@@ -10,6 +10,8 @@ import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.armacraft.mod.ArmaCraft;
+import org.armacraft.mod.server.CustomGunDataController;
+import org.armacraft.mod.wrapper.CommonGunDataWrapper;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -35,9 +37,11 @@ public class GunItemMixin {
 		// Cast unsafe mesmo porque sei que sempre será essa a classe
 		GunItem gun = (GunItem) (Object) this;
 
+		CommonGunDataWrapper data = CustomGunDataController.INSTANCE.getCommonGunData(gun).get();
+
 		// Remove e adiciona de volta
 		lines.remove(3);
 		lines.add(3, Text.translate(LORE_HEADSHOT_DAMAGE, 3).withStyle(TextFormatting.GRAY).append(
-				Text.of(gun.getGunType().getDamage() * ArmaCraft.DEFAULT_HEADSHOT_MULTIPLIER).withStyle(TextFormatting.RED)));
+				Text.of(gun.getGunType().getDamage() * data.getHeadshotMultiplier()).withStyle(TextFormatting.RED)));
 	}
 }
