@@ -44,11 +44,11 @@ public class ServerDist implements ArmaDist {
 	public static IBukkitWorldGuardBridge WORLD_GUARD_BRIDGE;
 
 	private final int CLIENT_INFO_REQUEST_DELAY_MILLIS = 10000;
-	private final int GUN_UPDATE_TOLERANCE_MILLIS = 5000;
+	public static final int GUN_UPDATE_TOLERANCE_MILLIS = 5000;
 
 	//Releva caso alguma arma não tenha integridade enquanto o server atualiza
 	//as informações das armas no server para todos os players
-	private boolean areGunsBeingUpdated = false;
+	private long gunUpdateBeginMillis = 0;
 
 	public ServerDist() {
 		// @StringObfuscator:on
@@ -75,7 +75,7 @@ public class ServerDist implements ArmaDist {
 	}
 
 	public void updateGunsForEveryone() {
-		this.areGunsBeingUpdated = true;
+		this.gunUpdateBeginMillis = System.currentTimeMillis();
 		ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayers().forEach(CustomGunDataController.INSTANCE::resendGunData);
 	}
 	
@@ -172,5 +172,9 @@ public class ServerDist implements ArmaDist {
 
 	public Map<UUID, Long> getLastClientInfoRequest() {
 		return lastClientInfoRequest;
+	}
+
+	public long getGunUpdateBeginMillis() {
+		return gunUpdateBeginMillis;
 	}
 }
