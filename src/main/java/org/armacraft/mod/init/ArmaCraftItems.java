@@ -1,13 +1,12 @@
 package org.armacraft.mod.init;
 
-import org.armacraft.mod.ArmaCraft;
-
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
+import org.armacraft.mod.ArmaCraft;
 
 public class ArmaCraftItems {
 	// @StringObfuscator:on

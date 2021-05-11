@@ -1,18 +1,35 @@
 package org.armacraft.mod;
 
-import java.util.Optional;
-import java.util.UUID;
-
-import com.craftingdead.core.item.GunItem;
+import com.craftingdead.core.capability.ModCapabilities;
+import com.craftingdead.core.event.GunEvent;
+import com.craftingdead.core.inventory.InventorySlotType;
+import com.craftingdead.core.item.ModItems;
 import com.craftingdead.core.item.PaintItem;
-import com.craftingdead.core.item.gun.AbstractGunType;
-import net.minecraft.client.Minecraft;
+import com.craftingdead.core.item.gun.AbstractGun;
+import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundEvents;
 import net.minecraft.util.Util;
 import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
+import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.DistExecutor;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.event.lifecycle.FMLDedicatedServerSetupEvent;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.fml.network.NetworkDirection;
+import net.minecraftforge.fml.network.NetworkRegistry;
+import net.minecraftforge.fml.network.simple.SimpleChannel;
 import org.armacraft.mod.client.ClientDist;
 import org.armacraft.mod.clothing.ClothingRepresentation;
 import org.armacraft.mod.clothing.ProtectionLevel;
@@ -31,34 +48,12 @@ import org.armacraft.mod.network.CloseGamePacket;
 import org.armacraft.mod.network.CommonGunSpecsUpdatePacket;
 import org.armacraft.mod.network.UpdateUserDataPacket;
 import org.armacraft.mod.potion.ArmaCraftEffects;
+import org.armacraft.mod.server.CustomGunDataController;
 import org.armacraft.mod.server.ServerDist;
 import org.armacraft.mod.util.EnchantUtils;
 import org.armacraft.mod.util.MiscUtil;
 
-import com.craftingdead.core.capability.ModCapabilities;
-import com.craftingdead.core.event.GunEvent;
-import com.craftingdead.core.inventory.InventorySlotType;
-import com.craftingdead.core.item.ModItems;
-import com.craftingdead.core.item.gun.AbstractGun;
-
-import net.minecraft.enchantment.Enchantments;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.SoundEvents;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
-import net.minecraftforge.event.entity.living.LivingHurtEvent;
-import net.minecraftforge.eventbus.api.EventPriority;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.fml.network.NetworkDirection;
-import net.minecraftforge.fml.network.NetworkRegistry;
-import net.minecraftforge.fml.network.simple.SimpleChannel;
-import org.bukkit.entity.LivingEntity;
+import java.util.Optional;
 
 @Mod(ArmaCraft.MODID)
 public class ArmaCraft {
@@ -71,7 +66,7 @@ public class ArmaCraft {
 	
 	private static ArmaCraft instance;
 
-	public static float ARMACRAFT_HEADSHOT_MULTIPLIER = 1.5F;
+	public static float DEFAULT_HEADSHOT_MULTIPLIER = 1.5F;
 
 	public static final SimpleChannel networkChannel = NetworkRegistry.ChannelBuilder
 			.named(new ResourceLocation(ArmaCraft.MODID, "play")).clientAcceptedVersions(version -> true)
@@ -85,6 +80,7 @@ public class ArmaCraft {
 
 		IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
 		modEventBus.addListener(this::handleCommonSetup);
+		modEventBus.addListener(this::handleDedicatedSetup);
 
 		MinecraftForge.EVENT_BUS.register(this);
 
@@ -173,6 +169,10 @@ public class ArmaCraft {
 		this.registerClothings();
 	}
 
+	public void handleDedicatedSetup(FMLDedicatedServerSetupEvent event) {
+		CustomGunDataController.INSTANCE.populateDefaultData();
+	}
+
 	private void registerClothings() {
 		ClothingRepresentation.register(ModItems.ARMY_CLOTHING.get(), ProtectionLevel.HIGH);
 		ClothingRepresentation.register(ModItems.SAS_CLOTHING.get(), ProtectionLevel.HIGH);
@@ -218,36 +218,13 @@ public class ArmaCraft {
 
 	@SubscribeEvent
 	public void handleGunFire(GunEvent.TriggerPressed event) {
-		//Fazer cast direto de PlayerEntity player = event.getLiving().getEntity() da ClassCast
-		getClientDist().ifPresent(client -> {
-			if(event.getLiving().getEntity().isCrouching()) {
-				Entity entity = event.getLiving().getEntity();
-				entity.getCapability(ModCapabilities.LIVING).ifPresent(living -> {
-					if (living.getEntity() instanceof PlayerEntity) {
-						PlayerEntity player = (PlayerEntity) living.getEntity();
-						ItemStack stack = event.getItemStack();
-						AbstractGunType<?> type = ((GunItem) stack.getItem()).getGunType();
-						System.out.println("--------------CLIENTE---------------");
-						System.out.println("RPM: " + type.getFireRateRPM());
-						System.out.println("Damage: " + type.getDamage());
-						System.out.println("Bullets: " + type.getBulletAmountToFire());
-						System.out.println("------------------------------------");
-					}
-				});
-			}
-		});
+		//Fazer cast direto de PlayerEntity player = event.getLiving().getEntity() da ClassCastException
 		getServerDist().ifPresent(server -> {
 			Entity entity = event.getLiving().getEntity();
 			entity.getCapability(ModCapabilities.LIVING).ifPresent(living -> {
 				if(living.getEntity() instanceof PlayerEntity) {
 					PlayerEntity player = (PlayerEntity) living.getEntity();
 					ItemStack stack = event.getItemStack();
-					AbstractGunType<?> type = ((GunItem) stack.getItem()).getGunType();
-					System.out.println("--------------CLIENTE---------------");
-					System.out.println("RPM: " + type.getFireRateRPM());
-					System.out.println("Damage: " + type.getDamage());
-					System.out.println("Bullets: " + type.getBulletAmountToFire());
-					System.out.println("------------------------------------");
 					stack.getCapability(ModCapabilities.GUN).ifPresent(gunController -> {
 						if (gunController.getPaint().isPresent()) {
 							PaintItem paint = (PaintItem) gunController.getPaintStack().getItem();
@@ -288,7 +265,7 @@ public class ArmaCraft {
 		if (event.isHeadshot()) {
 			// Matematicamente remove o multiplier de headshot do dano e aplica o nosso no
 			// lugar
-			event.setDamage((event.getDamage() / AbstractGun.HEADSHOT_MULTIPLIER) * ARMACRAFT_HEADSHOT_MULTIPLIER);
+			event.setDamage((event.getDamage() / AbstractGun.HEADSHOT_MULTIPLIER) * DEFAULT_HEADSHOT_MULTIPLIER);
 		}
 	}
 

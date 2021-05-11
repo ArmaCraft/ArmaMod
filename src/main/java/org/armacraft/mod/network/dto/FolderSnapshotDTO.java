@@ -1,15 +1,14 @@
 package org.armacraft.mod.network.dto;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
+import net.minecraft.network.PacketBuffer;
 import org.apache.commons.lang3.Validate;
 import org.armacraft.mod.util.CommonRiskyGameFolder;
 import org.armacraft.mod.util.RiskyGameFolder;
 
-import net.minecraft.network.PacketBuffer;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class FolderSnapshotDTO {
 	

@@ -1,12 +1,10 @@
 package org.armacraft.mod.mixin;
 
+import com.craftingdead.core.action.reload.AbstractReloadAction;
+import net.minecraft.entity.LivingEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
-
-import com.craftingdead.core.action.reload.AbstractReloadAction;
-
-import net.minecraft.entity.LivingEntity;
 
 @Mixin(AbstractReloadAction.class)
 public class AbstractReloadActionMixin {

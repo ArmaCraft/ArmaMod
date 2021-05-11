@@ -1,12 +1,11 @@
 package org.armacraft.mod;
 
+import net.minecraft.entity.player.PlayerEntity;
+import org.armacraft.mod.network.dto.FolderSnapshotDTO;
+import org.armacraft.mod.wrapper.EnvironmentWrapper;
+
 import java.lang.management.ManagementFactory;
 import java.util.List;
-
-import org.armacraft.mod.wrapper.EnvironmentWrapper;
-import org.armacraft.mod.network.dto.FolderSnapshotDTO;
-
-import net.minecraft.entity.player.PlayerEntity;
 
 public interface ArmaDist {
 	default boolean isJavaInDebugMode() {

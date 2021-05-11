@@ -1,12 +1,11 @@
 package org.armacraft.mod.init;
 
-import org.armacraft.mod.ArmaCraft;
-import org.armacraft.mod.tileentity.GeneratorTileEntity;
-
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
+import org.armacraft.mod.ArmaCraft;
+import org.armacraft.mod.tileentity.GeneratorTileEntity;
 
 public class ArmaCraftTileEntityTypes {
 	// @StringObfuscator:on

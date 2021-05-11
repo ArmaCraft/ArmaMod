@@ -1,10 +1,9 @@
 package org.armacraft.mod.mixin;
 
+import com.craftingdead.core.client.renderer.entity.layer.EquipmentLayer;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-
-import com.craftingdead.core.client.renderer.entity.layer.EquipmentLayer;
 
 @Mixin(EquipmentLayer.class)
 public class EquipmentLayerMixin {

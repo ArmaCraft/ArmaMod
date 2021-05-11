@@ -1,11 +1,10 @@
 package org.armacraft.mod.potion;
 
-import org.armacraft.mod.ArmaCraft;
-
 import net.minecraft.potion.Effect;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
+import org.armacraft.mod.ArmaCraft;
 
 public class ArmaCraftEffects {
 	// @StringObfuscator:on

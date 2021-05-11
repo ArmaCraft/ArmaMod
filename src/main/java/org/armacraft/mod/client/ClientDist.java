@@ -1,43 +1,12 @@
 package org.armacraft.mod.client;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.function.LongSupplier;
-
-import net.minecraft.client.gui.screen.MainMenuScreen;
-import org.armacraft.mod.ArmaCraft;
-import org.armacraft.mod.ArmaDist;
-import org.armacraft.mod.bridge.bukkit.IUserData;
-import org.armacraft.mod.client.util.ClientUtils;
-import org.armacraft.mod.network.ClientOpenedCheatEnginePacket;
-import org.armacraft.mod.wrapper.EnvironmentWrapper;
-import org.armacraft.mod.wrapper.KeyBindWrapper;
-import org.armacraft.mod.wrapper.ProcessWrapper;
-import org.armacraft.mod.event.DoubleTapKeyBindingEvent;
-import org.armacraft.mod.init.ArmaCraftBlocks;
-import org.armacraft.mod.init.ArmaCraftSounds;
-import org.armacraft.mod.network.ClientDashPacket;
-import org.armacraft.mod.network.dto.FolderSnapshotDTO;
-import org.armacraft.mod.util.Cooldown;
-import org.armacraft.mod.util.MiscUtil;
-
 import com.google.common.collect.ImmutableList;
-
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.client.gui.screen.PackScreen;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.RenderTypeLookup;
-import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.particles.BlockParticleData;
 import net.minecraft.particles.ParticleTypes;
@@ -58,6 +27,29 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.network.PacketDistributor;
+import org.armacraft.mod.ArmaCraft;
+import org.armacraft.mod.ArmaDist;
+import org.armacraft.mod.bridge.bukkit.IUserData;
+import org.armacraft.mod.client.util.ClientUtils;
+import org.armacraft.mod.event.DoubleTapKeyBindingEvent;
+import org.armacraft.mod.init.ArmaCraftBlocks;
+import org.armacraft.mod.init.ArmaCraftSounds;
+import org.armacraft.mod.network.ClientDashPacket;
+import org.armacraft.mod.network.ClientOpenedCheatEnginePacket;
+import org.armacraft.mod.network.dto.FolderSnapshotDTO;
+import org.armacraft.mod.util.Cooldown;
+import org.armacraft.mod.util.MiscUtil;
+import org.armacraft.mod.wrapper.EnvironmentWrapper;
+import org.armacraft.mod.wrapper.ProcessWrapper;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
+import java.util.Set;
+import java.util.function.LongSupplier;
 
 public class ClientDist implements ArmaDist {
 	

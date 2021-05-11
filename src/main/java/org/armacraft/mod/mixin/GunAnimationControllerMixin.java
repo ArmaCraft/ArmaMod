@@ -1,16 +1,14 @@
 package org.armacraft.mod.mixin;
 
+import com.craftingdead.core.item.animation.gun.GunAnimationController;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.item.ItemStack;
 import org.armacraft.mod.util.GunUtils;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
-import com.craftingdead.core.item.animation.gun.GunAnimationController;
-
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.ItemStack;
 
 @Mixin(GunAnimationController.class)
 public class GunAnimationControllerMixin {

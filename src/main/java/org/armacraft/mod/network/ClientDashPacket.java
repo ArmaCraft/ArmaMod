@@ -1,13 +1,12 @@
 package org.armacraft.mod.network;
 
-import java.util.function.Supplier;
-
-import org.armacraft.mod.ArmaCraft;
-import org.armacraft.mod.util.Cooldown;
-
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkEvent;
+import org.armacraft.mod.ArmaCraft;
+import org.armacraft.mod.util.Cooldown;
+
+import java.util.function.Supplier;
 
 public class ClientDashPacket {
 	

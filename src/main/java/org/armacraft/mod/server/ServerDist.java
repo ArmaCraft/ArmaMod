@@ -1,33 +1,5 @@
 package org.armacraft.mod.server;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.stream.Collectors;
-
-import com.craftingdead.core.item.GunItem;
-import com.craftingdead.core.item.ModItems;
-import net.minecraftforge.fml.RegistryObject;
-import org.armacraft.mod.ArmaCraft;
-import org.armacraft.mod.ArmaDist;
-import org.armacraft.mod.bridge.bukkit.IBukkitPermissionBridge;
-import org.armacraft.mod.bridge.bukkit.IBukkitWorldGuardBridge;
-import org.armacraft.mod.network.CommonGunSpecsUpdatePacket;
-import org.armacraft.mod.util.RegistryUtil;
-import org.armacraft.mod.wrapper.CommonGunInfoWrapper;
-import org.armacraft.mod.wrapper.EnvironmentWrapper;
-import org.armacraft.mod.network.ClientInfoRequestPacket;
-import org.armacraft.mod.network.dto.FileInfoDTO;
-import org.armacraft.mod.network.dto.FolderSnapshotDTO;
-import org.armacraft.mod.server.bukkit.util.ForgeToBukkitInterface;
-import org.armacraft.mod.server.bukkit.util.ForgeToBukkitInterfaceImpl;
-import org.armacraft.mod.util.FileUtil;
-
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraftforge.common.MinecraftForge;
@@ -37,6 +9,27 @@ import net.minecraftforge.event.entity.player.PlayerEvent.PlayerLoggedInEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.network.PacketDistributor;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
+import org.armacraft.mod.ArmaCraft;
+import org.armacraft.mod.ArmaDist;
+import org.armacraft.mod.bridge.bukkit.IBukkitPermissionBridge;
+import org.armacraft.mod.bridge.bukkit.IBukkitWorldGuardBridge;
+import org.armacraft.mod.network.ClientInfoRequestPacket;
+import org.armacraft.mod.network.dto.FileInfoDTO;
+import org.armacraft.mod.network.dto.FolderSnapshotDTO;
+import org.armacraft.mod.server.bukkit.util.BukkitToForgeInterface;
+import org.armacraft.mod.server.bukkit.util.ForgeToBukkitInterface;
+import org.armacraft.mod.server.bukkit.util.ForgeToBukkitInterfaceImpl;
+import org.armacraft.mod.util.FileUtil;
+import org.armacraft.mod.wrapper.EnvironmentWrapper;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class ServerDist implements ArmaDist {
 
@@ -51,7 +44,10 @@ public class ServerDist implements ArmaDist {
 	public static IBukkitWorldGuardBridge WORLD_GUARD_BRIDGE;
 
 	private final int CLIENT_INFO_REQUEST_DELAY_MILLIS = 10000;
-	private int userDataUpdateTickCounter = 0;
+
+	//Releva caso alguma arma não tenha integridade enquanto o server atualiza
+	//as informações das armas no server para todos os players
+	private boolean areGunsBeingUpdated = false;
 
 	public ServerDist() {
 		// @StringObfuscator:on
@@ -76,6 +72,10 @@ public class ServerDist implements ArmaDist {
 		}
 		// @StringObfuscator:off
 	}
+
+	public void updateGunsForEveryone() {
+		ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayers().forEach(CustomGunDataController.INSTANCE::resendGunData);
+	}
 	
 	@SubscribeEvent
 	public void onServerTick(TickEvent.ServerTickEvent event) {
@@ -90,13 +90,7 @@ public class ServerDist implements ArmaDist {
 	@SubscribeEvent
 	public void onLoggedIn(PlayerLoggedInEvent event) {
 		this.requestClientInfo(event.getPlayer());
-		RegistryUtil.filterRegistries(GunItem.class, ModItems.ITEMS)
-				.stream().map(RegistryObject::get)
-				.forEach(gun -> {
-					ArmaCraft.networkChannel.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) event.getPlayer()),
-							new CommonGunSpecsUpdatePacket(CommonGunInfoWrapper.from((GunItem) gun))
-					);
-				});
+		BukkitToForgeInterface.INSTANCE.packAndSynchronizeGuns(ForgeToBukkitInterfaceImpl.INSTANCE.getBukkitPlayer(event.getPlayer()));
 		this.lastClientInfoRequest.put(event.getPlayer().getUUID(), System.currentTimeMillis());
 	}
 

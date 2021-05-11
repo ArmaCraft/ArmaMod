@@ -1,14 +1,13 @@
 package org.armacraft.mod.client;
 
+import com.google.common.collect.ImmutableSet;
+import org.armacraft.mod.client.processes.ProcessGrabber;
+import org.armacraft.mod.util.MiscUtil;
+import org.armacraft.mod.wrapper.ProcessWrapper;
+
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-
-import org.armacraft.mod.client.processes.ProcessGrabber;
-import org.armacraft.mod.wrapper.ProcessWrapper;
-import org.armacraft.mod.util.MiscUtil;
-
-import com.google.common.collect.ImmutableSet;
 
 enum ProcessesLookupService {
 

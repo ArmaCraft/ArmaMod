@@ -6,15 +6,15 @@ import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkEvent;
 import org.armacraft.mod.bridge.IAbstractGunTypeBridge;
 import org.armacraft.mod.util.RegistryUtil;
-import org.armacraft.mod.wrapper.CommonGunInfoWrapper;
+import org.armacraft.mod.wrapper.CommonGunDataWrapper;
 import org.armacraft.mod.wrapper.ResourceLocationWrapper;
 
 import java.util.function.Supplier;
 
 public class CommonGunSpecsUpdatePacket {
-    private CommonGunInfoWrapper infos;
+    private CommonGunDataWrapper infos;
 
-    public CommonGunSpecsUpdatePacket(CommonGunInfoWrapper wrapper) {
+    public CommonGunSpecsUpdatePacket(CommonGunDataWrapper wrapper) {
         this.infos = wrapper;
     }
 
@@ -26,19 +26,20 @@ public class CommonGunSpecsUpdatePacket {
         out.writeInt(msg.infos.getReloadDurationTicks());
         out.writeFloat(msg.infos.getDamage());
         out.writeInt(msg.infos.getBulletAmountToFire());
+        out.writeFloat(msg.infos.getHeadshotMultiplier());
     }
 
     public static CommonGunSpecsUpdatePacket decode(PacketBuffer in) {
         String id = in.readUtf(64);
-        int rpm = in.readInt();
         float accuracy = in.readFloat();
         int fireDelay = in.readInt();
         int reloadTicks = in.readInt();
         float damage = in.readFloat();
         int bulletAmount = in.readInt();
+        float headshotMultiplier = in.readFloat();
 
         return new CommonGunSpecsUpdatePacket(
-                new CommonGunInfoWrapper(ResourceLocationWrapper.of(id), rpm, fireDelay, damage, reloadTicks, accuracy, bulletAmount));
+                new CommonGunDataWrapper(ResourceLocationWrapper.of(id), fireDelay, damage, reloadTicks, accuracy, bulletAmount, headshotMultiplier));
     }
 
     public static boolean handle(CommonGunSpecsUpdatePacket msg, Supplier<NetworkEvent.Context> ctx) {

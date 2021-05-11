@@ -1,10 +1,7 @@
 package org.armacraft.mod.network;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkEvent;
-import net.minecraftforge.fml.network.PacketDistributor;
-import org.armacraft.mod.ArmaCraft;
 import org.armacraft.mod.client.util.ClientUtils;
 
 import java.util.function.Supplier;

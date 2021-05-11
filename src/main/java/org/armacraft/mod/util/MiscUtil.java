@@ -1,18 +1,7 @@
 package org.armacraft.mod.util;
 
-import java.io.File;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Random;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
-import org.armacraft.mod.ArmaCraft;
-
 import com.craftingdead.core.item.ModItems;
 import com.craftingdead.core.util.ModDamageSource;
-
 import cpw.mods.modlauncher.Launcher;
 import cpw.mods.modlauncher.api.IEnvironment;
 import net.minecraft.block.BlockState;
@@ -28,6 +17,15 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
+import org.armacraft.mod.ArmaCraft;
+
+import java.io.File;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Random;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class MiscUtil {
 

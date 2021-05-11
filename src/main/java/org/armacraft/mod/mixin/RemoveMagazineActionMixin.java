@@ -1,12 +1,10 @@
 package org.armacraft.mod.mixin;
 
+import com.craftingdead.core.action.RemoveMagazineAction;
+import net.minecraft.entity.LivingEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
-
-import com.craftingdead.core.action.RemoveMagazineAction;
-
-import net.minecraft.entity.LivingEntity;
 
 @Mixin(RemoveMagazineAction.class)
 public class RemoveMagazineActionMixin {

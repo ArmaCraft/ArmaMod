@@ -1,8 +1,23 @@
 package org.armacraft.mod.mixin;
 
+import com.craftingdead.core.item.gun.AbstractGun;
+import com.craftingdead.core.item.gun.AbstractGunType;
+import com.craftingdead.core.item.gun.PendingHit;
+import com.craftingdead.core.living.ILiving;
+import com.craftingdead.core.living.IPlayer;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.potion.Effect;
+import net.minecraft.util.SoundEvents;
+import net.minecraft.util.Util;
+import net.minecraft.util.concurrent.ThreadTaskExecutor;
+import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.text.Style;
+import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.TranslationTextComponent;
 import org.armacraft.mod.bridge.AbstractGunBridge;
 import org.armacraft.mod.potion.ArmaCraftEffects;
-import org.armacraft.mod.server.ServerDist;
 import org.armacraft.mod.util.GunUtils;
 import org.armacraft.mod.util.MiscUtil;
 import org.spongepowered.asm.mixin.Final;
@@ -14,27 +29,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
-import com.craftingdead.core.capability.ModCapabilities;
-import com.craftingdead.core.item.PaintItem;
-import com.craftingdead.core.item.gun.AbstractGun;
-import com.craftingdead.core.item.gun.AbstractGunType;
-import com.craftingdead.core.item.gun.PendingHit;
-import com.craftingdead.core.living.ILiving;
-import com.craftingdead.core.living.IPlayer;
-
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.potion.Effect;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.util.Util;
-import net.minecraft.util.concurrent.ThreadTaskExecutor;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.text.Style;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.TranslationTextComponent;
 
 @Mixin(AbstractGun.class)
 public abstract class AbstractGunMixin<T extends AbstractGunType<SELF>, SELF extends AbstractGun<T, SELF>> implements AbstractGunBridge<T, SELF> {

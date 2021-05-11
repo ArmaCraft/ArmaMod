@@ -1,5 +1,7 @@
 package org.armacraft.mod.mixin;
 
+import net.minecraft.client.settings.KeyBinding;
+import net.minecraftforge.common.MinecraftForge;
 import org.armacraft.mod.client.ClientDist;
 import org.armacraft.mod.client.util.ClientUtils;
 import org.armacraft.mod.event.DoubleTapKeyBindingEvent;
@@ -9,9 +11,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
-import net.minecraft.client.settings.KeyBinding;
-import net.minecraftforge.common.MinecraftForge;
 
 @Mixin(KeyBinding.class)
 public class KeyBindingMixin {

@@ -1,13 +1,11 @@
 package org.armacraft.mod.mixin;
 
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
-
 import com.craftingdead.virus.entity.monster.AdvancedZombieEntity;
 import com.craftingdead.virus.entity.monster.FastZombieEntity;
-
 import net.minecraft.entity.ai.attributes.AttributeModifierMap;
 import net.minecraft.entity.ai.attributes.Attributes;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Overwrite;
 
 @Mixin(value = FastZombieEntity.class, remap = false)
 public class FastZombieEntityMixin {

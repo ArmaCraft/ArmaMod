@@ -1,16 +1,14 @@
 package org.armacraft.mod.mixin;
 
+import com.craftingdead.core.living.LivingImpl;
+import com.craftingdead.core.util.ModSoundEvents;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.util.SoundEvent;
+import net.minecraft.util.SoundEvents;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
-
-import com.craftingdead.core.living.LivingImpl;
-import com.craftingdead.core.util.ModSoundEvents;
-
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.util.SoundEvent;
-import net.minecraft.util.SoundEvents;
 
 @Mixin(LivingImpl.class)
 public abstract class LivingImplMixin<T extends LivingEntity> {

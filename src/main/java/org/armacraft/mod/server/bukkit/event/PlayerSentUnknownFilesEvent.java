@@ -1,11 +1,11 @@
 package org.armacraft.mod.server.bukkit.event;
 
-import java.util.List;
-
 import org.armacraft.mod.network.dto.FileInfoDTO;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.player.PlayerEvent;
+
+import java.util.List;
 
 public class PlayerSentUnknownFilesEvent extends PlayerEvent {
 	

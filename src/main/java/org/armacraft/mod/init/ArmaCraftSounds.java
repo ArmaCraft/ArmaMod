@@ -1,12 +1,11 @@
 package org.armacraft.mod.init;
 
-import org.armacraft.mod.ArmaCraft;
-
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
+import org.armacraft.mod.ArmaCraft;
 
 public class ArmaCraftSounds {
 

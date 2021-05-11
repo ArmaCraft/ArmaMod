@@ -1,10 +1,10 @@
 package org.armacraft.mod.server.bukkit.event;
 
-import java.util.List;
-
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.player.PlayerEvent;
+
+import java.util.List;
 
 public class PlayerMissingFilesEvent extends PlayerEvent {
 	

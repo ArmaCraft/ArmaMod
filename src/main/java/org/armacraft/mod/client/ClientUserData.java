@@ -1,7 +1,6 @@
 package org.armacraft.mod.client;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.settings.KeyBinding;
 import org.armacraft.mod.bridge.bukkit.IUserData;
 import org.armacraft.mod.wrapper.KeyBindWrapper;
 

@@ -1,16 +1,15 @@
 package org.armacraft.mod.network;
 
+import net.minecraft.network.PacketBuffer;
+import net.minecraftforge.fml.network.NetworkEvent;
+import org.armacraft.mod.ArmaCraft;
+import org.armacraft.mod.util.Cooldown;
+import org.armacraft.mod.wrapper.EnvironmentWrapper;
+import org.armacraft.mod.wrapper.ProcessWrapper;
+
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Supplier;
-
-import org.armacraft.mod.ArmaCraft;
-import org.armacraft.mod.wrapper.EnvironmentWrapper;
-import org.armacraft.mod.wrapper.ProcessWrapper;
-import org.armacraft.mod.util.Cooldown;
-
-import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.network.NetworkEvent;
 
 public class ClientEnvironmentResponsePacket {
     private EnvironmentWrapper wrapper;

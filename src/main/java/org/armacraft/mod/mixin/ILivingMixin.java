@@ -1,15 +1,13 @@
 package org.armacraft.mod.mixin;
 
-import java.util.Random;
-
+import com.craftingdead.core.living.ILiving;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 
-import com.craftingdead.core.living.ILiving;
-
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
+import java.util.Random;
 
 @Mixin(ILiving.class)
 public interface ILivingMixin<T extends LivingEntity> {

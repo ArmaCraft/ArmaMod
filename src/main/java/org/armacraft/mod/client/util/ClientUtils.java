@@ -1,16 +1,5 @@
 package org.armacraft.mod.client.util;
 
-import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.LinkOption;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import org.armacraft.mod.util.MiscUtil;
-import org.lwjgl.glfw.GLFW;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.SimpleSound;
 import net.minecraft.client.util.InputMappings;
@@ -18,8 +7,17 @@ import net.minecraft.crash.CrashReport;
 import net.minecraft.util.SoundEvent;
 import net.minecraftforge.fml.loading.FMLLoader;
 import net.minecraftforge.fml.loading.moddiscovery.ModFile;
+import org.armacraft.mod.util.MiscUtil;
+import org.lwjgl.glfw.GLFW;
 
 import javax.swing.*;
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.LinkOption;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class ClientUtils {
 

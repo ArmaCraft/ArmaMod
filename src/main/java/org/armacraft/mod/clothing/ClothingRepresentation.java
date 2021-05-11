@@ -1,15 +1,14 @@
 package org.armacraft.mod.clothing;
 
+import com.craftingdead.core.capability.ModCapabilities;
+import com.craftingdead.core.item.ClothingItem;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
-
-import com.craftingdead.core.capability.ModCapabilities;
-import com.craftingdead.core.item.ClothingItem;
-
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
 
 public class ClothingRepresentation {
     private static final Map<ClothingItem, ProtectionLevel> REGISTERED_CLOTHING = new HashMap<>();

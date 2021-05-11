@@ -1,12 +1,11 @@
 package org.armacraft.mod.network;
 
-import java.util.function.Supplier;
-
-import org.armacraft.mod.ArmaCraft;
-
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkEvent;
 import net.minecraftforge.fml.network.PacketDistributor;
+import org.armacraft.mod.ArmaCraft;
+
+import java.util.function.Supplier;
 
 public class ClientInfoRequestPacket {
 

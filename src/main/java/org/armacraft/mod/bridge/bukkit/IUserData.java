@@ -1,6 +1,5 @@
 package org.armacraft.mod.bridge.bukkit;
 
-import net.minecraft.client.settings.KeyBinding;
 import org.armacraft.mod.wrapper.KeyBindWrapper;
 
 import java.util.Set;

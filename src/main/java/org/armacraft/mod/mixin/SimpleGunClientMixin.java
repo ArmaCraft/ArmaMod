@@ -1,21 +1,5 @@
 package org.armacraft.mod.mixin;
 
-import java.lang.reflect.Field;
-import java.util.HashMap;
-
-import org.armacraft.mod.ArmaCraft;
-import org.armacraft.mod.bridge.AbstractGunBridge;
-import org.armacraft.mod.network.ClientGunInfoPacket;
-import org.armacraft.mod.util.GunUtils;
-import org.armacraft.mod.wrapper.ClientGunInfoWrapper;
-import org.armacraft.mod.wrapper.ResourceLocationWrapper;
-import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
 import com.craftingdead.core.client.ClientDist;
 import com.craftingdead.core.item.AttachmentItem.MultiplierType;
 import com.craftingdead.core.item.GunItem;
@@ -26,13 +10,27 @@ import com.craftingdead.core.living.ILiving;
 import com.craftingdead.core.network.NetworkChannel;
 import com.craftingdead.core.network.message.play.ValidatePendingHitMessage;
 import com.google.common.collect.Multimap;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraftforge.fml.network.PacketDistributor;
+import org.armacraft.mod.ArmaCraft;
+import org.armacraft.mod.bridge.AbstractGunBridge;
+import org.armacraft.mod.network.ClientGunInfoPacket;
+import org.armacraft.mod.util.GunUtils;
+import org.armacraft.mod.wrapper.ClientGunDataWrapper;
+import org.armacraft.mod.wrapper.ResourceLocationWrapper;
+import org.spongepowered.asm.mixin.Final;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import java.lang.reflect.Field;
+import java.util.HashMap;
 
 @Mixin(SimpleGunClient.class)
 public abstract class SimpleGunClientMixin {
@@ -81,7 +79,7 @@ public abstract class SimpleGunClientMixin {
 		if(stack.getItem() instanceof GunItem) {
 			GunItem gunItem = (GunItem) stack.getItem();
 			ArmaCraft.networkChannel.send(PacketDistributor.SERVER.noArg(),
-					new ClientGunInfoPacket(new ClientGunInfoWrapper(
+					new ClientGunInfoPacket(new ClientGunDataWrapper(
 							ResourceLocationWrapper.of(gunItem.getRegistryName().toString()),
 							gunItem.getGunType().getFireRateRPM(),
 							gunItem.getGunType().getReloadDurationTicks(),

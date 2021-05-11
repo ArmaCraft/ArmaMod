@@ -1,19 +1,17 @@
 package org.armacraft.mod.client;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-
+import com.google.common.collect.ImmutableList;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import org.armacraft.mod.network.dto.FileInfoDTO;
 import org.armacraft.mod.network.dto.FolderSnapshotDTO;
 import org.armacraft.mod.util.CommonRiskyGameFolder;
 import org.armacraft.mod.util.FileUtil;
 
-import com.google.common.collect.ImmutableList;
-
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @OnlyIn(value = Dist.CLIENT)
 public class ClientRiskyGameFolder extends CommonRiskyGameFolder {

@@ -1,19 +1,18 @@
 package org.armacraft.mod.server.bukkit.util;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-
-import org.armacraft.mod.bridge.bukkit.IUserData;
-import org.armacraft.mod.wrapper.CommonGunInfoWrapper;
-import org.armacraft.mod.wrapper.EnvironmentWrapper;
-import org.armacraft.mod.network.dto.FileInfoDTO;
-import org.armacraft.mod.wrapper.ClientGunInfoWrapper;
-import org.bukkit.entity.Player;
-
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import org.armacraft.mod.bridge.bukkit.IUserData;
+import org.armacraft.mod.network.dto.FileInfoDTO;
+import org.armacraft.mod.wrapper.ClientGunDataWrapper;
+import org.armacraft.mod.wrapper.CommonGunDataWrapper;
+import org.armacraft.mod.wrapper.EnvironmentWrapper;
+import org.bukkit.entity.Player;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @OnlyIn(Dist.DEDICATED_SERVER)
 public interface ForgeToBukkitInterface {
@@ -21,7 +20,7 @@ public interface ForgeToBukkitInterface {
 	IUserData retrieveUserData(UUID holder);
 	IUserData retrieveUserData(PlayerEntity holder);
 	void onCheatEngineOpened(PlayerEntity who);
-	void onGunNoIntegrity(PlayerEntity who, ClientGunInfoWrapper clientInfos, Optional<CommonGunInfoWrapper> commonInfos);
+	void onGunNoIntegrity(PlayerEntity who, ClientGunDataWrapper clientInfos, Optional<CommonGunDataWrapper> commonInfos);
 	void onNoClassesIntegrity(PlayerEntity who, String hash, List<String> expectedHashes);
 	void onEnvironmentReceive(PlayerEntity who, EnvironmentWrapper environmentWrapper);
 	void onMissingFile(PlayerEntity entity, List<String> missingHashes);

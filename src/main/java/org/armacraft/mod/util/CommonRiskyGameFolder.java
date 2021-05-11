@@ -1,14 +1,12 @@
 package org.armacraft.mod.util;
 
-import java.util.List;
-
-import org.armacraft.mod.client.ClientRiskyGameFolder;
-
 import com.google.common.collect.ImmutableList;
-
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import org.armacraft.mod.client.ClientRiskyGameFolder;
+
+import java.util.List;
 
 public class CommonRiskyGameFolder implements RiskyGameFolder {
 	

@@ -1,6 +1,5 @@
 package org.armacraft.mod.server.bukkit.event;
 
-import org.armacraft.mod.wrapper.EnvironmentWrapper;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.player.PlayerEvent;

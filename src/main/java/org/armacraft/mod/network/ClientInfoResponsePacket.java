@@ -1,17 +1,16 @@
 package org.armacraft.mod.network;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Supplier;
-
+import net.minecraft.network.PacketBuffer;
+import net.minecraftforge.fml.network.NetworkEvent;
 import org.apache.commons.lang3.Validate;
 import org.armacraft.mod.ArmaCraft;
 import org.armacraft.mod.network.dto.FolderSnapshotDTO;
 import org.armacraft.mod.util.Cooldown;
 import org.armacraft.mod.util.MiscUtil;
 
-import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.network.NetworkEvent;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Supplier;
 
 public class ClientInfoResponsePacket {
 

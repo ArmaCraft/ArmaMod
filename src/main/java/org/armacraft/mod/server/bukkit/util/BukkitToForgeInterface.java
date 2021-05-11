@@ -1,29 +1,21 @@
 package org.armacraft.mod.server.bukkit.util;
 
-import java.lang.reflect.Method;
-
-import com.craftingdead.core.item.GunItem;
-import com.craftingdead.core.item.ModItems;
-import net.minecraftforge.fml.RegistryObject;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.fml.network.PacketDistributor;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
 import org.armacraft.mod.ArmaCraft;
-import org.armacraft.mod.bridge.IAbstractGunTypeBridge;
 import org.armacraft.mod.bridge.bukkit.IUserData;
 import org.armacraft.mod.network.ClientEnvironmentRequestPacket;
 import org.armacraft.mod.network.ClientInfoRequestPacket;
 import org.armacraft.mod.network.CloseGamePacket;
 import org.armacraft.mod.network.CommonGunSpecsUpdatePacket;
 import org.armacraft.mod.network.UpdateUserDataPacket;
-import org.armacraft.mod.util.GunUtils;
-import org.armacraft.mod.util.RegistryUtil;
-import org.armacraft.mod.wrapper.CommonGunInfoWrapper;
-import org.bukkit.Bukkit;
+import org.armacraft.mod.server.CustomGunDataController;
 import org.bukkit.entity.Player;
 
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.fml.network.PacketDistributor;
+import java.lang.reflect.Method;
 
 @OnlyIn(Dist.DEDICATED_SERVER)
 public enum BukkitToForgeInterface {
@@ -40,17 +32,8 @@ public enum BukkitToForgeInterface {
 				);
 	}
 
-	public void synchronizeGuns(CommonGunInfoWrapper infos) {
-		RegistryUtil.filterRegistries(GunItem.class, ModItems.ITEMS).stream()
-				.filter(registry -> registry.getId().toString().equalsIgnoreCase(infos.getResourceLocation().toString()))
-				.map(gun -> (GunItem) gun.get())
-				.forEach(gun -> ((IAbstractGunTypeBridge) gun.getGunType()).bridge$updateSpecs(infos));
-		GunUtils.getCommonGunSpecsWrapper(infos.getResourceLocation().toString()).ifPresent(x -> {
-			Bukkit.getServer().getOnlinePlayers().forEach(player ->
-				ArmaCraft.networkChannel.send(PacketDistributor.PLAYER.with(() -> this.getPlayerEntity(player)),
-						new CommonGunSpecsUpdatePacket(x))
-			);
-		});
+	public void packAndSynchronizeGuns(Player player) {
+		CustomGunDataController.INSTANCE.resendGunData(getPlayerEntity(player));
 	}
 	
 	public void closePlayerGame(Player player, String title, String message) {

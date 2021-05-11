@@ -1,28 +1,28 @@
 package org.armacraft.mod.network;
 
-import java.util.function.Supplier;
-
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.Hand;
+import net.minecraftforge.fml.network.NetworkEvent;
+import org.armacraft.mod.server.CustomGunDataController;
 import org.armacraft.mod.server.bukkit.util.ForgeToBukkitInterfaceImpl;
 import org.armacraft.mod.util.GunUtils;
-
-import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.network.NetworkEvent;
-import org.armacraft.mod.wrapper.ClientGunInfoWrapper;
+import org.armacraft.mod.wrapper.ClientGunDataWrapper;
 import org.armacraft.mod.wrapper.ResourceLocationWrapper;
 
-public class ClientGunInfoPacket {
-    private ClientGunInfoWrapper gunInfos;
+import java.util.function.Supplier;
 
-    public ClientGunInfoPacket(ClientGunInfoWrapper infos) {
+public class ClientGunInfoPacket {
+    private ClientGunDataWrapper gunInfos;
+
+    public ClientGunInfoPacket(ClientGunDataWrapper infos) {
         this.gunInfos = infos;
     }
 
     public static void encode(ClientGunInfoPacket msg, PacketBuffer out) {
         // @StringObfuscator:on
     	out.writeUtf(msg.gunInfos.getResourceLocation().toString());
-        out.writeInt(msg.gunInfos.getFireRateRPM());
+        out.writeInt(msg.gunInfos.getFireDelayMs());
         out.writeInt(msg.gunInfos.getReloadDurationTicks());
         out.writeFloat(msg.gunInfos.getAccuracyPct());
         out.writeInt(msg.gunInfos.getBulletAmountToFire());
@@ -32,13 +32,13 @@ public class ClientGunInfoPacket {
     public static ClientGunInfoPacket decode(PacketBuffer in) {
         // @StringObfuscator:on
         String gunId = in.readUtf(60);
-        int rpm = in.readInt();
+        int delayMs = in.readInt();
         int reloadDurationTicks = in.readInt();
         float accuracy = in.readFloat();
         int bulletAmountToFire = in.readInt();
         // @StringObfuscator:off
 
-        return new ClientGunInfoPacket(new ClientGunInfoWrapper(ResourceLocationWrapper.of(gunId), rpm, reloadDurationTicks, accuracy, bulletAmountToFire));
+        return new ClientGunInfoPacket(new ClientGunDataWrapper(ResourceLocationWrapper.of(gunId), delayMs, reloadDurationTicks, accuracy, bulletAmountToFire));
     }
 
     public static boolean handle(ClientGunInfoPacket msg, Supplier<NetworkEvent.Context> ctx) {
@@ -48,7 +48,9 @@ public class ClientGunInfoPacket {
 
         if(!GunUtils.INTEGRITY_VALIDATOR.test(msg.gunInfos)) {
         	ctx.get().getSender().setItemInHand(Hand.MAIN_HAND, ItemStack.EMPTY);
-            ForgeToBukkitInterfaceImpl.INSTANCE.onGunNoIntegrity(ctx.get().getSender(), msg.gunInfos, GunUtils.getCommonGunSpecsWrapper(msg.gunInfos.getResourceLocation().toString()));
+            CustomGunDataController.INSTANCE.getCommonGunData(msg.gunInfos.getResourceLocation()).ifPresent(data -> {
+                ForgeToBukkitInterfaceImpl.INSTANCE.onGunNoIntegrity(ctx.get().getSender(), msg.gunInfos, CustomGunDataController.INSTANCE.getCommonGunData(msg.gunInfos.getResourceLocation()));
+            });
         }
 
         return true;

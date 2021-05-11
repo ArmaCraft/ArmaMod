@@ -1,29 +1,28 @@
 package org.armacraft.mod.server.bukkit.util;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-
-import org.armacraft.mod.bridge.bukkit.IUserData;
-import org.armacraft.mod.server.bukkit.event.PlayerNoGunIntegrityEvent;
-import org.armacraft.mod.server.bukkit.event.PlayerOpenedCheatEngineEvent;
-import org.armacraft.mod.wrapper.CommonGunInfoWrapper;
-import org.armacraft.mod.wrapper.EnvironmentWrapper;
-import org.armacraft.mod.network.dto.FileInfoDTO;
-import org.armacraft.mod.server.bukkit.event.PlayerDashEvent;
-import org.armacraft.mod.server.bukkit.event.PlayerMissingFilesEvent;
-import org.armacraft.mod.server.bukkit.event.PlayerNoClassesIntegrityEvent;
-import org.armacraft.mod.server.bukkit.event.PlayerSentEnvironmentEvent;
-import org.armacraft.mod.server.bukkit.event.PlayerSentUnknownFilesEvent;
-import org.armacraft.mod.server.bukkit.event.PlayerTransformationServiceReceiveEvent;
-import org.armacraft.mod.wrapper.ClientGunInfoWrapper;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
-
 import io.izzel.arclight.common.bridge.entity.player.ServerPlayerEntityBridge;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import org.armacraft.mod.bridge.bukkit.IUserData;
+import org.armacraft.mod.network.dto.FileInfoDTO;
+import org.armacraft.mod.server.bukkit.event.PlayerDashEvent;
+import org.armacraft.mod.server.bukkit.event.PlayerMissingFilesEvent;
+import org.armacraft.mod.server.bukkit.event.PlayerNoClassesIntegrityEvent;
+import org.armacraft.mod.server.bukkit.event.PlayerNoGunIntegrityEvent;
+import org.armacraft.mod.server.bukkit.event.PlayerOpenedCheatEngineEvent;
+import org.armacraft.mod.server.bukkit.event.PlayerSentEnvironmentEvent;
+import org.armacraft.mod.server.bukkit.event.PlayerSentUnknownFilesEvent;
+import org.armacraft.mod.server.bukkit.event.PlayerTransformationServiceReceiveEvent;
+import org.armacraft.mod.wrapper.ClientGunDataWrapper;
+import org.armacraft.mod.wrapper.CommonGunDataWrapper;
+import org.armacraft.mod.wrapper.EnvironmentWrapper;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @OnlyIn(Dist.DEDICATED_SERVER)
 public enum ForgeToBukkitInterfaceImpl implements ForgeToBukkitInterface {
@@ -49,7 +48,7 @@ public enum ForgeToBukkitInterfaceImpl implements ForgeToBukkitInterface {
 	}
 
 	@Override
-	public void onGunNoIntegrity(PlayerEntity player, ClientGunInfoWrapper clientInfos, Optional<CommonGunInfoWrapper> serverInfos) {
+	public void onGunNoIntegrity(PlayerEntity player, ClientGunDataWrapper clientInfos, Optional<CommonGunDataWrapper> serverInfos) {
 		Bukkit.getPluginManager().callEvent(new PlayerNoGunIntegrityEvent(this.getBukkitPlayer(player), clientInfos, serverInfos));
 	}
 

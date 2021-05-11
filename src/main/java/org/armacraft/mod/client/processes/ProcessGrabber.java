@@ -1,8 +1,8 @@
 package org.armacraft.mod.client.processes;
 
-import java.util.Set;
-
 import org.armacraft.mod.wrapper.ProcessWrapper;
+
+import java.util.Set;
 
 public interface ProcessGrabber {
 

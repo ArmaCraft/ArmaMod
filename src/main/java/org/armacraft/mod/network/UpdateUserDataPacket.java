@@ -1,17 +1,15 @@
 package org.armacraft.mod.network;
 
+import net.minecraft.network.PacketBuffer;
+import net.minecraftforge.fml.network.NetworkEvent;
+import org.armacraft.mod.ArmaCraft;
+import org.armacraft.mod.bridge.bukkit.IUserData;
+import org.armacraft.mod.client.ClientUserData;
+import org.armacraft.mod.wrapper.KeyBindWrapper;
+
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Supplier;
-
-import net.minecraft.client.Minecraft;
-import org.armacraft.mod.ArmaCraft;
-import org.armacraft.mod.bridge.bukkit.IUserData;
-
-import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.network.NetworkEvent;
-import org.armacraft.mod.client.ClientUserData;
-import org.armacraft.mod.wrapper.KeyBindWrapper;
 
 public class UpdateUserDataPacket {
     private IUserData userData;
