@@ -4,7 +4,7 @@ public class ResourceLocationWrapper {
     private String path;
     private String namespace;
 
-    public ResourceLocationWrapper(String path, String namespace) {
+    public ResourceLocationWrapper(String namespace, String path) {
         this.path = path;
         this.namespace = namespace;
     }

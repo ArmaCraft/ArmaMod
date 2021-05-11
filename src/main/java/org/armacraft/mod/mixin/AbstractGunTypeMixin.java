@@ -19,11 +19,13 @@ public class AbstractGunTypeMixin implements IAbstractGunTypeBridge {
 
     @Override
 	public void bridge$updateSpecs(CommonGunInfoWrapper wrapper) {
+        System.out.println("Ebaaa ta setando as coisas");
         this.fireDelayMs = wrapper.getFireDelayMs();
         this.damage = (int) wrapper.getDamage();
         this.reloadDurationTicks = wrapper.getReloadDurationTicks();
         this.accuracyPct = wrapper.getAccuracyPct();
         this.bulletAmountToFire = wrapper.getBulletAmountToFire();
+        System.out.println(damage);
     }
 
 }

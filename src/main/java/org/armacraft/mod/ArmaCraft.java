@@ -3,7 +3,9 @@ package org.armacraft.mod;
 import java.util.Optional;
 import java.util.UUID;
 
+import com.craftingdead.core.item.GunItem;
 import com.craftingdead.core.item.PaintItem;
+import com.craftingdead.core.item.gun.AbstractGunType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -217,12 +219,35 @@ public class ArmaCraft {
 	@SubscribeEvent
 	public void handleGunFire(GunEvent.TriggerPressed event) {
 		//Fazer cast direto de PlayerEntity player = event.getLiving().getEntity() da ClassCast
+		getClientDist().ifPresent(client -> {
+			if(event.getLiving().getEntity().isCrouching()) {
+				Entity entity = event.getLiving().getEntity();
+				entity.getCapability(ModCapabilities.LIVING).ifPresent(living -> {
+					if (living.getEntity() instanceof PlayerEntity) {
+						PlayerEntity player = (PlayerEntity) living.getEntity();
+						ItemStack stack = event.getItemStack();
+						AbstractGunType<?> type = ((GunItem) stack.getItem()).getGunType();
+						System.out.println("--------------CLIENTE---------------");
+						System.out.println("RPM: " + type.getFireRateRPM());
+						System.out.println("Damage: " + type.getDamage());
+						System.out.println("Bullets: " + type.getBulletAmountToFire());
+						System.out.println("------------------------------------");
+					}
+				});
+			}
+		});
 		getServerDist().ifPresent(server -> {
 			Entity entity = event.getLiving().getEntity();
 			entity.getCapability(ModCapabilities.LIVING).ifPresent(living -> {
 				if(living.getEntity() instanceof PlayerEntity) {
 					PlayerEntity player = (PlayerEntity) living.getEntity();
 					ItemStack stack = event.getItemStack();
+					AbstractGunType<?> type = ((GunItem) stack.getItem()).getGunType();
+					System.out.println("--------------CLIENTE---------------");
+					System.out.println("RPM: " + type.getFireRateRPM());
+					System.out.println("Damage: " + type.getDamage());
+					System.out.println("Bullets: " + type.getBulletAmountToFire());
+					System.out.println("------------------------------------");
 					stack.getCapability(ModCapabilities.GUN).ifPresent(gunController -> {
 						if (gunController.getPaint().isPresent()) {
 							PaintItem paint = (PaintItem) gunController.getPaintStack().getItem();
