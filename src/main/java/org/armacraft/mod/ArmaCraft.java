@@ -52,6 +52,7 @@ import org.armacraft.mod.server.CustomGunDataController;
 import org.armacraft.mod.server.ServerDist;
 import org.armacraft.mod.util.EnchantUtils;
 import org.armacraft.mod.util.MiscUtil;
+import org.armacraft.mod.wrapper.CommonGunDataWrapper;
 
 import java.util.Optional;
 
@@ -263,9 +264,12 @@ public class ArmaCraft {
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void onGunHit(GunEvent.HitEntity event) {
 		if (event.isHeadshot()) {
+
+			CommonGunDataWrapper data = CustomGunDataController.INSTANCE.getCommonGunData(event.getItemStack().getItem().getRegistryName().toString()).get();
+
 			// Matematicamente remove o multiplier de headshot do dano e aplica o nosso no
 			// lugar
-			event.setDamage((event.getDamage() / AbstractGun.HEADSHOT_MULTIPLIER) * DEFAULT_HEADSHOT_MULTIPLIER);
+			event.setDamage((event.getDamage() / AbstractGun.HEADSHOT_MULTIPLIER) * data.getHeadshotMultiplier());
 		}
 	}
 
