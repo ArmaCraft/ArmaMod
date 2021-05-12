@@ -81,7 +81,7 @@ public abstract class SimpleGunClientMixin {
 			ArmaCraft.networkChannel.send(PacketDistributor.SERVER.noArg(),
 					new ClientGunInfoPacket(new ClientGunDataWrapper(
 							ResourceLocationWrapper.of(gunItem.getRegistryName().toString()),
-							gunItem.getGunType().getFireRateRPM(),
+							gunItem.getGunType().getFireDelayMs(),
 							gunItem.getGunType().getReloadDurationTicks(),
 							gunItem.getGunType().getAccuracyPct(),
 							gunItem.getGunType().getBulletAmountToFire())));

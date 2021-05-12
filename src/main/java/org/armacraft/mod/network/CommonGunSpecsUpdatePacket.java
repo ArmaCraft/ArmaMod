@@ -43,8 +43,10 @@ public class CommonGunSpecsUpdatePacket {
 
     public static boolean handle(CommonGunSpecsUpdatePacket msg, Supplier<NetworkEvent.Context> ctx) {
         RegistryUtil.filterRegistries(GunItem.class, ModItems.ITEMS).stream()
-                .filter(registry -> registry.getId().toString().equals(msg.infos.getResourceLocation().toString()))
-                .forEach(gun -> ((IAbstractGunTypeBridge) ((GunItem) gun.get()).getGunType()).bridge$updateSpecs(msg.infos));
+                .filter(registry -> registry.getId().toString().equalsIgnoreCase(msg.infos.getResourceLocation().toString()))
+                .forEach(gun -> {
+                    ((IAbstractGunTypeBridge) ((GunItem) gun.get()).getGunType()).bridge$updateSpecs(msg.infos);
+                });
         return true;
     }
 }

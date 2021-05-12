@@ -17,7 +17,6 @@ public class GunUtils {
         if(controller.getCachedGunData().get(clientInfo.getResourceLocation().toString()) != null) {
             CommonGunDataWrapper serverGunInfo = controller.getCachedGunData().get(clientInfo.getResourceLocation().toString());
             return serverGunInfo.getAccuracyPct() == clientInfo.getAccuracyPct()
-                    && serverGunInfo.getFireRateRPM() == clientInfo.getFireRateRPM()
                     && serverGunInfo.getBulletAmountToFire() == clientInfo.getBulletAmountToFire()
                     && serverGunInfo.getReloadDurationTicks() == clientInfo.getReloadDurationTicks();
         }
