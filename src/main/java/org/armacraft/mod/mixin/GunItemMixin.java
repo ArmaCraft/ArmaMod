@@ -37,11 +37,12 @@ public class GunItemMixin {
 		// Cast unsafe mesmo porque sei que sempre será essa a classe
 		GunItem gun = (GunItem) (Object) this;
 
-		CommonGunDataWrapper data = CustomGunDataController.INSTANCE.getCommonGunData(gun).get();
+		CustomGunDataController.INSTANCE.getCommonGunData(gun).ifPresent(data -> {
+			// Remove e adiciona de volta
+			lines.remove(3);
+			lines.add(3, Text.translate(LORE_HEADSHOT_DAMAGE, 3).withStyle(TextFormatting.GRAY).append(
+					Text.of(gun.getGunType().getDamage() * data.getHeadshotMultiplier()).withStyle(TextFormatting.RED)));
+		});
 
-		// Remove e adiciona de volta
-		lines.remove(3);
-		lines.add(3, Text.translate(LORE_HEADSHOT_DAMAGE, 3).withStyle(TextFormatting.GRAY).append(
-				Text.of(gun.getGunType().getDamage() * data.getHeadshotMultiplier()).withStyle(TextFormatting.RED)));
 	}
 }

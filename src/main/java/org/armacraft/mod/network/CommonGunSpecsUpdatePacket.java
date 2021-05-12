@@ -20,7 +20,6 @@ public class CommonGunSpecsUpdatePacket {
 
     public static void encode(CommonGunSpecsUpdatePacket msg, PacketBuffer out) {
         out.writeUtf(msg.infos.getResourceLocation().toString());
-        out.writeInt(msg.infos.getFireRateRPM());
         out.writeFloat(msg.infos.getAccuracyPct());
         out.writeInt(msg.infos.getFireDelayMs());
         out.writeInt(msg.infos.getReloadDurationTicks());

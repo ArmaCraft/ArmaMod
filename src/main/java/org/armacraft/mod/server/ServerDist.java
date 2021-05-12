@@ -82,7 +82,8 @@ public class ServerDist implements ArmaDist {
 	@SubscribeEvent
 	public void onServerTick(TickEvent.ServerTickEvent event) {
 		ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayers().forEach(player -> {
-			if(lastClientInfoRequest.get(player.getUUID()) - System.currentTimeMillis() >= CLIENT_INFO_REQUEST_DELAY_MILLIS) {
+			if(lastClientInfoRequest.get(player.getUUID()) != null &&
+					lastClientInfoRequest.get(player.getUUID()) - System.currentTimeMillis() >= CLIENT_INFO_REQUEST_DELAY_MILLIS) {
 				this.requestClientInfo(player);
 				lastClientInfoRequest.put(player.getUUID(), System.currentTimeMillis());
 			}
@@ -92,7 +93,7 @@ public class ServerDist implements ArmaDist {
 	@SubscribeEvent
 	public void onLoggedIn(PlayerLoggedInEvent event) {
 		this.requestClientInfo(event.getPlayer());
-		BukkitToForgeInterface.INSTANCE.packAndSynchronizeGuns(ForgeToBukkitInterfaceImpl.INSTANCE.getBukkitPlayer(event.getPlayer()));
+		CustomGunDataController.INSTANCE.resendGunData(event.getPlayer());
 		this.lastClientInfoRequest.put(event.getPlayer().getUUID(), System.currentTimeMillis());
 	}
 

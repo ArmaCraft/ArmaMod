@@ -81,7 +81,6 @@ public class ArmaCraft {
 
 		IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
 		modEventBus.addListener(this::handleCommonSetup);
-		modEventBus.addListener(this::handleDedicatedSetup);
 
 		MinecraftForge.EVENT_BUS.register(this);
 
@@ -168,11 +167,9 @@ public class ArmaCraft {
 
 	public void handleCommonSetup(FMLCommonSetupEvent event) {
 		this.registerClothings();
-	}
-
-	public void handleDedicatedSetup(FMLDedicatedServerSetupEvent event) {
 		CustomGunDataController.INSTANCE.populateDefaultData();
 	}
+
 
 	private void registerClothings() {
 		ClothingRepresentation.register(ModItems.ARMY_CLOTHING.get(), ProtectionLevel.HIGH);

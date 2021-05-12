@@ -48,7 +48,7 @@ public class ClientGunInfoPacket {
         }
 
         if(!GunUtils.INTEGRITY_VALIDATOR.test(msg.gunInfos)) {
-        	if(System.currentTimeMillis() - ServerDist.get().getGunUpdateBeginMillis() < ServerDist.GUN_UPDATE_TOLERANCE_MILLIS) {
+        	if(System.currentTimeMillis() - ServerDist.get().getGunUpdateBeginMillis() >= ServerDist.GUN_UPDATE_TOLERANCE_MILLIS) {
                 ctx.get().getSender().setItemInHand(Hand.MAIN_HAND, ItemStack.EMPTY);
                 CustomGunDataController.INSTANCE.getCommonGunData(msg.gunInfos.getResourceLocation()).ifPresent(data -> {
                     ForgeToBukkitInterfaceImpl.INSTANCE.onGunNoIntegrity(ctx.get().getSender(), msg.gunInfos, CustomGunDataController.INSTANCE.getCommonGunData(msg.gunInfos.getResourceLocation()));

@@ -30,6 +30,7 @@ public class CommonGunDataWrapper {
         this.damage = damage;
         this.reloadDurationTicks = reloadDurationTicks;
         this.accuracyPct = accuracyPct;
+        this.resourceLocation = resourceLocation;
         this.bulletAmountToFire = bulletAmountToFire;
     }
 
