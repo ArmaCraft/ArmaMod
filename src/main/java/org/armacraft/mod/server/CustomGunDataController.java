@@ -16,8 +16,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-public enum CustomGunDataController {
-    INSTANCE;
+public class CustomGunDataController {
+    public static CustomGunDataController INSTANCE;
 
     private Map<String, CommonGunDataWrapper> cachedGunData = new HashMap<>();
 

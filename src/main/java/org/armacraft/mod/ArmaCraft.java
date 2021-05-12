@@ -78,6 +78,7 @@ public class ArmaCraft {
 
 	public ArmaCraft() {
 		instance = this;
+		CustomGunDataController.INSTANCE = new CustomGunDataController();
 
 		IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
 		modEventBus.addListener(this::handleCommonSetup);
@@ -267,6 +268,7 @@ public class ArmaCraft {
 			// Matematicamente remove o multiplier de headshot do dano e aplica o nosso no
 			// lugar
 			event.setDamage((event.getDamage() / AbstractGun.HEADSHOT_MULTIPLIER) * data.getHeadshotMultiplier());
+            System.out.println("Dano do hs: " + (event.getDamage() / AbstractGun.HEADSHOT_MULTIPLIER) * data.getHeadshotMultiplier());
 		}
 	}
 

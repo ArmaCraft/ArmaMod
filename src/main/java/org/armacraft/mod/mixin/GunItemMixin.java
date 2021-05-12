@@ -22,27 +22,13 @@ import java.util.List;
 @Mixin(GunItem.class)
 public class GunItemMixin {
 
-	// @StringObfuscator:on
-	private static String LORE_HEADSHOT_DAMAGE = "item_lore.gun_item.headshot_damage";
-	// @StringObfuscator:off
-
-	/**
-	 * Mostra o dano de headshot correto na arma
-	 */
-
 	@Inject(method = "appendHoverText", at = @At("TAIL"))
 	@OnlyIn(Dist.CLIENT)
 	public void appendHoverText(ItemStack stack, World world, List<ITextComponent> lines, ITooltipFlag tooltipFlag,
 			CallbackInfo ci) {
-		// Cast unsafe mesmo porque sei que sempre será essa a classe
-		GunItem gun = (GunItem) (Object) this;
-
-		CustomGunDataController.INSTANCE.getCommonGunData(gun).ifPresent(data -> {
-			// Remove e adiciona de volta
-			lines.remove(3);
-			lines.add(3, Text.translate(LORE_HEADSHOT_DAMAGE, 3).withStyle(TextFormatting.GRAY).append(
-					Text.of(gun.getGunType().getDamage() * data.getHeadshotMultiplier()).withStyle(TextFormatting.RED)));
-		});
-
+		//Após eu ter adicionado os headshots multipliers customizados, por algum motivo o forge
+		//tem problemas em encontrar esses valores no momento em que esse Mixin é aplicado, portanto
+		//eu apenas tiro a lore de headshot e aplico ela pelo próprio Bukkit. É mais fácil.
+		lines.remove(3);
 	}
 }
