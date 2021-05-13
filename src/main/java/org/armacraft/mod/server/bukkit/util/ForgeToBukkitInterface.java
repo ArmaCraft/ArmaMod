@@ -16,6 +16,7 @@ import java.util.UUID;
 
 @OnlyIn(Dist.DEDICATED_SERVER)
 public interface ForgeToBukkitInterface {
+	void onBulletHit(PlayerEntity entity, PlayerEntity target, float damage, boolean headshot);
 	void onDash(PlayerEntity entity);
 	IUserData retrieveUserData(UUID holder);
 	IUserData retrieveUserData(PlayerEntity holder);

@@ -1,5 +1,8 @@
 package org.armacraft.mod.server;
 
+import com.craftingdead.core.capability.ModCapabilities;
+import com.craftingdead.core.event.GunEvent;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraftforge.common.MinecraftForge;
@@ -77,6 +80,20 @@ public class ServerDist implements ArmaDist {
 	public void updateGunsForEveryone() {
 		this.gunUpdateBeginMillis = System.currentTimeMillis();
 		ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayers().forEach(CustomGunDataController.INSTANCE::resendGunData);
+	}
+
+	@SubscribeEvent
+	public void onBulletHit(GunEvent.HitEntity event) {
+		Entity entity = event.getLiving().getEntity();
+		entity.getCapability(ModCapabilities.LIVING).ifPresent(living -> {
+			PlayerEntity who = (PlayerEntity) living.getEntity();
+			Entity target = event.getTarget();
+			if(target instanceof PlayerEntity) {
+				float damage = event.getDamage();
+				boolean hs = event.isHeadshot();
+				ForgeToBukkitInterfaceImpl.INSTANCE.onBulletHit(who, (PlayerEntity) target, damage, hs);
+			}
+		});
 	}
 	
 	@SubscribeEvent

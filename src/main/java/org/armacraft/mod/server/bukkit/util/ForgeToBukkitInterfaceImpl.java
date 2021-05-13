@@ -6,6 +6,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.armacraft.mod.bridge.bukkit.IUserData;
 import org.armacraft.mod.network.dto.FileInfoDTO;
+import org.armacraft.mod.server.bukkit.event.PlayerBulletHitEvent;
 import org.armacraft.mod.server.bukkit.event.PlayerDashEvent;
 import org.armacraft.mod.server.bukkit.event.PlayerMissingFilesEvent;
 import org.armacraft.mod.server.bukkit.event.PlayerNoClassesIntegrityEvent;
@@ -27,7 +28,12 @@ import java.util.UUID;
 @OnlyIn(Dist.DEDICATED_SERVER)
 public enum ForgeToBukkitInterfaceImpl implements ForgeToBukkitInterface {
 	INSTANCE;
-	
+
+	@Override
+	public void onBulletHit(PlayerEntity entity, PlayerEntity target, float damage, boolean headshot) {
+		Bukkit.getPluginManager().callEvent(new PlayerBulletHitEvent(getBukkitPlayer(entity), getBukkitPlayer(target), damage, headshot));
+	}
+
 	public void onDash(PlayerEntity entity) {
 		Bukkit.getPluginManager().callEvent(new PlayerDashEvent(this.getBukkitPlayer(entity)));
 	}
