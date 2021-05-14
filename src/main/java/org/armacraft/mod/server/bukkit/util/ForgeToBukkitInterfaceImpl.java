@@ -1,12 +1,13 @@
 package org.armacraft.mod.server.bukkit.util;
 
 import io.izzel.arclight.common.bridge.entity.player.ServerPlayerEntityBridge;
+import net.minecraft.block.Block;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.armacraft.mod.bridge.bukkit.IUserData;
 import org.armacraft.mod.network.dto.FileInfoDTO;
-import org.armacraft.mod.server.bukkit.event.PlayerBulletHitEvent;
+import org.armacraft.mod.server.bukkit.event.PlayerBulletHitEntityEvent;
 import org.armacraft.mod.server.bukkit.event.PlayerDashEvent;
 import org.armacraft.mod.server.bukkit.event.PlayerMissingFilesEvent;
 import org.armacraft.mod.server.bukkit.event.PlayerNoClassesIntegrityEvent;
@@ -30,8 +31,8 @@ public enum ForgeToBukkitInterfaceImpl implements ForgeToBukkitInterface {
 	INSTANCE;
 
 	@Override
-	public void onBulletHit(PlayerEntity entity, PlayerEntity target, float damage, boolean headshot) {
-		Bukkit.getPluginManager().callEvent(new PlayerBulletHitEvent(getBukkitPlayer(entity), getBukkitPlayer(target), damage, headshot));
+	public void onBulletEntityHit(PlayerEntity entity, PlayerEntity target, float damage, boolean headshot) {
+		Bukkit.getPluginManager().callEvent(new PlayerBulletHitEntityEvent(getBukkitPlayer(entity), getBukkitPlayer(target), damage, headshot));
 	}
 
 	public void onDash(PlayerEntity entity) {

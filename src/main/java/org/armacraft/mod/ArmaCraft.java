@@ -3,6 +3,7 @@ package org.armacraft.mod;
 import com.craftingdead.core.capability.ModCapabilities;
 import com.craftingdead.core.event.GunEvent;
 import com.craftingdead.core.inventory.InventorySlotType;
+import com.craftingdead.core.item.GunItem;
 import com.craftingdead.core.item.ModItems;
 import com.craftingdead.core.item.PaintItem;
 import com.craftingdead.core.item.gun.AbstractGun;
@@ -262,11 +263,10 @@ public class ArmaCraft {
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void onGunHit(GunEvent.HitEntity event) {
 		if (event.isHeadshot()) {
-
-			//CommonGunDataWrapper data = CustomGunDataController.INSTANCE.getCommonGunData(event.getItemStack().getItem().getRegistryName().toString()).get();
 			// Matematicamente remove o multiplier de headshot do dano e aplica o nosso no
 			// lugar
-			event.setDamage((event.getDamage() / AbstractGun.HEADSHOT_MULTIPLIER) * DEFAULT_HEADSHOT_MULTIPLIER);
+			CommonGunDataWrapper serverData = CustomGunDataController.INSTANCE.getCommonGunData((GunItem) event.getItemStack().getItem()).get();
+			event.setDamage((event.getDamage() / AbstractGun.HEADSHOT_MULTIPLIER) * serverData.getHeadshotMultiplier());
 		}
 	}
 

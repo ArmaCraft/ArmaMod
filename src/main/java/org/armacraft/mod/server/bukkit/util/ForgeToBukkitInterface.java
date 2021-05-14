@@ -1,5 +1,6 @@
 package org.armacraft.mod.server.bukkit.util;
 
+import net.minecraft.block.Block;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -16,7 +17,7 @@ import java.util.UUID;
 
 @OnlyIn(Dist.DEDICATED_SERVER)
 public interface ForgeToBukkitInterface {
-	void onBulletHit(PlayerEntity entity, PlayerEntity target, float damage, boolean headshot);
+	void onBulletEntityHit(PlayerEntity entity, PlayerEntity target, float damage, boolean headshot);
 	void onDash(PlayerEntity entity);
 	IUserData retrieveUserData(UUID holder);
 	IUserData retrieveUserData(PlayerEntity holder);

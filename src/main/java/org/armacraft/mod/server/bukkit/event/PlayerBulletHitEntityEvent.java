@@ -5,7 +5,7 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerEvent;
 
-public class PlayerBulletHitEvent extends PlayerEvent {
+public class PlayerBulletHitEntityEvent extends PlayerEvent {
 
     private Player target;
     private float damage;
@@ -13,7 +13,7 @@ public class PlayerBulletHitEvent extends PlayerEvent {
 
     private static final HandlerList handlers = new HandlerList();
 
-    public PlayerBulletHitEvent(Player who, Player target, float damage, boolean headshot) {
+    public PlayerBulletHitEntityEvent(Player who, Player target, float damage, boolean headshot) {
         super(who);
         this.target = target;
         this.damage = damage;

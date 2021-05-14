@@ -91,7 +91,7 @@ public class ServerDist implements ArmaDist {
 			if(target instanceof PlayerEntity) {
 				float damage = event.getDamage();
 				boolean hs = event.isHeadshot();
-				ForgeToBukkitInterfaceImpl.INSTANCE.onBulletHit(who, (PlayerEntity) target, damage, hs);
+				ForgeToBukkitInterfaceImpl.INSTANCE.onBulletEntityHit(who, (PlayerEntity) target, damage, hs);
 			}
 		});
 	}
