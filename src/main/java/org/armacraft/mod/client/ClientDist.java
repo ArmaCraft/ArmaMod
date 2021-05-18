@@ -7,6 +7,7 @@ import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.client.gui.screen.PackScreen;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.RenderTypeLookup;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.particles.BlockParticleData;
 import net.minecraft.particles.ParticleTypes;
@@ -201,6 +202,13 @@ public class ClientDist implements ArmaDist {
 	public void onNameplateRender(RenderNameplateEvent event) {
 		if (event.getEntity() instanceof PlayerEntity && this.userData != null) {
 			PlayerEntity player = (PlayerEntity) event.getEntity();
+			if(Minecraft.getInstance().crosshairPickEntity != null){
+				Entity entity = Minecraft.getInstance().crosshairPickEntity;
+				if(entity instanceof PlayerEntity && entity.getId() == event.getEntity().getId()) {
+					event.setResult(Event.Result.ALLOW);
+					return;
+				}
+			}
 			if(userData.getFlags().contains(IUserData.Flags.SHOW_ALL)) {
 				event.setResult(Event.Result.ALLOW);
 			} else if (userData.getFlags().contains(IUserData.Flags.HIDE_ALL)) {
