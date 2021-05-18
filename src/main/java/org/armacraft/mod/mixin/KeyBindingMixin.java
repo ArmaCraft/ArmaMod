@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(KeyBinding.class)
 public class KeyBindingMixin {
 
-	private static final long DOUBLE_TAP_MAX_TIMESPAN = 400L;
+	private static final long DOUBLE_TAP_MAX_TIMESPAN = 250L;
 	private static KeyBinding lastPressedKeyBinding = null;
 	private static long lastPressStart = 0L;
 
