@@ -28,7 +28,7 @@ forge*changelog.txt
 # Maybe a future feature
 src/parsed
 
-/libs
+#/libs
 
 # Map of original names from proguard
 proguard.map
