@@ -13,6 +13,7 @@
     "ILivingMixin",
     "LivingImplMixin",
     "PlayerImplMixin",
+    "ItemListInventoryMixin",
     "RemoveMagazineActionMixin"
   ],
   "client": [

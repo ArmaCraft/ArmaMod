@@ -28,3 +28,9 @@ Mod próprio do servidor ArmaCraft :D
     mandatory=true
     ordering="NONE"
     side="BOTH"
+[[dependencies.corpse]]
+    modId="corpse"
+    versionRange="[0,)" #mandatory, but any
+    mandatory=true
+    ordering="NONE"
+    side="BOTH"
