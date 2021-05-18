@@ -38,7 +38,8 @@ public class UpdateUserDataPacket {
         byte bindsAmount = in.readByte();
 
         for (int i = 0; i < flagAmount; i++) {
-            flags.add(IUserData.Flags.valueOf(in.readUtf(64)));
+            String flag = in.readUtf(64);
+            flags.add(IUserData.Flags.valueOf(flag));
         }
 
         for (int i = 0; i < whitelistAmount; i++) {

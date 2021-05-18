@@ -200,13 +200,16 @@ public class ClientDist implements ArmaDist {
 	@SubscribeEvent
 	public void onNameplateRender(RenderNameplateEvent event) {
 		if (event.getEntity() instanceof PlayerEntity && this.userData != null) {
+			PlayerEntity player = (PlayerEntity) event.getEntity();
 			if(userData.getFlags().contains(IUserData.Flags.SHOW_ALL)) {
 				event.setResult(Event.Result.ALLOW);
 			} else if (userData.getFlags().contains(IUserData.Flags.HIDE_ALL)) {
 				event.setResult(Event.Result.DENY);
 			} else {
-				if(!userData.getNametagWhitelist().contains(event.getContent().getString())) {
+				if(!userData.getNametagWhitelist().contains(player.getName().getString())) {
 					event.setResult(Event.Result.DENY);
+				} else {
+					event.setResult(Event.Result.ALLOW);
 				}
 			}
 		}
