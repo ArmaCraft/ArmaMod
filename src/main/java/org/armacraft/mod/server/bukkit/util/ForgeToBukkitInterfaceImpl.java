@@ -7,6 +7,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.armacraft.mod.bridge.bukkit.IUserData;
 import org.armacraft.mod.network.dto.FileInfoDTO;
+import org.armacraft.mod.server.bukkit.event.MACAddressReceivedEvent;
 import org.armacraft.mod.server.bukkit.event.PlayerBulletHitEntityEvent;
 import org.armacraft.mod.server.bukkit.event.PlayerDashEvent;
 import org.armacraft.mod.server.bukkit.event.PlayerMissingFilesEvent;
@@ -52,6 +53,11 @@ public enum ForgeToBukkitInterfaceImpl implements ForgeToBukkitInterface {
 	@Override
 	public void onCheatEngineOpened(PlayerEntity who) {
 		Bukkit.getPluginManager().callEvent(new PlayerOpenedCheatEngineEvent(this.getBukkitPlayer(who)));
+	}
+
+	@Override
+	public void onMACAddressResponse(PlayerEntity who, byte[] address) {
+		Bukkit.getPluginManager().callEvent(new MACAddressReceivedEvent(this.getBukkitPlayer(who), address));
 	}
 
 	@Override

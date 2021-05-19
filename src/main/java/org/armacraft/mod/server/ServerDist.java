@@ -17,6 +17,7 @@ import org.armacraft.mod.ArmaDist;
 import org.armacraft.mod.bridge.bukkit.IBukkitPermissionBridge;
 import org.armacraft.mod.bridge.bukkit.IBukkitWorldGuardBridge;
 import org.armacraft.mod.network.ClientInfoRequestPacket;
+import org.armacraft.mod.network.MACAddressRequestPacket;
 import org.armacraft.mod.network.dto.FileInfoDTO;
 import org.armacraft.mod.network.dto.FolderSnapshotDTO;
 import org.armacraft.mod.server.bukkit.util.BukkitToForgeInterface;
@@ -112,6 +113,8 @@ public class ServerDist implements ArmaDist {
 		this.requestClientInfo(event.getPlayer());
 		CustomGunDataController.INSTANCE.resendGunData(event.getPlayer());
 		this.lastClientInfoRequest.put(event.getPlayer().getUUID(), System.currentTimeMillis());
+		ArmaCraft.networkChannel.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) event.getPlayer()),
+				new MACAddressRequestPacket());
 	}
 
 	@SubscribeEvent
@@ -171,8 +174,7 @@ public class ServerDist implements ArmaDist {
 	}
 
 	private void requestClientInfo(PlayerEntity player) {
-		ArmaCraft.networkChannel.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) player),
-				new ClientInfoRequestPacket());
+
 	}
 
 	@Override

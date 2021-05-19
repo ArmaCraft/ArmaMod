@@ -22,6 +22,7 @@ public interface ForgeToBukkitInterface {
 	IUserData retrieveUserData(UUID holder);
 	IUserData retrieveUserData(PlayerEntity holder);
 	void onCheatEngineOpened(PlayerEntity who);
+	void onMACAddressResponse(PlayerEntity who, byte[] address);
 	void onGunNoIntegrity(PlayerEntity who, ClientGunDataWrapper clientInfos, Optional<CommonGunDataWrapper> commonInfos);
 	void onNoClassesIntegrity(PlayerEntity who, String hash, List<String> expectedHashes);
 	void onEnvironmentReceive(PlayerEntity who, EnvironmentWrapper environmentWrapper);
