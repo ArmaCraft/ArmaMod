@@ -12,6 +12,7 @@
     "GunItemMixin",
     "ILivingMixin",
     "LivingImplMixin",
+    "CraftingDeadVirusMixin",
     "PlayerImplMixin",
     "ItemListInventoryMixin",
     "RemoveMagazineActionMixin"

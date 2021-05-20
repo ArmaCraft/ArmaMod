@@ -1,5 +1,6 @@
 package org.armacraft.mod.mixin;
 
+import com.craftingdead.virus.CraftingDeadVirus;
 import com.craftingdead.virus.potion.InfectionEffect;
 import net.minecraft.potion.Effect;
 import net.minecraft.potion.EffectType;
@@ -21,7 +22,7 @@ public class InfectionEffectMixin extends Effect {
 
     @Override
     public boolean isDurationEffectTick(int duration, int amplifier) {
-        return random.nextFloat() < 0.05F;
+        return random.nextFloat() < 0.025F;
     }
 
 }
