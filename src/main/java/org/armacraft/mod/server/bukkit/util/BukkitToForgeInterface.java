@@ -65,7 +65,6 @@ public enum BukkitToForgeInterface {
 			if (this.craftPlayer$getHandle == null) {
 				this.craftPlayer$getHandle = player.getClass().getDeclaredMethod("getHandle");
 			}
-			CraftItemStack
 			return (ServerPlayerEntity) this.craftPlayer$getHandle.invoke(player);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
