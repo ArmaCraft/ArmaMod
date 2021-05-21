@@ -1,5 +1,7 @@
 package org.armacraft.mod.server.bukkit.util;
 
+import com.craftingdead.core.capability.ModCapabilities;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -10,15 +12,16 @@ import org.armacraft.mod.bridge.bukkit.IUserData;
 import org.armacraft.mod.network.ClientEnvironmentRequestPacket;
 import org.armacraft.mod.network.ClientInfoRequestPacket;
 import org.armacraft.mod.network.CloseGamePacket;
-import org.armacraft.mod.network.CommonGunSpecsUpdatePacket;
 import org.armacraft.mod.network.MACAddressRequestPacket;
 import org.armacraft.mod.network.UpdateUserDataPacket;
 import org.armacraft.mod.server.CustomGunDataController;
-import org.bukkit.craftbukkit.v1_16_R3.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_16_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 
 @OnlyIn(Dist.DEDICATED_SERVER)
 public enum BukkitToForgeInterface {
@@ -33,6 +36,24 @@ public enum BukkitToForgeInterface {
 					ArmaCraft.networkChannel.send(PacketDistributor.PLAYER.with(() -> player),
 							new UpdateUserDataPacket(data))
 				);
+	}
+
+	public void setStackInSlot(Player p, ItemStack stack, int slot) {
+		this.getPlayerEntity(p).getCapability(ModCapabilities.LIVING).ifPresent(living -> {
+			living.getItemHandler().setStackInSlot(slot, CraftItemStack.asNMSCopy(stack));
+		});
+	}
+
+	public List<ItemStack> getCDInventory(Player p) {
+		List<ItemStack> items = new ArrayList<>();
+		this.getPlayerEntity(p).getCapability(ModCapabilities.LIVING).ifPresent(living -> {
+			items.add(CraftItemStack.asBukkitCopy(living.getItemHandler().getStackInSlot(0)));
+			items.add(CraftItemStack.asBukkitCopy(living.getItemHandler().getStackInSlot(1)));
+			items.add(CraftItemStack.asBukkitCopy(living.getItemHandler().getStackInSlot(2)));
+			items.add(CraftItemStack.asBukkitCopy(living.getItemHandler().getStackInSlot(3)));
+			items.add(CraftItemStack.asBukkitCopy(living.getItemHandler().getStackInSlot(4)));
+		});
+		return items;
 	}
 
 	public void requestMACAdress(Player player) {

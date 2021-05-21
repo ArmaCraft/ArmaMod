@@ -56,6 +56,7 @@ import org.armacraft.mod.server.ServerDist;
 import org.armacraft.mod.util.EnchantUtils;
 import org.armacraft.mod.util.MiscUtil;
 import org.armacraft.mod.wrapper.CommonGunDataWrapper;
+import org.bukkit.craftbukkit.v1_16_R3.inventory.CraftItemStack;
 
 import java.util.Optional;
 
@@ -95,7 +96,6 @@ public class ArmaCraft {
 		ArmaCraftTileEntityTypes.TILE_ENTITY_TYPES.register(modEventBus);
 
 		this.dist = DistExecutor.safeRunForDist(() -> ClientDist::new, () -> ServerDist::new);
-
 		this.setupChannel();
 	}
 
