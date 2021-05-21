@@ -11,8 +11,11 @@ import org.armacraft.mod.network.ClientEnvironmentRequestPacket;
 import org.armacraft.mod.network.ClientInfoRequestPacket;
 import org.armacraft.mod.network.CloseGamePacket;
 import org.armacraft.mod.network.CommonGunSpecsUpdatePacket;
+import org.armacraft.mod.network.MACAddressRequestPacket;
 import org.armacraft.mod.network.UpdateUserDataPacket;
 import org.armacraft.mod.server.CustomGunDataController;
+import org.bukkit.craftbukkit.v1_16_R3.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_16_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 
 import java.lang.reflect.Method;
@@ -32,14 +35,19 @@ public enum BukkitToForgeInterface {
 				);
 	}
 
+	public void requestMACAdress(Player player) {
+		ArmaCraft.networkChannel.send(PacketDistributor.PLAYER.with(() -> this.getPlayerEntity(player)),
+				new MACAddressRequestPacket());
+	}
+
 	public void packAndSynchronizeGuns(Player player) {
 		CustomGunDataController.INSTANCE.resendGunData(getPlayerEntity(player));
 	}
 	
 	public void closePlayerGame(Player player, String title, String message) {
+		player.kickPlayer(message);
 		ArmaCraft.networkChannel.send(PacketDistributor.PLAYER.with(() -> this.getPlayerEntity(player)),
 				new CloseGamePacket(title, message));
-		player.kickPlayer(message);
 	}
 
 	public void requestPlayerEnvironmentInfos(Player player) {
@@ -57,7 +65,7 @@ public enum BukkitToForgeInterface {
 			if (this.craftPlayer$getHandle == null) {
 				this.craftPlayer$getHandle = player.getClass().getDeclaredMethod("getHandle");
 			}
-			
+			CraftItemStack
 			return (ServerPlayerEntity) this.craftPlayer$getHandle.invoke(player);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
