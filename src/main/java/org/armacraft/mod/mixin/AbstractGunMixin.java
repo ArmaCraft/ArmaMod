@@ -27,6 +27,7 @@ import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.fml.ModList;
+import org.armacraft.mod.ArmaCraft;
 import org.armacraft.mod.bridge.AbstractGunBridge;
 import org.armacraft.mod.bridge.bukkit.IBukkitWorldGuardBridge;
 import org.armacraft.mod.potion.ArmaCraftEffects;
@@ -43,6 +44,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import org.spongepowered.asm.mixin.throwables.ClassMetadataNotFoundException;
 
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
@@ -134,26 +136,24 @@ public abstract class AbstractGunMixin<T extends AbstractGunType<SELF>, SELF ext
 						executor.execute(() -> this.hitEntity(living, entityRayTraceResult.getEntity(),
 								entityRayTraceResult.getLocation(), playEntityHitSound));
 
-						if (!entity.level.isClientSide()
-								&& !(living.getEntity() instanceof PlayerEntity
-								&& ((PlayerEntity) living.getEntity()).isCreative())) {
-							if (ServerDist.WORLD_GUARD_BRIDGE == null) {
-								break;
-							}
+						if (ServerDist.WORLD_GUARD_BRIDGE == null) {
+							break;
+						}
+						if(!ArmaCraft.getInstance().getClientDist().isPresent()) {
 							if(ForgeToBukkitInterfaceImpl.INSTANCE.isWorldGuardFlagAllowed("bullet-recovery", entity)) {
 								consumeBullet = false;
 							}
-							break;
 						}
-
 						break;
 					default:
 						break;
 				}
 
-				if(ServerDist.WORLD_GUARD_BRIDGE != null
-						&& ForgeToBukkitInterfaceImpl.INSTANCE.isWorldGuardFlagAllowed("infinity-ammo", entity)) {
-					consumeBullet = false;
+				if(!ArmaCraft.getInstance().getClientDist().isPresent()) {
+					if (ServerDist.WORLD_GUARD_BRIDGE != null
+							&& ForgeToBukkitInterfaceImpl.INSTANCE.isWorldGuardFlagAllowed("infinity-ammo", entity)) {
+						consumeBullet = false;
+					}
 				}
 
 				if (!entity.level.isClientSide()

@@ -32,7 +32,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-@OnlyIn(Dist.DEDICATED_SERVER)
 public enum ForgeToBukkitInterfaceImpl implements ForgeToBukkitInterface {
 	INSTANCE;
 
