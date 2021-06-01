@@ -2,22 +2,36 @@ package org.armacraft.mod.mixin;
 
 import com.craftingdead.core.item.gun.AbstractGun;
 import com.craftingdead.core.item.gun.AbstractGunType;
+import com.craftingdead.core.item.gun.IGunClient;
 import com.craftingdead.core.item.gun.PendingHit;
+import com.craftingdead.core.item.gun.ammoprovider.IAmmoProvider;
 import com.craftingdead.core.living.ILiving;
 import com.craftingdead.core.living.IPlayer;
+import com.craftingdead.core.util.RayTraceUtil;
+import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.enchantment.Enchantments;
+import net.minecraft.enchantment.UnbreakingEnchantment;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.Effect;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.Util;
 import net.minecraft.util.concurrent.ThreadTaskExecutor;
+import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.util.math.EntityRayTraceResult;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraftforge.fml.ModList;
 import org.armacraft.mod.bridge.AbstractGunBridge;
+import org.armacraft.mod.bridge.bukkit.IBukkitWorldGuardBridge;
 import org.armacraft.mod.potion.ArmaCraftEffects;
+import org.armacraft.mod.server.ServerDist;
+import org.armacraft.mod.server.bukkit.util.ForgeToBukkitInterfaceImpl;
 import org.armacraft.mod.util.GunUtils;
 import org.armacraft.mod.util.MiscUtil;
 import org.spongepowered.asm.mixin.Final;
@@ -30,9 +44,21 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import java.util.Random;
+import java.util.concurrent.CompletableFuture;
+
 @Mixin(AbstractGun.class)
 public abstract class AbstractGunMixin<T extends AbstractGunType<SELF>, SELF extends AbstractGun<T, SELF>> implements AbstractGunBridge<T, SELF> {
 
+	@Shadow @Final private IGunClient client;
+
+	@Shadow protected abstract void hitBlock(ILiving<?, ?> living, BlockRayTraceResult rayTrace, boolean playSound);
+
+	@Shadow public abstract float getAccuracy(ILiving<?, ?> living);
+
+	@Shadow private int shotCount;
+	@Shadow @Final private static Random random;
+	@Shadow private IAmmoProvider ammoProvider;
 	@Shadow @Final protected T type;
 	
 	@Shadow
@@ -42,29 +68,107 @@ public abstract class AbstractGunMixin<T extends AbstractGunType<SELF>, SELF ext
 	@Accessor(value = "type", remap = false) public abstract T bridge$getGunType();
 
 	/**
-	 * Remove skins ao atirar, se não tiver perm
+	 * Mecânica de retornar bala
+	 * @author
 	 */
+	@Overwrite(remap = false)
+	protected void processShot(ILiving<?, ?> living, ThreadTaskExecutor<?> executor) {
+		final Entity entity = living.getEntity();
 
-	@Inject(method = "processShot", remap = false, at = @At("TAIL"))
-	private void processShot(ILiving<?, ?> living, ThreadTaskExecutor<?> threadTaskExecutor, CallbackInfo ci) {
-		threadTaskExecutor.execute(() -> {
-			/*if (living.getEntity() instanceof PlayerEntity) {
-				PlayerEntity playerEntity = (PlayerEntity) living.getEntity();
-				gunStack.getCapability(ModCapabilities.GUN).ifPresent(gunController -> {
-					if (gunController.getPaint().isPresent()) {
-						PaintItem paint = (PaintItem) gunController.getPaintStack().getItem();
-						String permissionNode = "armacraft.skins."
-								+ gunStack.getItem().getRegistryName().getPath() + "."
-								+ paint.getRegistryName().getPath();
-						if (!ServerDist.PERMISSION_BRIDGE.hasPermission(playerEntity.getUUID(), permissionNode)) {
-							playerEntity.sendMessage(new TranslationTextComponent("message.no_skin_permission")
-									.setStyle(Style.EMPTY.applyFormat(TextFormatting.RED).withBold(true)), Util.NIL_UUID);
-							gunStack.getCapability(ModCapabilities.GUN).ifPresent(x -> x.setPaintStack(ItemStack.EMPTY));
+		boolean consumeBullet = true;
+
+		// Used to avoid playing the same hit sound more than once.
+		RayTraceResult lastRayTraceResult = null;
+		for (int i = 0; i < this.type.getBulletAmountToFire(); i++) {
+			final long randomSeed = entity.level.getGameTime() + i;
+			random.setSeed(randomSeed);
+
+			RayTraceResult rayTraceResult =
+					CompletableFuture.supplyAsync(() -> RayTraceUtil.rayTrace(entity,
+							this.type.getRange(),
+							this.getAccuracy(living),
+							this.shotCount,
+							random).orElse(null), executor).join();
+
+			if (rayTraceResult != null) {
+				switch (rayTraceResult.getType()) {
+					case BLOCK:
+						final BlockRayTraceResult blockRayTraceResult = (BlockRayTraceResult) rayTraceResult;
+						final boolean playSound;
+						if (lastRayTraceResult instanceof BlockRayTraceResult) {
+							playSound = entity.level.getBlockState(
+									((BlockRayTraceResult) lastRayTraceResult).getBlockPos()) != entity.level
+									.getBlockState(blockRayTraceResult.getBlockPos());
+						} else {
+							playSound = true;
 						}
+
+						executor.execute(() -> this.hitBlock(living, (BlockRayTraceResult) rayTraceResult,
+								playSound && entity.level.isClientSide()));
+						break;
+					case ENTITY:
+						EntityRayTraceResult entityRayTraceResult = (EntityRayTraceResult) rayTraceResult;
+						if (!entityRayTraceResult.getEntity().isAlive()) {
+							break;
+						}
+
+						// Handled by validatePendingHit
+						if (entityRayTraceResult.getEntity() instanceof ServerPlayerEntity
+								&& entity instanceof ServerPlayerEntity) {
+							break;
+						}
+
+						if (entity.level.isClientSide()) {
+							this.client.handleHitEntityPre(living,
+									entityRayTraceResult.getEntity(),
+									entityRayTraceResult.getLocation(),
+									randomSeed);
+						}
+
+						final boolean playEntityHitSound = !(lastRayTraceResult instanceof EntityRayTraceResult)
+								|| !((EntityRayTraceResult) lastRayTraceResult).getEntity().getType()
+								.getRegistryName()
+								.equals(entityRayTraceResult.getEntity().getType().getRegistryName())
+								&& entity.level.isClientSide();
+
+						executor.execute(() -> this.hitEntity(living, entityRayTraceResult.getEntity(),
+								entityRayTraceResult.getLocation(), playEntityHitSound));
+
+						if (!entity.level.isClientSide()
+								&& !(living.getEntity() instanceof PlayerEntity
+								&& ((PlayerEntity) living.getEntity()).isCreative())) {
+							if (ServerDist.WORLD_GUARD_BRIDGE == null) {
+								break;
+							}
+							if(ForgeToBukkitInterfaceImpl.INSTANCE.isWorldGuardFlagAllowed("bullet-recovery", entity)) {
+								consumeBullet = false;
+							}
+							break;
+						}
+
+						break;
+					default:
+						break;
+				}
+
+				if(ServerDist.WORLD_GUARD_BRIDGE != null
+						&& ForgeToBukkitInterfaceImpl.INSTANCE.isWorldGuardFlagAllowed("infinity-ammo", entity)) {
+					consumeBullet = false;
+				}
+
+				if (!entity.level.isClientSide()
+						&& !(living.getEntity() instanceof PlayerEntity
+						&& ((PlayerEntity) living.getEntity()).isCreative())) {
+					if (consumeBullet) {
+						this.ammoProvider.getExpectedMagazine().decrementSize();
 					}
-				});
-			}*/
-		});
+				}
+
+				lastRayTraceResult = rayTraceResult;
+			}
+		}
+
+
 	}
 
 	/**

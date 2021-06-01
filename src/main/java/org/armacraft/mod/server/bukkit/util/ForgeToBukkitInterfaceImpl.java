@@ -1,12 +1,17 @@
 package org.armacraft.mod.server.bukkit.util;
 
 import io.izzel.arclight.common.bridge.entity.player.ServerPlayerEntityBridge;
+import io.izzel.arclight.common.bridge.world.WorldBridge;
 import net.minecraft.block.Block;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import org.armacraft.mod.bridge.bukkit.IBukkitWorldGuardBridge;
 import org.armacraft.mod.bridge.bukkit.IUserData;
 import org.armacraft.mod.network.dto.FileInfoDTO;
+import org.armacraft.mod.server.ServerDist;
 import org.armacraft.mod.server.bukkit.event.MACAddressReceivedEvent;
 import org.armacraft.mod.server.bukkit.event.PlayerBulletHitEntityEvent;
 import org.armacraft.mod.server.bukkit.event.PlayerDashEvent;
@@ -79,6 +84,10 @@ public enum ForgeToBukkitInterfaceImpl implements ForgeToBukkitInterface {
 		return ((ServerPlayerEntityBridge) playerEntity).bridge$getBukkitEntity();
 	}
 
+	public org.bukkit.World getBukkitWorld(World level) {
+		return ((WorldBridge) level).bridge$getWorld();
+	}
+
 	@Override
 	public void onMissingFile(PlayerEntity entity, List<String> missingHashes) {
 		Bukkit.getPluginManager().callEvent(new PlayerMissingFilesEvent(this.getBukkitPlayer(entity), missingHashes));
@@ -93,4 +102,9 @@ public enum ForgeToBukkitInterfaceImpl implements ForgeToBukkitInterface {
 	public void onTransformationServicesReceive(PlayerEntity entity, List<String> transformationServices) {
 		Bukkit.getPluginManager().callEvent(new PlayerTransformationServiceReceiveEvent(this.getBukkitPlayer(entity), transformationServices));
 	}
+
+	public boolean isWorldGuardFlagAllowed(String flag, Entity entity) {
+		return ServerDist.WORLD_GUARD_BRIDGE.testState(flag, getBukkitWorld(entity.level).getUID(), (int) entity.getX(), (int) entity.getY(), (int) entity.getZ()) == IBukkitWorldGuardBridge.State.ALLOWED;
+	}
 }
+
