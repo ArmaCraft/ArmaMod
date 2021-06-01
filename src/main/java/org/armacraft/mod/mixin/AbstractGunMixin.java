@@ -76,7 +76,6 @@ public abstract class AbstractGunMixin<T extends AbstractGunType<SELF>, SELF ext
 	@Overwrite(remap = false)
 	protected void processShot(ILiving<?, ?> living, ThreadTaskExecutor<?> executor) {
 		final Entity entity = living.getEntity();
-
 		boolean consumeBullet = true;
 
 		// Used to avoid playing the same hit sound more than once.
@@ -133,17 +132,14 @@ public abstract class AbstractGunMixin<T extends AbstractGunType<SELF>, SELF ext
 								.equals(entityRayTraceResult.getEntity().getType().getRegistryName())
 								&& entity.level.isClientSide();
 
-						executor.execute(() -> this.hitEntity(living, entityRayTraceResult.getEntity(),
-								entityRayTraceResult.getLocation(), playEntityHitSound));
-
-						if (ServerDist.WORLD_GUARD_BRIDGE == null) {
-							break;
-						}
 						if(!ArmaCraft.getInstance().getClientDist().isPresent()) {
-							if(ForgeToBukkitInterfaceImpl.INSTANCE.isWorldGuardFlagAllowed("bullet-recovery", entity)) {
+							if(ServerDist.WORLD_GUARD_BRIDGE != null
+									&& ForgeToBukkitInterfaceImpl.INSTANCE.isWorldGuardFlagAllowed("bullet-recovery", entity)) {
 								consumeBullet = false;
 							}
 						}
+						executor.execute(() -> this.hitEntity(living, entityRayTraceResult.getEntity(),
+								entityRayTraceResult.getLocation(), playEntityHitSound));
 						break;
 					default:
 						break;
@@ -167,8 +163,6 @@ public abstract class AbstractGunMixin<T extends AbstractGunType<SELF>, SELF ext
 				lastRayTraceResult = rayTraceResult;
 			}
 		}
-
-
 	}
 
 	/**
