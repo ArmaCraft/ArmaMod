@@ -32,7 +32,6 @@ import org.armacraft.mod.bridge.AbstractGunBridge;
 import org.armacraft.mod.bridge.bukkit.IBukkitWorldGuardBridge;
 import org.armacraft.mod.potion.ArmaCraftEffects;
 import org.armacraft.mod.server.ServerDist;
-import org.armacraft.mod.server.bukkit.util.ForgeToBukkitInterfaceImpl;
 import org.armacraft.mod.util.GunUtils;
 import org.armacraft.mod.util.MiscUtil;
 import org.spongepowered.asm.mixin.Final;
@@ -76,7 +75,18 @@ public abstract class AbstractGunMixin<T extends AbstractGunType<SELF>, SELF ext
 	@Overwrite(remap = false)
 	protected void processShot(ILiving<?, ?> living, ThreadTaskExecutor<?> executor) {
 		final Entity entity = living.getEntity();
-		boolean consumeBullet = true;
+
+		// Magazine size will be synced to clients so only decrement this on the server.
+		if (!entity.level.isClientSide()
+				&& !(living.getEntity() instanceof PlayerEntity
+				&& ((PlayerEntity) living.getEntity()).isCreative())) {
+			final int unbreakingLevel =
+					EnchantmentHelper.getItemEnchantmentLevel(Enchantments.UNBREAKING, this.gunStack);
+			if (!UnbreakingEnchantment.shouldIgnoreDurabilityDrop(this.gunStack, unbreakingLevel,
+					random)) {
+				this.ammoProvider.getExpectedMagazine().decrementSize();
+			}
+		}
 
 		// Used to avoid playing the same hit sound more than once.
 		RayTraceResult lastRayTraceResult = null;
@@ -132,34 +142,12 @@ public abstract class AbstractGunMixin<T extends AbstractGunType<SELF>, SELF ext
 								.equals(entityRayTraceResult.getEntity().getType().getRegistryName())
 								&& entity.level.isClientSide();
 
-						if(!ArmaCraft.getInstance().getClientDist().isPresent()) {
-							if(ServerDist.WORLD_GUARD_BRIDGE != null
-									&& ForgeToBukkitInterfaceImpl.INSTANCE.isWorldGuardFlagAllowed("bullet-recovery", entity)) {
-								consumeBullet = false;
-							}
-						}
 						executor.execute(() -> this.hitEntity(living, entityRayTraceResult.getEntity(),
 								entityRayTraceResult.getLocation(), playEntityHitSound));
 						break;
 					default:
 						break;
 				}
-
-				if(!ArmaCraft.getInstance().getClientDist().isPresent()) {
-					if (ServerDist.WORLD_GUARD_BRIDGE != null
-							&& ForgeToBukkitInterfaceImpl.INSTANCE.isWorldGuardFlagAllowed("infinity-ammo", entity)) {
-						consumeBullet = false;
-					}
-				}
-
-				if (!entity.level.isClientSide()
-						&& !(living.getEntity() instanceof PlayerEntity
-						&& ((PlayerEntity) living.getEntity()).isCreative())) {
-					if (consumeBullet) {
-						this.ammoProvider.getExpectedMagazine().decrementSize();
-					}
-				}
-
 				lastRayTraceResult = rayTraceResult;
 			}
 		}

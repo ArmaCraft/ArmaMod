@@ -144,7 +144,7 @@ task processTokens() {
 
 if (target == 'client') {
 	processTokens.finalizedBy 'copyAndProcessSourcesForPublic'
-	build.finalizedBy 'applyProguard'
+    build.finalizedBy 'applyProguard'
 }
 
 compileJava {
@@ -368,11 +368,6 @@ task applyProguard(type: proguard.gradle.ProGuardTask) {
     outjars jar.destinationDirectory.file('ArmaMod-client.jar')
     
     printmapping 'proguard.map'
-    finalizedBy 'encryptJars'
-    doLast {
-    	// Apaga a jar desofuscada
-    	jar.destinationDirectory.file('ArmaMod-client-unobf.jar').get().getAsFile().delete();
-    }
 }
 
 task encryptJars(type: JavaExec) {
