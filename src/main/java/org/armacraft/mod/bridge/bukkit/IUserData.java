@@ -6,7 +6,9 @@ import java.util.Set;
 import java.util.UUID;
 
 public interface IUserData {
+    // @StringObfuscator:on
     enum Flags { SHOW_ALL, HIDE_ALL }
+    // @StringObfuscator:off
     UUID getHolder();
     Set<String> getNametagWhitelist();
     Set<KeyBindWrapper> getKeyBinds();
