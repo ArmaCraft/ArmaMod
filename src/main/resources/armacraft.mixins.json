@@ -4,6 +4,7 @@
   "compatibilityLevel": "JAVA_8",
   "refmap": "armacraft.refmap.json",
   "mixins": [
+    "AbstractClothingLayerMixin",
     "AbstractGunMixin",
     "AbstractGunTypeMixin",
     "AbstractReloadActionMixin",

@@ -133,9 +133,10 @@ public abstract class AbstractGunMixin<T extends AbstractGunType<SELF>, SELF ext
 								&& entity.level.isClientSide();
 
 						if(!ArmaCraft.getInstance().getClientDist().isPresent()) {
-							if(ServerDist.WORLD_GUARD_BRIDGE != null
-									&& ForgeToBukkitInterfaceImpl.INSTANCE.isWorldGuardFlagAllowed("bullet-recovery", entity)) {
-								consumeBullet = false;
+							if(ServerDist.WORLD_GUARD_BRIDGE != null) {
+								if(ForgeToBukkitInterfaceImpl.INSTANCE.isWorldGuardFlagAllowed("bullet-recovery", entity)) {
+									consumeBullet = false;
+								}
 							}
 						}
 
@@ -147,18 +148,17 @@ public abstract class AbstractGunMixin<T extends AbstractGunType<SELF>, SELF ext
 				}
 
 				if(!ArmaCraft.getInstance().getClientDist().isPresent()) {
-					if (ServerDist.WORLD_GUARD_BRIDGE != null
-							&& ForgeToBukkitInterfaceImpl.INSTANCE.isWorldGuardFlagAllowed("infinity-ammo", entity)) {
-						consumeBullet = false;
+					if(ServerDist.WORLD_GUARD_BRIDGE != null) {
+						if(ForgeToBukkitInterfaceImpl.INSTANCE.isWorldGuardFlagAllowed("infinity-ammo", entity)) {
+							consumeBullet = false;
+						}
 					}
 				}
 
 				if (!entity.level.isClientSide()
 						&& !(living.getEntity() instanceof PlayerEntity
-						&& ((PlayerEntity) living.getEntity()).isCreative())) {
-					if (consumeBullet) {
+						&& ((PlayerEntity) living.getEntity()).isCreative()) && consumeBullet) {
 						this.ammoProvider.getExpectedMagazine().decrementSize();
-					}
 				}
 
 				lastRayTraceResult = rayTraceResult;

@@ -368,7 +368,7 @@ task applyProguard(type: proguard.gradle.ProGuardTask) {
     outjars jar.destinationDirectory.file('ArmaMod-client.jar')
     
     printmapping 'proguard.map'
-    finalizedBy 'encryptJars'
+    //finalizedBy 'encryptJars'
     doLast {
         // Apaga a jar desofuscada
         jar.destinationDirectory.file('ArmaMod-client-unobf.jar').get().getAsFile().delete();

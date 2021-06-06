@@ -18,4 +18,6 @@ public interface IUserData {
     void setFlags(Set<Flags> flags);
     boolean hasBind(Character character);
     boolean areKeybindsEnabled();
+    void setRenderClothes(boolean bool);
+    boolean renderClothes();
 }

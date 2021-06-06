@@ -12,12 +12,14 @@ public class ClientUserData implements IUserData {
     private Set<Flags> flags;
     private Set<String> nametagWhitelist;
     private boolean areKeybindsEnabled;
+    private boolean renderClothes;
 
-    public ClientUserData(Set<KeyBindWrapper> keybinds, Set<Flags> flags, Set<String> nametagWhitelist, boolean areKeybindsEnabled) {
+    public ClientUserData(Set<KeyBindWrapper> keybinds, Set<Flags> flags, Set<String> nametagWhitelist, boolean areKeybindsEnabled, boolean renderClothes) {
         this.keybinds = keybinds;
         this.areKeybindsEnabled = areKeybindsEnabled;
         this.flags = flags;
         this.nametagWhitelist = nametagWhitelist;
+        this.renderClothes = renderClothes;
     }
 
     @Override
@@ -64,5 +66,15 @@ public class ClientUserData implements IUserData {
     @Override
     public boolean areKeybindsEnabled() {
         return areKeybindsEnabled;
+    }
+
+    @Override
+    public void setRenderClothes(boolean bool) {
+        this.renderClothes = bool;
+    }
+
+    @Override
+    public boolean renderClothes() {
+        return renderClothes;
     }
 }

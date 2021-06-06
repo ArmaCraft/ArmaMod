@@ -47,7 +47,9 @@ public class UpdateUserDataPacket {
         }
 
         for (int i = 0; i < bindsAmount; i++) {
-            keybinds.add(KeyBindWrapper.fromString(in.readUtf(64)));
+            String bind = in.readUtf(64);
+            System.out.println("BIND RECEBIDA: " + bind);
+            keybinds.add(KeyBindWrapper.fromString(bind));
         }
 
         return new UpdateUserDataPacket(new ClientUserData(keybinds, flags, nametagWhitelist, areKeybindsEnabled));

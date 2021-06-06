@@ -17,6 +17,7 @@ public class ClientDashPacket {
 	}
 
 	public static boolean handle(ClientDashPacket msg, Supplier<NetworkEvent.Context> ctx) {
+		//StringObfuscation: on
 		if (ctx.get().getDirection().getReceptionSide().isServer()) {
 			ctx.get().enqueueWork(() -> {
 				ServerPlayerEntity player = ctx.get().getSender();
@@ -27,6 +28,7 @@ public class ClientDashPacket {
 				}
 			});
 		}
+		//StringObfuscation: off
 		return true;
 	}
 }
