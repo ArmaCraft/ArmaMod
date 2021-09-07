@@ -13,7 +13,6 @@ public class CraftingDeadVirusMixin {
     @Overwrite(remap = false)
     @SubscribeEvent
     public void handleGunHitEntity(GunEvent.HitEntity event) {
-        com.craftingdead.core.network.message.play.KillFeedMessage
         //NAO DEIXA O PLAYER SER INFECTADO
     }
 }

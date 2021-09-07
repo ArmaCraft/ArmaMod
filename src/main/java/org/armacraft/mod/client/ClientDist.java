@@ -8,7 +8,10 @@ import net.minecraft.client.gui.screen.PackScreen;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.monster.ZombieEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.particles.BlockParticleData;
 import net.minecraft.particles.ParticleTypes;
 import net.minecraft.util.SoundEvents;
@@ -37,7 +40,10 @@ import org.armacraft.mod.init.ArmaCraftBlocks;
 import org.armacraft.mod.init.ArmaCraftSounds;
 import org.armacraft.mod.network.ClientDashPacket;
 import org.armacraft.mod.network.ClientOpenedCheatEnginePacket;
+import org.armacraft.mod.network.KeybindPacket;
+import org.armacraft.mod.network.MACAddressRequestPacket;
 import org.armacraft.mod.network.dto.FolderSnapshotDTO;
+import org.armacraft.mod.server.bukkit.event.KeybindPressedEvent;
 import org.armacraft.mod.util.Cooldown;
 import org.armacraft.mod.util.MiscUtil;
 import org.armacraft.mod.wrapper.EnvironmentWrapper;
@@ -156,14 +162,8 @@ public class ClientDist implements ArmaDist {
 		if (this.isPlayerInWorld()) {
 			if (ClientUtils.isAltKeyDown()) {
 				if(userData != null){
-					this.userData.getKeyBinds().forEach((keybind) -> {
-						if (ClientUtils.isKeyDown(keybind.getBind())) {
-							if (!Cooldown.checkAndPut("keybind", 500L)) {
-								ClientUtils.playLocalSound(SoundEvents.UI_BUTTON_CLICK, 1.2F, 1F);
-								minecraft.player.chat("/" + keybind.getCommand());
-							}
-						}
-					});
+					ClientUtils.playLocalSound(SoundEvents.UI_BUTTON_CLICK, 1.2F, 1F);
+					ArmaCraft.networkChannel.send(PacketDistributor.SERVER.noArg(), new KeybindPacket((char) event.getKey()));
 				}
 			}
 		}

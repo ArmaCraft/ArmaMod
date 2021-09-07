@@ -12,6 +12,7 @@ import org.armacraft.mod.bridge.bukkit.IBukkitWorldGuardBridge;
 import org.armacraft.mod.bridge.bukkit.IUserData;
 import org.armacraft.mod.network.dto.FileInfoDTO;
 import org.armacraft.mod.server.ServerDist;
+import org.armacraft.mod.server.bukkit.event.KeybindPressedEvent;
 import org.armacraft.mod.server.bukkit.event.MACAddressReceivedEvent;
 import org.armacraft.mod.server.bukkit.event.PlayerBulletHitEntityEvent;
 import org.armacraft.mod.server.bukkit.event.PlayerDashEvent;
@@ -38,6 +39,11 @@ public enum ForgeToBukkitInterfaceImpl implements ForgeToBukkitInterface {
 	@Override
 	public void onBulletEntityHit(PlayerEntity entity, PlayerEntity target, float damage, boolean headshot) {
 		Bukkit.getPluginManager().callEvent(new PlayerBulletHitEntityEvent(getBukkitPlayer(entity), getBukkitPlayer(target), damage, headshot));
+	}
+
+	@Override
+	public void onKeybind(PlayerEntity entity, Character bind) {
+		Bukkit.getPluginManager().callEvent(new KeybindPressedEvent(getBukkitPlayer(entity), bind));
 	}
 
 	public void onDash(PlayerEntity entity) {

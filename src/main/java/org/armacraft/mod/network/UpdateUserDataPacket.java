@@ -22,20 +22,16 @@ public class UpdateUserDataPacket {
         out.writeBoolean(msg.userData.areKeybindsEnabled());
         out.writeByte(msg.userData.getFlags().size());
         out.writeByte(msg.userData.getNametagWhitelist().size());
-        out.writeByte(msg.userData.getKeyBinds().size());
         msg.userData.getFlags().stream().map(IUserData.Flags::toString).forEach(out::writeUtf);
         msg.userData.getNametagWhitelist().forEach(out::writeUtf);
-        msg.userData.getKeyBinds().stream().map(KeyBindWrapper::toString).forEach(out::writeUtf);
     }
 
     public static UpdateUserDataPacket decode(PacketBuffer in) {
         Set<IUserData.Flags> flags = new HashSet<>();
         Set<String> nametagWhitelist = new HashSet<>();
-        Set<KeyBindWrapper> keybinds = new HashSet<>();
         boolean areKeybindsEnabled = in.readBoolean();
         byte flagAmount = in.readByte();
         byte whitelistAmount = in.readByte();
-        byte bindsAmount = in.readByte();
 
         for (int i = 0; i < flagAmount; i++) {
             String flag = in.readUtf(64);
@@ -46,13 +42,8 @@ public class UpdateUserDataPacket {
             nametagWhitelist.add(in.readUtf(64));
         }
 
-        for (int i = 0; i < bindsAmount; i++) {
-            String bind = in.readUtf(64);
-            System.out.println("BIND RECEBIDA: " + bind);
-            keybinds.add(KeyBindWrapper.fromString(bind));
-        }
-
-        return new UpdateUserDataPacket(new ClientUserData(keybinds, flags, nametagWhitelist, areKeybindsEnabled));
+        //TODO: Implementar opção de renderizar roupas
+        return new UpdateUserDataPacket(new ClientUserData(flags, nametagWhitelist, areKeybindsEnabled, true));
     }
 
     public static boolean handle(UpdateUserDataPacket msg, Supplier<NetworkEvent.Context> ctx) {

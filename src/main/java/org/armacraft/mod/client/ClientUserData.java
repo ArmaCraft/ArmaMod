@@ -8,14 +8,12 @@ import java.util.Set;
 import java.util.UUID;
 
 public class ClientUserData implements IUserData {
-    private Set<KeyBindWrapper> keybinds;
     private Set<Flags> flags;
     private Set<String> nametagWhitelist;
     private boolean areKeybindsEnabled;
     private boolean renderClothes;
 
-    public ClientUserData(Set<KeyBindWrapper> keybinds, Set<Flags> flags, Set<String> nametagWhitelist, boolean areKeybindsEnabled, boolean renderClothes) {
-        this.keybinds = keybinds;
+    public ClientUserData(Set<Flags> flags, Set<String> nametagWhitelist, boolean areKeybindsEnabled, boolean renderClothes) {
         this.areKeybindsEnabled = areKeybindsEnabled;
         this.flags = flags;
         this.nametagWhitelist = nametagWhitelist;
@@ -34,7 +32,7 @@ public class ClientUserData implements IUserData {
 
     @Override
     public Set<KeyBindWrapper> getKeyBinds() {
-        return keybinds;
+        return null;
     }
 
     @Override
@@ -49,7 +47,7 @@ public class ClientUserData implements IUserData {
 
     @Override
     public void setKeyBinds(Set<KeyBindWrapper> binds) {
-        this.keybinds = binds;
+
     }
 
     @Override
@@ -58,10 +56,7 @@ public class ClientUserData implements IUserData {
     }
 
     @Override
-    public boolean hasBind(Character character) {
-        return keybinds.stream()
-                .anyMatch(keybind -> keybind.getBind().toString().equalsIgnoreCase(character.toString()));
-    }
+    public boolean hasBind(Character character) { return false; }
 
     @Override
     public boolean areKeybindsEnabled() {

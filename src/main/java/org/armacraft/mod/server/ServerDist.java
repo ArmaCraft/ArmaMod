@@ -43,7 +43,7 @@ public class ServerDist implements ArmaDist {
 
 	//private List<String> validHashes = new ArrayList<>();
 
-	//Pontes entre o mod e o Bukkit que são injetadas pelo server
+	//Pontes entre o mod e o Bukkit que são injsetadas pelo server
 	public static IBukkitPermissionBridge PERMISSION_BRIDGE;
 	public static IBukkitWorldGuardBridge WORLD_GUARD_BRIDGE;
 

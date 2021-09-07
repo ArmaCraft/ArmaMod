@@ -15,7 +15,5 @@ public abstract class AbstractClothingLayerMixin<T extends LivingEntity, M exten
         super(p_i50926_1_);
     }
 
-    @Override
-
 
 }
