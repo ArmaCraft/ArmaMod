@@ -28,7 +28,7 @@ public class IngameGuiMixin {
 		ci.cancel();
 	}
 
-	@Inject(method = "<init>", at = @At("HEAD"), remap = false)
+	@Inject(method = "<init>", at = @At("TAIL"), remap = false)
 	public void constructorHead(Minecraft minecraft, ClientDist client, ResourceLocation crosshairLocation, CallbackInfo ci) {
 		KILL_FEED_MESSAGE_LIFE_MS = 2500;
 	}
