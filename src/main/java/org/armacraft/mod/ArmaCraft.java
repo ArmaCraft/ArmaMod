@@ -47,6 +47,7 @@ import org.armacraft.mod.network.ClientInfoResponsePacket;
 import org.armacraft.mod.network.ClientOpenedCheatEnginePacket;
 import org.armacraft.mod.network.CloseGamePacket;
 import org.armacraft.mod.network.CommonGunSpecsUpdatePacket;
+import org.armacraft.mod.network.KeybindPacket;
 import org.armacraft.mod.network.MACAddressRequestPacket;
 import org.armacraft.mod.network.MACAddressResponsePacket;
 import org.armacraft.mod.network.UpdateUserDataPacket;
@@ -178,6 +179,10 @@ public class ArmaCraft {
 				.decoder(MACAddressResponsePacket::decode)
 				.consumer(MACAddressResponsePacket::handle).add();
 
+		networkChannel.messageBuilder(KeybindPacket.class, ++packetId, NetworkDirection.PLAY_TO_SERVER)
+				.encoder(KeybindPacket::encode)
+				.decoder(KeybindPacket::decode)
+				.consumer(KeybindPacket::handle).add();
 	}
 
 	public void handleCommonSetup(FMLCommonSetupEvent event) {
