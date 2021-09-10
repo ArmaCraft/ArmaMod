@@ -26,7 +26,6 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.event.lifecycle.FMLDedicatedServerSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.network.NetworkDirection;
 import net.minecraftforge.fml.network.NetworkRegistry;
@@ -47,17 +46,18 @@ import org.armacraft.mod.network.ClientInfoResponsePacket;
 import org.armacraft.mod.network.ClientOpenedCheatEnginePacket;
 import org.armacraft.mod.network.CloseGamePacket;
 import org.armacraft.mod.network.CommonGunSpecsUpdatePacket;
-import org.armacraft.mod.network.KeybindPacket;
+import org.armacraft.mod.network.FlagsUpdatePacket;
+import org.armacraft.mod.network.KeybindingsUpdatePacket;
 import org.armacraft.mod.network.MACAddressRequestPacket;
 import org.armacraft.mod.network.MACAddressResponsePacket;
-import org.armacraft.mod.network.UpdateUserDataPacket;
+import org.armacraft.mod.network.NametagsUpdatePacket;
+import org.armacraft.mod.network.ToggleKeybindingsPacket;
 import org.armacraft.mod.potion.ArmaCraftEffects;
 import org.armacraft.mod.server.CustomGunDataController;
 import org.armacraft.mod.server.ServerDist;
 import org.armacraft.mod.util.EnchantUtils;
 import org.armacraft.mod.util.MiscUtil;
 import org.armacraft.mod.wrapper.CommonGunDataWrapper;
-import org.bukkit.craftbukkit.v1_16_R3.inventory.CraftItemStack;
 
 import java.util.Optional;
 
@@ -102,41 +102,24 @@ public class ArmaCraft {
 
 	public void setupChannel() {
 		int packetId = -1;
-		
-		networkChannel.messageBuilder(ClientInfoRequestPacket.class, ++packetId, NetworkDirection.PLAY_TO_CLIENT)
-				.encoder(ClientInfoRequestPacket::encode)
-				.decoder(ClientInfoRequestPacket::decode)
-				.consumer(ClientInfoRequestPacket::handle).add();
+
+		//PLAY --> SERVER
 
 		networkChannel.messageBuilder(ClientInfoResponsePacket.class, ++packetId, NetworkDirection.PLAY_TO_SERVER)
 				.encoder(ClientInfoResponsePacket::encode)
 				.decoder(ClientInfoResponsePacket::decode)
 				.consumer(ClientInfoResponsePacket::handle).add();
 
-		networkChannel.messageBuilder(UpdateUserDataPacket.class, ++packetId, NetworkDirection.PLAY_TO_CLIENT)
-				.encoder(UpdateUserDataPacket::encode)
-				.decoder(UpdateUserDataPacket::decode)
-				.consumer(UpdateUserDataPacket::handle).add();
-
 		networkChannel.messageBuilder(ClientDashPacket.class, ++packetId, NetworkDirection.PLAY_TO_SERVER)
 				.encoder(ClientDashPacket::encode)
 				.decoder(ClientDashPacket::decode)
 				.consumer(ClientDashPacket::handle).add();
-
-		networkChannel.messageBuilder(UpdateUserDataPacket.class, ++packetId, NetworkDirection.PLAY_TO_CLIENT)
-				.encoder(UpdateUserDataPacket::encode)
-				.decoder(UpdateUserDataPacket::decode)
-				.consumer(UpdateUserDataPacket::handle).add();
 
 		networkChannel.messageBuilder(ClientEnvironmentResponsePacket.class, ++packetId, NetworkDirection.PLAY_TO_SERVER)
 				.encoder(ClientEnvironmentResponsePacket::encode)
 				.decoder(ClientEnvironmentResponsePacket::decode)
 				.consumer(ClientEnvironmentResponsePacket::handle).add();
 
-		networkChannel.messageBuilder(ClientEnvironmentRequestPacket.class, ++packetId, NetworkDirection.PLAY_TO_CLIENT)
-				.encoder(ClientEnvironmentRequestPacket::encode)
-				.decoder(ClientEnvironmentRequestPacket::decode)
-				.consumer(ClientEnvironmentRequestPacket::handle).add();
 
 		networkChannel.messageBuilder(ClientGunInfoPacket.class, ++packetId, NetworkDirection.PLAY_TO_SERVER)
 				.encoder(ClientGunInfoPacket::encode)
@@ -146,23 +129,39 @@ public class ArmaCraft {
 		/*networkChannel.messageBuilder(ClientClassesHashResponsePacket.class, ++packetId, NetworkDirection.PLAY_TO_SERVER)
 				.encoder(ClientClassesHashResponsePacket::encode)
 				.decoder(ClientClassesHashResponsePacket::decode)
-				.consumer(ClientClassesHashResponsePacket::handle).add();
-
-		networkChannel.messageBuilder(ClientClassesHashRequestPacket.class, ++packetId, NetworkDirection.PLAY_TO_CLIENT)
-				.encoder(ClientClassesHashRequestPacket::encode)
-				.decoder(ClientClassesHashRequestPacket::decode)
-				.consumer(ClientClassesHashRequestPacket::handle).add();*/
-
-		networkChannel.messageBuilder(CloseGamePacket.class, ++packetId, NetworkDirection.PLAY_TO_CLIENT)
-				.encoder(CloseGamePacket::encode)
-				.decoder(CloseGamePacket::decode)
-				.consumer(CloseGamePacket::handle).add();
+				.consumer(ClientClassesHashResponsePacket::handle).add();*/
 
 		networkChannel.messageBuilder(ClientOpenedCheatEnginePacket.class, ++packetId, NetworkDirection.PLAY_TO_SERVER)
 				.encoder(ClientOpenedCheatEnginePacket::encode)
 				.decoder(ClientOpenedCheatEnginePacket::decode)
 				.consumer(ClientOpenedCheatEnginePacket::handle).add();
 
+		networkChannel.messageBuilder(MACAddressResponsePacket.class, ++packetId, NetworkDirection.PLAY_TO_SERVER)
+				.encoder(MACAddressResponsePacket::encode)
+				.decoder(MACAddressResponsePacket::decode)
+				.consumer(MACAddressResponsePacket::handle).add();
+
+		//PLAY --> CLIENT
+
+		/*networkChannel.messageBuilder(ClientClassesHashRequestPacket.class, ++packetId, NetworkDirection.PLAY_TO_CLIENT)
+			.encoder(ClientClassesHashRequestPacket::encode)
+			.decoder(ClientClassesHashRequestPacket::decode)
+			.consumer(ClientClassesHashRequestPacket::handle).add();*/
+
+		networkChannel.messageBuilder(ClientInfoRequestPacket.class, ++packetId, NetworkDirection.PLAY_TO_CLIENT)
+				.encoder(ClientInfoRequestPacket::encode)
+				.decoder(ClientInfoRequestPacket::decode)
+				.consumer(ClientInfoRequestPacket::handle).add();
+
+		networkChannel.messageBuilder(ClientEnvironmentRequestPacket.class, ++packetId, NetworkDirection.PLAY_TO_CLIENT)
+				.encoder(ClientEnvironmentRequestPacket::encode)
+				.decoder(ClientEnvironmentRequestPacket::decode)
+				.consumer(ClientEnvironmentRequestPacket::handle).add();
+
+		networkChannel.messageBuilder(CloseGamePacket.class, ++packetId, NetworkDirection.PLAY_TO_CLIENT)
+				.encoder(CloseGamePacket::encode)
+				.decoder(CloseGamePacket::decode)
+				.consumer(CloseGamePacket::handle).add();
 
 		networkChannel.messageBuilder(CommonGunSpecsUpdatePacket.class, ++packetId, NetworkDirection.PLAY_TO_CLIENT)
 				.encoder(CommonGunSpecsUpdatePacket::encode)
@@ -174,15 +173,25 @@ public class ArmaCraft {
 				.decoder(MACAddressRequestPacket::decode)
 				.consumer(MACAddressRequestPacket::handle).add();
 
-		networkChannel.messageBuilder(MACAddressResponsePacket.class, ++packetId, NetworkDirection.PLAY_TO_SERVER)
-				.encoder(MACAddressResponsePacket::encode)
-				.decoder(MACAddressResponsePacket::decode)
-				.consumer(MACAddressResponsePacket::handle).add();
+		networkChannel.messageBuilder(KeybindingsUpdatePacket.class, ++packetId, NetworkDirection.PLAY_TO_CLIENT)
+				.encoder(KeybindingsUpdatePacket::encode)
+				.decoder(KeybindingsUpdatePacket::decode)
+				.consumer(KeybindingsUpdatePacket::handle).add();
 
-		networkChannel.messageBuilder(KeybindPacket.class, ++packetId, NetworkDirection.PLAY_TO_SERVER)
-				.encoder(KeybindPacket::encode)
-				.decoder(KeybindPacket::decode)
-				.consumer(KeybindPacket::handle).add();
+		networkChannel.messageBuilder(NametagsUpdatePacket.class, ++packetId, NetworkDirection.PLAY_TO_CLIENT)
+				.encoder(NametagsUpdatePacket::encode)
+				.decoder(NametagsUpdatePacket::decode)
+				.consumer(NametagsUpdatePacket::handle).add();
+
+		networkChannel.messageBuilder(ToggleKeybindingsPacket.class, ++packetId, NetworkDirection.PLAY_TO_CLIENT)
+				.encoder(ToggleKeybindingsPacket::encode)
+				.decoder(ToggleKeybindingsPacket::decode)
+				.consumer(ToggleKeybindingsPacket::handle).add();
+
+		networkChannel.messageBuilder(FlagsUpdatePacket.class, ++packetId, NetworkDirection.PLAY_TO_CLIENT)
+				.encoder(FlagsUpdatePacket::encode)
+				.decoder(FlagsUpdatePacket::decode)
+				.consumer(FlagsUpdatePacket::handle).add();
 	}
 
 	public void handleCommonSetup(FMLCommonSetupEvent event) {

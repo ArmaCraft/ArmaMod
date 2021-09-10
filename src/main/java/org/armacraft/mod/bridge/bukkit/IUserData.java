@@ -7,7 +7,7 @@ import java.util.UUID;
 
 public interface IUserData {
     // @StringObfuscator:on
-    enum Flags { SHOW_ALL, HIDE_ALL }
+    enum Flags { NAMETAGS_SHOW_ALL, NAMETAGS_HIDE_ALL }
     // @StringObfuscator:off
     UUID getHolder();
     Set<String> getNametagWhitelist();
@@ -15,9 +15,10 @@ public interface IUserData {
     Set<Flags> getFlags();
     void setNametagWhitelist(Set<String> whitelist);
     void setKeyBinds(Set<KeyBindWrapper> binds);
+    void toggleKeybindings(boolean enable);
     void setFlags(Set<Flags> flags);
     boolean hasBind(Character character);
-    boolean areKeybindsEnabled();
+    boolean areKeybindingsEnabled();
     void setRenderClothes(boolean bool);
     boolean renderClothes();
 }

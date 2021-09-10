@@ -51,6 +51,11 @@ public class ClientUserData implements IUserData {
     }
 
     @Override
+    public void toggleKeybindings(boolean enable) {
+        this.areKeybindsEnabled = enable;
+    }
+
+    @Override
     public void setFlags(Set<Flags> flags) {
         this.flags = flags;
     }
@@ -59,7 +64,7 @@ public class ClientUserData implements IUserData {
     public boolean hasBind(Character character) { return false; }
 
     @Override
-    public boolean areKeybindsEnabled() {
+    public boolean areKeybindingsEnabled() {
         return areKeybindsEnabled;
     }
 
