@@ -212,9 +212,9 @@ public class ClientDist implements ArmaDist {
 					return;
 				}
 			}
-			if(userData.getFlags().contains(IUserData.Flags.SHOW_ALL)) {
+			if(userData.getFlags().contains(IUserData.Flags.NAMETAGS_SHOW_ALL)) {
 				event.setResult(Event.Result.ALLOW);
-			} else if (userData.getFlags().contains(IUserData.Flags.HIDE_ALL)) {
+			} else if (userData.getFlags().contains(IUserData.Flags.NAMETAGS_HIDE_ALL)) {
 				event.setResult(Event.Result.DENY);
 			} else {
 				if(!userData.getNametagWhitelist().contains(player.getName().getString())) {
