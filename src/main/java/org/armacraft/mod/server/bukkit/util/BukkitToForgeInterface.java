@@ -68,7 +68,7 @@ public enum BukkitToForgeInterface {
         return items;
     }
 
-    public void requestMACAdress(Player player) {
+    public void requestMACAddress(Player player) {
         ArmaCraft.networkChannel.send(PacketDistributor.PLAYER.with(() -> this.getPlayerEntity(player)),
                 new MACAddressRequestPacket());
     }
@@ -83,12 +83,12 @@ public enum BukkitToForgeInterface {
                 new CloseGamePacket(title, message));
     }
 
-    public void requestPlayerEnvironmentInfos(Player player) {
+    public void requestPlayerEnvironmentInfo(Player player) {
         ArmaCraft.networkChannel.send(PacketDistributor.PLAYER.with(() -> this.getPlayerEntity(player)),
                 new ClientEnvironmentRequestPacket());
     }
 
-    public void requestClientInfos(Player player) {
+    public void requestClientInfo(Player player) {
         ArmaCraft.networkChannel.send(PacketDistributor.PLAYER.with(() -> this.getPlayerEntity(player)),
                 new ClientInfoRequestPacket());
     }
