@@ -16,6 +16,7 @@ import org.armacraft.mod.network.FlagsUpdatePacket;
 import org.armacraft.mod.network.KeybindingsUpdatePacket;
 import org.armacraft.mod.network.MACAddressRequestPacket;
 import org.armacraft.mod.network.NametagsUpdatePacket;
+import org.armacraft.mod.network.ToggleKeybindingsPacket;
 import org.armacraft.mod.server.CustomGunDataController;
 import org.bukkit.craftbukkit.v1_16_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
@@ -30,6 +31,14 @@ public enum BukkitToForgeInterface {
     INSTANCE;
 
     private Method craftPlayer$getHandle;
+
+    public void toggleKeybindings(IUserData data, boolean enable) {
+        ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayers().stream()
+                .filter(player -> player.getUUID().equals(data.getHolder()))
+                .forEach(player ->
+                    ArmaCraft.networkChannel.send(PacketDistributor.PLAYER.with(() -> player),
+                            new ToggleKeybindingsPacket(enable)));
+    }
 
     public void synchronizeUserData(IUserData data, boolean flags, boolean nametags, boolean keybindings) {
         ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayers().stream()
