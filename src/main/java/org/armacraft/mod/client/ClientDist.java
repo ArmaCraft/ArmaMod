@@ -70,7 +70,7 @@ public class ClientDist implements ArmaDist {
 		this.firstSnapshot = ImmutableList.copyOf(ClientRiskyGameFolder.createSnapshotsOfAllRiskyFolders());
 		
 		ClientUtils.deleteArmaModJarFile();
-		
+		this.userData = new ClientUserData();
 		checkAndWarnAboutRAM();
 		
 		MinecraftForge.EVENT_BUS.register(this);

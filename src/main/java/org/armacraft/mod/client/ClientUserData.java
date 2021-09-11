@@ -4,14 +4,15 @@ import net.minecraft.client.Minecraft;
 import org.armacraft.mod.bridge.bukkit.IUserData;
 import org.armacraft.mod.wrapper.KeyBindWrapper;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
 public class ClientUserData implements IUserData {
-    private Set<Flags> flags;
-    private Set<String> nametagWhitelist;
-    private boolean areKeybindsEnabled;
-    private boolean renderClothes;
+    private Set<Flags> flags = new HashSet<>();
+    private Set<String> nametagWhitelist = new HashSet<>();
+    private boolean areKeybindsEnabled = true;
+    private boolean renderClothes = false;
 
     public ClientUserData(Set<Flags> flags, Set<String> nametagWhitelist, boolean areKeybindsEnabled, boolean renderClothes) {
         this.areKeybindsEnabled = areKeybindsEnabled;
@@ -19,6 +20,8 @@ public class ClientUserData implements IUserData {
         this.nametagWhitelist = nametagWhitelist;
         this.renderClothes = renderClothes;
     }
+
+    public ClientUserData() {}
 
     @Override
     public UUID getHolder() {
