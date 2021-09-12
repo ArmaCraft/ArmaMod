@@ -10,12 +10,14 @@ import java.util.UUID;
 
 public class ClientUserData implements IUserData {
     private Set<Flags> flags = new HashSet<>();
+    private Set<KeyBindWrapper> binds = new HashSet<>();
     private Set<String> nametagWhitelist = new HashSet<>();
     private boolean areKeybindsEnabled = true;
     private boolean renderClothes = false;
 
-    public ClientUserData(Set<Flags> flags, Set<String> nametagWhitelist, boolean areKeybindsEnabled, boolean renderClothes) {
+    public ClientUserData(Set<Flags> flags, Set<String> nametagWhitelist, Set<KeyBindWrapper> binds, boolean areKeybindsEnabled, boolean renderClothes) {
         this.areKeybindsEnabled = areKeybindsEnabled;
+        this.binds = binds;
         this.flags = flags;
         this.nametagWhitelist = nametagWhitelist;
         this.renderClothes = renderClothes;
@@ -35,7 +37,7 @@ public class ClientUserData implements IUserData {
 
     @Override
     public Set<KeyBindWrapper> getKeyBinds() {
-        return null;
+        return binds;
     }
 
     @Override
@@ -50,7 +52,7 @@ public class ClientUserData implements IUserData {
 
     @Override
     public void setKeyBinds(Set<KeyBindWrapper> binds) {
-
+        this.binds = binds;
     }
 
     @Override
@@ -64,7 +66,7 @@ public class ClientUserData implements IUserData {
     }
 
     @Override
-    public boolean hasBind(Character character) { return false; }
+    public boolean hasBind(Character character) { return binds.stream().anyMatch(x -> x.getBind().equals(character)); }
 
     @Override
     public boolean areKeybindingsEnabled() {
