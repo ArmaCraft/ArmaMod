@@ -118,11 +118,10 @@ public class ClientDist implements ArmaDist {
 		this.lastDash = System.currentTimeMillis();
 	}
 
-	public void setUserData(IUserData data) {
-		this.userData = data;
-	}
-
 	public IUserData getUserData() {
+		if(this.userData == null) {
+			this.userData = new ClientUserData();
+		}
 		return this.userData;
 	}
 
