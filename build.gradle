@@ -245,7 +245,7 @@ dependencies {
     annotationProcessor "org.spongepowered:mixin:0.8.2:processor"
     implementation fg.deobf("curse.maven:corpse-${corpse_curseforge_project_id}:${corpse_curseforge_file_id}")
     implementation fg.deobf("curse.maven:crafting_dead_core-${cd_curseforge_project_id}:${cd_curseforge_file_id}")
-    implementation fg.deobf("curse.maven:crafting_dead_virus-${cd_virus_curseforge_project_id}:${cd_virus_curseforge_file_id}")
+    implementation fg.deobf("curse.maven:crafting_dead_virus-${cd_survival_curseforge_project_id}:${cd_survival_curseforge_file_id}")
     implementation 'org.spigotmc:spigot-api:1.12.2-R0.1-SNAPSHOT'
     
 	implementation downloadedFile('https://github.com/IzzelAliz/Arclight/releases/download/1.16%2F1.0.17/arclight-forge-1.16-1.0.17.jar', 'arclight-forge-1.16-1.0.17.jar')
