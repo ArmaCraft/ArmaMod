@@ -1,17 +1,15 @@
 package org.armacraft.mod.mixin;
 
-import com.craftingdead.virus.CraftingDeadVirus;
-import com.craftingdead.virus.potion.InfectionEffect;
+import com.craftingdead.survival.world.effect.InfectionMobEffect;
 import net.minecraft.potion.Effect;
 import net.minecraft.potion.EffectType;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 
 import java.util.Random;
 
-@Mixin(InfectionEffect.class)
+@Mixin(InfectionMobEffect.class)
 public class InfectionEffectMixin extends Effect {
 
     @Shadow @Final private static Random random;
